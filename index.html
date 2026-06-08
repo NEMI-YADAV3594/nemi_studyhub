@@ -158,7 +158,7 @@
 </main>
 
 <script>
-(() => {
+(async () => {
   const STORAGE = { PLANS:'sh_plans', SESSIONS:'sh_sessions', BCA:'sh_bca', SSC:'sh_ssc', ENG:'sh_eng', SKILLS:'sh_skills', REVISION:'sh_revision', TIMER:'sh_timer_state', ACCUMULATED:'sh_timer_accumulated' };
 
   const defaultBCA = [
@@ -188,7 +188,9 @@
   let timerInterval = null;
   async function loadCloudData() {
 
-  const snap = await getDoc(doc(db, "studyhub", "nemi"));
+  const snap = await window.getDoc(
+  window.doc(window.db, "studyhub", "nemi")
+);
 
   if (!snap.exists()) return;
 
@@ -219,7 +221,9 @@
   localStorage.setItem(STORAGE.TIMER, JSON.stringify(timerState));
   localStorage.setItem(STORAGE.ACCUMULATED, JSON.stringify(accumulatedMap));
 
-  await setDoc(doc(db, "studyhub", "nemi"), {
+  await window.setDoc(
+  window.doc(window.db, "studyhub", "nemi"),
+{
     plans,
     sessions,
     bcaData,
@@ -573,6 +577,7 @@
   document.getElementById('planDate').value = today();
   document.getElementById('analyticsDate').value = today();
   document.getElementById('exportMonth').value = new Date().getMonth();
+  await loadCloudData();
   loadPlanner(); renderDashboard(); renderBCA(); renderSSC(); renderEnglish(); renderSkills(); renderRevision();
   populateTimerTaskSelect(); updateTimerDisplay();
   if (timerState.running) { timerInterval = setInterval(updateTimerDisplay, 1000); document.getElementById('timerActiveLabel').textContent = `🔴 Running: ${getTimerTaskName(timerState.taskId)}`; }
@@ -580,8 +585,12 @@
 </script>
   <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 const firebaseConfig = {
   apiKey: "AIzaSyDMvic5ec-KTGc9oDSw5hpoAJ45V3aEQ3c",
   authDomain: "studyhub-pro-max.firebaseapp.com",
@@ -595,6 +604,9 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 window.db = db;
+    window.doc = doc;
+window.getDoc = getDoc;
+window.setDoc = setDoc;
 
 console.log("Firebase Connected Successfully 🚀");
 </script>
