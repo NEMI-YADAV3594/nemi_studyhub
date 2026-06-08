@@ -2,613 +2,1360 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="google-site-verification" content="g9A3CxPUwH-GEf8jlqbwnd0plBtuBhSPQqXP7lhYX8g" />
+   <meta name="google-site-verification" content="g9A3CxPUwH-GEf8jlqbwnd0plBtuBhSPQqXP7lhYX8g" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#0a0a12">
-  <meta name="description" content="StudyHub Pro Max by Nemi - BCA Study Planner, Live Timer, SSC Prep, English Learning and Analytics Dashboard">
-
-<meta name="keywords" content="StudyHub, BCA, SSC Preparation, Study Planner, Student Dashboard, Nemi Yadav">
-
-<meta name="author" content="Nemi Yadav">
-
-<meta property="og:title" content="StudyHub Pro Max">
-
-<meta property="og:description" content="Track every minute, improve every day.">
   <title>StudyHub Pro Max | Nemi</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
-  </script>
-  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js">
-  </script>
-  <style>
-    :root {
-      --bg: #0a0a12; --surface: #13132b; --card: #1a1a3a; --accent: #7c3aed;
-      --accent2: #a78bfa; --gold: #f59e0b; --green: #10b981; --red: #ef4444;
-      --cyan: #06b6d4; --text: #e2e8f0; --text2: #cbd5e1; --muted: #94a3b8;
-      --border: #2d2d5a; --radius: 14px; --shadow: 0 6px 20px rgba(0,0,0,0.4);
-    }
-    * { margin:0; padding:0; box-sizing:border-box; }
 
-    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
-    
-    .sidebar { width: 260px; background: #0f0f1f; border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top:0; left:0; bottom:0; z-index:20; padding:20px 12px; gap:4px; overflow-y:auto; }
-    .logo { display: flex; align-items: center; gap:12px; padding:10px; margin-bottom:10px; }
-    .logo-icon { width:44px; height:44px; background: linear-gradient(135deg, var(--accent), #a855f7); border-radius:12px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:1.5rem; color:#fff; }
-    .logo-text h2 { font-size:1.2rem; background: linear-gradient(to right, #e2e8f0, var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  <!-- ==================== EXTERNAL LIBRARIES ==================== -->
+  <!-- Firebase (for real‑time cloud sync) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <!-- Chart.js (for analytics graphs) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- SheetJS (for Excel export) -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+
+  <style>
+    /* ========== ROOT VARIABLES (Theme) ========== */
+    :root {
+      --bg: #0a0a12;
+      --surface: #13132b;
+      --card: #1a1a3a;
+      --accent: #7c3aed;
+      --accent2: #a78bfa;
+      --gold: #f59e0b;
+      --green: #10b981;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+      --text: #e2e8f0;
+      --text2: #cbd5e1;
+      --muted: #94a3b8;
+      --border: #2d2d5a;
+      --radius: 14px;
+      --shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    /* ========== RESET & BASE ========== */
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family:'Segoe UI', system-ui, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      display:flex;
+      min-height:100vh;
+    }
+
+    /* ========== APP CONTAINER ========== */
+    .app-container { display:flex; width:100%; }
+
+    /* ========== SYNC BADGE (top right) ========== */
+    .sync-badge {
+      position:fixed; top:10px; right:10px;
+      background:var(--card); padding:8px 16px;
+      border-radius:20px; font-size:0.75rem; z-index:100;
+      border:1px solid var(--border);
+      display:flex; align-items:center; gap:8px;
+    }
+    .sync-dot { width:8px; height:8px; border-radius:50%; }
+    .sync-dot.online { background:var(--green); }
+    .sync-dot.offline { background:var(--red); }
+    .sync-dot.syncing { background:var(--gold); animation:pulse 1s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    /* ========== SIDEBAR ========== */
+    .sidebar {
+      width:260px; background:#0f0f1f;
+      border-right:1px solid var(--border);
+      display:flex; flex-direction:column;
+      position:fixed; top:0; left:0; bottom:0;
+      z-index:20; padding:20px 12px; gap:4px;
+      overflow-y:auto;
+    }
+    .logo { display:flex; align-items:center; gap:12px; padding:10px; margin-bottom:10px; }
+    .logo-icon {
+      width:44px; height:44px;
+      background:linear-gradient(135deg,var(--accent),#a855f7);
+      border-radius:12px;
+      display:flex; align-items:center; justify-content:center;
+      font-weight:900; font-size:1.5rem; color:#fff;
+    }
+    .logo-text h2 {
+      font-size:1.2rem;
+      background:linear-gradient(to right,#e2e8f0,var(--accent2));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    }
     .logo-text span { font-size:0.7rem; color:var(--muted); display:block; }
-    .nav-link { display:flex; align-items:center; gap:12px; padding:12px 16px; border-radius:12px; font-weight:500; color:var(--text2); cursor:pointer; transition:0.2s; text-decoration:none; }
-    .nav-link:hover, .nav-link.active { background:var(--accent); color:#fff; box-shadow:0 4px 15px rgba(124,58,237,0.4); }
+
+    /* ========== NAV LINKS ========== */
+    .nav-link {
+      display:flex; align-items:center; gap:12px;
+      padding:12px 16px; border-radius:12px;
+      font-weight:500; color:var(--text2);
+      cursor:pointer; transition:0.2s; text-decoration:none;
+    }
+    .nav-link:hover, .nav-link.active {
+      background:var(--accent); color:#fff;
+      box-shadow:0 4px 15px rgba(124,58,237,0.4);
+    }
     .nav-link .icon { font-size:1.2rem; width:24px; text-align:center; }
-    .user-badge { margin-top:auto; padding:12px; background:var(--card); border-radius:12px; display:flex; align-items:center; gap:10px; }
-    .avatar { width:36px; height:36px; background:linear-gradient(135deg, #ec4899, var(--accent)); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; }
-    
-    .main { margin-left:260px; flex:1; padding:24px 28px; max-width:1400px; }
-    .top-bar { display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px; margin-bottom:24px; }
+
+    /* ========== USER BADGE & LOGOUT (hidden) ========== */
+    .user-badge {
+      margin-top:auto; padding:12px;
+      background:var(--card); border-radius:12px;
+      display:flex; align-items:center; gap:10px;
+    }
+    .avatar {
+      width:36px; height:36px;
+      background:linear-gradient(135deg,#ec4899,var(--accent));
+      border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-weight:bold;
+    }
+    .logout-btn { display:none; }
+
+    /* ========== MAIN CONTENT ========== */
+    .main {
+      margin-left:260px; flex:1;
+      padding:24px 28px; max-width:1400px;
+    }
+
+    /* ========== TOP BAR ========== */
+    .top-bar {
+      display:flex; justify-content:space-between;
+      flex-wrap:wrap; gap:16px; margin-bottom:24px;
+    }
     .welcome h1 { font-size:1.8rem; }
-    .welcome h1 span { background:linear-gradient(135deg, #c084fc, var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-    .date-badge { background:var(--card); padding:14px 22px; border-radius:16px; display:flex; gap:14px; border:1px solid var(--border); align-items:center; }
-    .date-badge .day { background:var(--accent); padding:6px 14px; border-radius:20px; font-weight:700; }
-    .date-badge .time { color:var(--accent2); font-weight:700; font-family:monospace; }
-    
+    .welcome h1 span {
+      background:linear-gradient(135deg,#c084fc,var(--accent2));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    }
+    .date-badge {
+      background:var(--card); padding:14px 22px;
+      border-radius:16px; display:flex; gap:14px;
+      border:1px solid var(--border); align-items:center;
+    }
+    .date-badge .day {
+      background:var(--accent); padding:6px 14px;
+      border-radius:20px; font-weight:700;
+    }
+
+    /* ========== TAB CONTENT ========== */
     .tab-content { display:none; animation:fadeIn 0.3s; }
     .tab-content.active { display:block; }
-    @keyframes fadeIn { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
-    
-    .card { background:var(--card); border-radius:var(--radius); padding:20px; border:1px solid var(--border); box-shadow:var(--shadow); margin-bottom:20px; }
-    .flex-row { display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin:8px 0; }
-    .grid2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:16px; }
-    
-    .btn { background:var(--accent); color:#fff; border:none; padding:10px 20px; border-radius:30px; font-weight:600; cursor:pointer; transition:0.2s; font-size:0.9rem; }
-    .btn:hover { background:#8b5cf6; box-shadow:0 0 15px rgba(124,58,237,0.5); }
+    @keyframes fadeIn {
+      from{opacity:0;transform:translateY(8px);}
+      to{opacity:1;transform:translateY(0);}
+    }
+
+    /* ========== CARDS & GRID ========== */
+    .card {
+      background:var(--card); border-radius:var(--radius);
+      padding:20px; border:1px solid var(--border);
+      box-shadow:var(--shadow); margin-bottom:20px;
+    }
+    .flex-row {
+      display:flex; gap:10px; flex-wrap:wrap;
+      align-items:center; margin:6px 0;
+    }
+    .grid2 {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:14px;
+    }
+
+    /* ========== BUTTONS ========== */
+    .btn {
+      background:var(--accent); color:#fff;
+      border:none; padding:10px 20px;
+      border-radius:30px; font-weight:600;
+      cursor:pointer; font-size:0.9rem;
+    }
+    .btn:hover { background:#8b5cf6; }
     .btn-sm { padding:6px 14px; font-size:0.8rem; }
     .btn-danger { background:var(--red); }
-    .btn-outline { background:transparent; border:2px solid var(--accent); color:var(--accent2); }
+    .btn-outline {
+      background:transparent; border:2px solid var(--accent);
+      color:var(--accent2);
+    }
     .btn-success { background:var(--green); }
-    
-    .input-field { background:#0f0f1f; border:1px solid var(--border); padding:10px 14px; border-radius:10px; color:#fff; outline:none; font-size:0.9rem; }
+
+    /* ========== INPUT FIELDS ========== */
+    .input-field {
+      background:#0f0f1f; border:1px solid var(--border);
+      padding:10px 14px; border-radius:10px;
+      color:#fff; outline:none; font-size:0.9rem;
+    }
     select.input-field { max-width:220px; }
-    .tag { background:#2d2d5a; padding:4px 12px; border-radius:20px; font-size:0.8rem; display:inline-block; margin:4px; }
+
+    /* ========== STATISTICS NUMBERS ========== */
     .stat-num { font-size:1.8rem; font-weight:700; color:var(--accent2); }
-    
-    table { width:100%; border-collapse:collapse; margin:10px 0; font-size:0.9rem; }
-    th, td { padding:8px 12px; border:1px solid var(--border); text-align:left; }
+
+    /* ========== TABLES ========== */
+    table { width:100%; border-collapse:collapse; margin:10px 0; font-size:0.85rem; }
+    th,td { padding:8px 12px; border:1px solid var(--border); text-align:left; }
     th { background:#2d2d5a; color:var(--accent2); }
-    
-    .accordion { cursor:pointer; padding:8px 12px; background:#0f0f1f; border-radius:8px; margin:4px 0; display:flex; justify-content:space-between; }
-    .accordion-content { display:none; padding:10px; background:#111; border-radius:8px; margin-top:4px; }
+
+    /* ========== ACCORDION (SSC & BCA) ========== */
+    .accordion {
+      cursor:pointer; padding:10px 14px;
+      background:#0f0f1f; border-radius:8px;
+      margin:4px 0; display:flex;
+      justify-content:space-between; align-items:center;
+      user-select:none; transition:background 0.2s;
+    }
+    .accordion:hover { background:#1a1a3a; }
+    .accordion::after {
+      content:'▼'; font-size:0.7rem;
+      color:var(--accent2); transition:transform 0.3s;
+    }
+    .accordion.open::after { transform:rotate(180deg); }
+    .accordion-content {
+      display:none; padding:10px;
+      background:#111; border-radius:8px;
+      margin:4px 0 8px 0;
+    }
+    .accordion-content.open { display:block; }
+
+    /* ========== TIMER ========== */
     .timer-display { font-size:2.4rem; font-family:monospace; margin:15px 0; }
-    
-    @media (max-width:800px) {
-      .sidebar { width:70px; padding:10px 5px; }
-      .sidebar .nav-link span:not(.icon), .logo-text, .user-badge span { display:none; }
-      .main { margin-left:70px; padding:16px; }
+
+    /* ========== ANALYTICS CHARTS ========== */
+    .chart-wrap {
+      background:#0f0f1f; border-radius:12px;
+      padding:16px; border:1px solid var(--border);
+      margin:10px 0;
+    }
+    .chart-row {
+      display:grid; grid-template-columns:1fr 1fr; gap:14px;
+    }
+
+    /* ========== REVISION CARDS & FLASHCARDS ========== */
+    .revision-card {
+      background:#0f0f1f; border-radius:12px;
+      padding:14px; margin:8px 0;
+      border:1px solid var(--border);
+    }
+    .flashcard { perspective:1000px; width:100%; max-width:500px; margin:20px auto; }
+    .flashcard-inner {
+      position:relative; width:100%; height:250px;
+      transition:transform 0.6s; transform-style:preserve-3d; cursor:pointer;
+    }
+    .flashcard.flipped .flashcard-inner { transform:rotateY(180deg); }
+    .flashcard-front, .flashcard-back {
+      position:absolute; width:100%; height:100%;
+      backface-visibility:hidden; border-radius:16px;
+      padding:20px; display:flex;
+      flex-direction:column; justify-content:center; align-items:center;
+      background:var(--card); border:1px solid var(--border);
+    }
+    .flashcard-back { transform:rotateY(180deg); background:#1a1a3a; }
+
+    /* ========== MOBILE RESPONSIVE ========== */
+    @media (max-width:900px) {
+      .chart-row { grid-template-columns:1fr; }
+      .sidebar { width:70px; padding:8px 5px; }
+      .sidebar .nav-link span:not(.icon),
+      .logo-text,
+      .user-badge span { display:none; }
+      .main { margin-left:70px; padding:14px; }
     }
   </style>
 </head>
 <body>
-<aside class="sidebar">
-  <div class="logo"><div class="logo-icon">SH</div><div class="logo-text"><h2>StudyHub</h2><span>Pro Max · Nemi</span></div></div>
-  <div class="nav-link active" data-tab="dashboard"><span class="icon">📊</span><span>Dashboard</span></div>
-  <div class="nav-link" data-tab="planner"><span class="icon">📅</span><span>Planner</span></div>
-  <div class="nav-link" data-tab="timer"><span class="icon">⏱️</span><span>Live Timer</span></div>
-  <div class="nav-link" data-tab="bca"><span class="icon">💻</span><span>BCA Syllabus</span></div>
-  <div class="nav-link" data-tab="ssc"><span class="icon">🏛️</span><span>SSC Prep</span></div>
-  <div class="nav-link" data-tab="english"><span class="icon">📖</span><span>English</span></div>
-  <div class="nav-link" data-tab="skills"><span class="icon">🛠️</span><span>Skills</span></div>
-  <div class="nav-link" data-tab="revision"><span class="icon">🔄</span><span>Revision</span></div>
-  <div class="nav-link" data-tab="analytics"><span class="icon">📈</span><span>Analytics</span></div>
-  <div class="nav-link" data-tab="export"><span class="icon">📥</span><span>Export</span></div>
-  <div class="user-badge"><div class="avatar">N</div><span>Nemi 👋</span></div>
-</aside>
 
-<main class="main">
-  <div class="top-bar">
-    <div class="welcome"><h1>Welcome <span>Nemi</span> 👋</h1><p style="color:var(--muted);">Track every minute, improve every day.</p></div>
-    <div class="date-badge"><span class="day" id="currentDay">Monday</span><span id="currentDate">Jun 7, 2026</span><span class="time" id="currentTime">00:00</span></div>
+  <!-- ==================== SYNC STATUS INDICATOR ==================== -->
+  <div class="sync-badge" id="syncBadge">
+    <span class="sync-dot online" id="syncDot"></span>
+    <span id="syncText">Synced</span>
   </div>
 
-  <div class="tab-content active" id="tab-dashboard">
-    <div class="card"><h3>📊 Today's Accuracy</h3><div id="dashSummary"></div></div>
-    <div class="card"><h4>⏳ Live Timer Status</h4><div id="dashTimerStatus"></div></div>
-    <div class="card"><h4>📋 Recent Sessions</h4><div id="dashRecentSessions"></div></div>
-  </div>
+  <!-- ==================== APP CONTAINER (sidebar + main) ==================== -->
+  <div class="app-container" id="appContainer">
 
-  <div class="tab-content" id="tab-planner">
-    <div class="card"><h3>📅 Daily Planner</h3>
-      <div class="flex-row"><input type="date" id="planDate" class="input-field" onchange="loadPlanner()"><button class="btn btn-outline" onclick="changePlanDate(-1)">◀</button><button class="btn btn-outline" onclick="changePlanDate(1)">▶</button><button class="btn btn-outline" onclick="goToToday()">Today</button></div>
-      <div class="flex-row"><input type="text" id="planSubject" placeholder="Subject" class="input-field"><input type="number" id="planHrs" placeholder="Hrs" class="input-field" style="width:80px;"><input type="number" id="planMins" placeholder="Min" class="input-field" style="width:70px;"><button class="btn" onclick="addPlanTask()">➕ Add</button></div>
-      <div id="plannerTasks"></div><div id="plannerWeekSummary" style="margin-top:12px;color:var(--muted);"></div>
-    </div>
-  </div>
-
-  <div class="tab-content" id="tab-timer">
-    <div class="card"><h3>⏱️ Live Multi‑Task Timer</h3>
-      <p style="color:var(--muted);margin-bottom:12px;">Select planned task → Start. Pause to switch subjects – time resumes.</p>
-      <div class="flex-row"><select id="timerTaskSelect" class="input-field"></select><button class="btn" onclick="startTimerForTask()">▶ Start</button><button class="btn btn-danger" onclick="pauseTimer()">⏸ Pause</button><button class="btn" onclick="stopTimer()">⏹ Stop & Save</button></div>
-      <div class="timer-display" id="timerDisplay">00:00:00</div><div id="timerActiveLabel" style="color:var(--muted);"></div>
-      <h4>Today's Sessions</h4><div id="timerTodayLogs"></div>
-    </div>
-  </div>
-
-  <div class="tab-content" id="tab-bca"><div class="card"><h3>💻 BCA LPU Syllabus</h3><div id="bcaContainer"></div></div></div>
-  <div class="tab-content" id="tab-ssc"><div class="card"><h3>🏛️ SSC Preparation</h3><div id="sscContainer"></div></div></div>
-  <div class="tab-content" id="tab-english"><div class="card"><h3>📖 English Weekly Plan</h3><div id="englishContainer"></div></div></div>
-  <div class="tab-content" id="tab-skills"><div class="card"><h3>🛠️ Other Skills</h3><div id="skillsContainer"></div></div></div>
-  <div class="tab-content" id="tab-revision"><div class="card"><h3>🔄 Revision Items</h3><div id="revisionContainer"></div></div></div>
-  <div class="tab-content" id="tab-analytics">
-    <div class="card"><h3>📈 Analytics</h3>
-      <div class="flex-row"><select id="analyticsRange" class="input-field"><option value="day">Day</option><option value="week">Week</option><option value="month">Month</option><option value="year">Year</option></select><input type="date" id="analyticsDate" class="input-field"><button class="btn" onclick="renderAnalytics()">Analyze</button></div>
-      <canvas id="analyticsChart" width="400" height="200"></canvas><div id="analyticsTable" style="margin-top:16px;"></div>
-    </div>
-  </div>
-
-  <div class="tab-content" id="tab-export">
-    <div class="card">
-      <h3>📥 Export Detailed Reports</h3>
-      <p style="color:var(--muted);margin-bottom:16px;">Exports planner data, time gaps, accuracy, weekly summaries, and yearly overview in a single Excel file.</p>
-      <div class="flex-row">
-        <select id="exportMonth" class="input-field">
-          <option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option><option value="4">May</option><option value="5">June</option>
-          <option value="6">July</option><option value="7">August</option><option value="8">September</option><option value="9">October</option><option value="10">November</option><option value="11">December</option>
-        </select>
-        <input type="number" id="exportYear" value="2026" class="input-field" style="width:80px;">
-        <button class="btn btn-success" onclick="exportDetailedReport()">📥 Download Excel</button>
+    <!-- ========== SIDEBAR ========== -->
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">☁️</div>
+        <div class="logo-text"><h2>StudyHub</h2><span>Nemi</span></div>
       </div>
-    </div>
+
+      <!-- Navigation Links – data-tab attribute matches tab id -->
+      <div class="nav-link active" data-tab="dashboard"><span class="icon">📊</span><span>Dashboard</span></div>
+      <div class="nav-link" data-tab="planner"><span class="icon">📅</span><span>Planner</span></div>
+      <div class="nav-link" data-tab="timer"><span class="icon">⏱️</span><span>Live Timer</span></div>
+      <div class="nav-link" data-tab="bca"><span class="icon">💻</span><span>BCA</span></div>
+      <div class="nav-link" data-tab="ssc"><span class="icon">🏛️</span><span>SSC CGL</span></div>
+      <div class="nav-link" data-tab="english"><span class="icon">📖</span><span>English</span></div>
+      <div class="nav-link" data-tab="skills"><span class="icon">🛠️</span><span>Skills</span></div>
+      <div class="nav-link" data-tab="revision"><span class="icon">🔄</span><span>Revision Vault</span></div>
+      <div class="nav-link" data-tab="analytics"><span class="icon">📈</span><span>Analytics</span></div>
+      <div class="nav-link" data-tab="export"><span class="icon">📥</span><span>Export</span></div>
+      <div class="nav-link" data-tab="settings"><span class="icon">⚙️</span><span>Settings</span></div>
+
+      <!-- User info at bottom of sidebar -->
+      <div class="user-badge">
+        <div class="avatar">N</div>
+        <div><span>Nemi 👋</span><div style="font-size:0.7rem;color:var(--muted);">ncy3594</div></div>
+      </div>
+    </aside>
+
+    <!-- ========== MAIN CONTENT AREA ========== -->
+    <main class="main">
+
+      <!-- ===== Top bar (welcome + date/time) ===== -->
+      <div class="top-bar">
+        <div class="welcome">
+          <h1>Welcome <span>Nemi</span> 👋</h1>
+          <!-- 🏁 Changed to a motivational quote -->
+          <p style="color:var(--muted);">"One day or day one. You decide."</p>
+        </div>
+        <div class="date-badge">
+          <span class="day" id="currentDay">Monday</span>
+          <span id="currentDate">Jun 9, 2026</span>
+          <span id="currentTime">00:00</span>
+        </div>
+      </div>
+
+      <!-- ==================== TAB CONTENTS ==================== -->
+
+      <!-- Dashboard -->
+      <div class="tab-content active" id="tab-dashboard">
+        <div class="card"><h3>📊 Today's Accuracy</h3><div id="dashSummary"></div></div>
+        <div class="card"><h4>⏳ Live Timer Status</h4><div id="dashTimerStatus"></div></div>
+        <div class="card"><h4>📋 Recent Sessions</h4><div id="dashRecentSessions"></div></div>
+      </div>
+
+      <!-- Planner -->
+      <div class="tab-content" id="tab-planner">
+        <div class="card">
+          <h3>📅 Daily Planner</h3>
+          <div class="flex-row">
+            <input type="date" id="planDate" class="input-field" onchange="loadPlanner()">
+            <button class="btn btn-outline btn-sm" onclick="changePlanDate(-1)">◀</button>
+            <button class="btn btn-outline btn-sm" onclick="changePlanDate(1)">▶</button>
+            <button class="btn btn-outline btn-sm" onclick="goToToday()">Today</button>
+          </div>
+          <div class="flex-row">
+            <input type="text" id="planSubject" placeholder="Subject" class="input-field">
+            <input type="number" id="planHrs" placeholder="Hrs" class="input-field" style="width:70px;">
+            <input type="number" id="planMins" placeholder="Min" class="input-field" style="width:65px;">
+            <button class="btn btn-sm" onclick="addPlanTask()">➕ Add</button>
+          </div>
+          <div id="plannerTasks"></div>
+          <div id="plannerWeekSummary" style="margin-top:10px;color:var(--muted);"></div>
+        </div>
+      </div>
+
+      <!-- Timer -->
+      <div class="tab-content" id="tab-timer">
+        <div class="card">
+          <h3>⏱️ Live Multi‑Task Timer</h3>
+          <div class="flex-row">
+            <select id="timerTaskSelect" class="input-field"></select>
+            <button class="btn btn-sm" onclick="startTimerForTask()">▶ Start</button>
+            <button class="btn btn-sm btn-danger" onclick="pauseTimer()">⏸ Pause</button>
+            <button class="btn btn-sm" onclick="stopTimer()">⏹ Stop & Save</button>
+          </div>
+          <div class="timer-display" id="timerDisplay">00:00:00</div>
+          <div id="timerActiveLabel" style="color:var(--muted);"></div>
+          <h4>Today's Sessions</h4>
+          <div id="timerTodayLogs"></div>
+        </div>
+      </div>
+
+      <!-- BCA -->
+      <div class="tab-content" id="tab-bca">
+        <div class="card"><h3>💻 BCA LPU Syllabus</h3><div id="bcaContainer"></div></div>
+      </div>
+
+      <!-- SSC CGL -->
+      <div class="tab-content" id="tab-ssc">
+        <div class="card">
+          <h3>🏛️ SSC CGL Complete Syllabus</h3>
+          <div class="flex-row" style="margin-bottom:12px;">
+            <button class="btn btn-sm btn-outline" onclick="expandAllSSC()">📂 Expand All</button>
+            <button class="btn btn-sm btn-outline" onclick="collapseAllSSC()">📁 Collapse All</button>
+            <button class="btn btn-sm btn-danger" onclick="resetSSCSyllabus()">🔄 Reset Syllabus</button>
+          </div>
+          <div id="sscContainer"></div>
+        </div>
+      </div>
+
+      <!-- English -->
+      <div class="tab-content" id="tab-english">
+        <div class="card"><h3>📖 English Weekly Plan</h3><div id="englishContainer"></div></div>
+      </div>
+
+      <!-- Skills -->
+      <div class="tab-content" id="tab-skills">
+        <div class="card"><h3>🛠️ Other Skills</h3><div id="skillsContainer"></div></div>
+      </div>
+
+      <!-- Revision Vault -->
+      <div class="tab-content" id="tab-revision">
+        <div class="card">
+          <h3>🔄 Revision Master Vault</h3>
+          <div class="flex-row">
+            <button class="btn btn-sm" onclick="toggleRevView()">📋 List / 🃏 Flashcards</button>
+            <button class="btn btn-sm btn-outline" onclick="showAddRevForm()">➕ Add Revision Item</button>
+          </div>
+          <div id="revisionContainer"></div>
+          <div id="flashcardContainer" style="display:none;"></div>
+          <!-- Hidden form to add a revision item -->
+          <div id="revAddForm" style="display:none;margin-top:12px;padding:16px;background:#0f0f1f;border-radius:12px;">
+            <h4>New Revision Item</h4>
+            <div class="flex-row">
+              <select id="revCourse" class="input-field"><option>BCA</option><option>SSC</option><option>English</option><option>Skills</option><option>Other</option></select>
+              <input type="text" id="revSubject" placeholder="Subject" class="input-field">
+              <input type="text" id="revTopic" placeholder="Topic" class="input-field">
+            </div>
+            <div class="flex-row">
+              <select id="revCardType" class="input-field"><option>Q&A</option><option>Formula</option><option>Definition</option><option>Note</option></select>
+              <select id="revStatus" class="input-field"><option>Not Started</option><option>Learning</option><option>Revised</option><option>Mastered</option></select>
+            </div>
+            <textarea id="revNotes" class="input-field" placeholder="Notes / Answer..." style="width:100%;height:80px;"></textarea>
+            <div class="flex-row"><label>📷 Image:</label><input type="file" id="revImage" accept="image/*" onchange="previewRevImage()"><img id="revImagePreview" style="max-width:80px;max-height:60px;display:none;border-radius:8px;"></div>
+            <div class="flex-row"><label><input type="checkbox" id="revDoubt"> Mark as Doubt</label></div>
+            <button class="btn btn-sm" onclick="addRevisionItem()">💾 Save</button>
+            <button class="btn btn-sm btn-outline" onclick="document.getElementById('revAddForm').style.display='none'">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Analytics -->
+      <div class="tab-content" id="tab-analytics">
+        <div class="card">
+          <h3>📈 Analytics</h3>
+          <div class="flex-row">
+            <label>From:</label><input type="date" id="analyticsStart" class="input-field">
+            <label>To:</label><input type="date" id="analyticsEnd" class="input-field">
+            <button class="btn btn-sm" onclick="renderAnalytics()">🔍 Analyze</button>
+            <button class="btn btn-sm btn-outline" onclick="setAnalyticsWeek()">This Week</button>
+          </div>
+          <div class="chart-row">
+            <div class="chart-wrap"><h4>📊 Planned vs Actual (Bar)</h4><canvas id="chartBar"></canvas></div>
+            <div class="chart-wrap"><h4>🥧 Subject Share (Pie)</h4><canvas id="chartPie"></canvas></div>
+          </div>
+          <div class="chart-wrap"><h4>📈 Cumulative Hours (Area)</h4><canvas id="chartArea"></canvas></div>
+          <div id="analyticsTable" style="margin-top:12px;"></div>
+        </div>
+      </div>
+
+      <!-- Export -->
+      <div class="tab-content" id="tab-export">
+        <div class="card">
+          <h3>📥 Export Excel</h3>
+          <div class="flex-row">
+            <select id="exportMonth" class="input-field">
+              <option value="0">Jan</option><option value="1">Feb</option><option value="2">Mar</option><option value="3">Apr</option><option value="4">May</option><option value="5">Jun</option><option value="6">Jul</option><option value="7">Aug</option><option value="8">Sep</option><option value="9">Oct</option><option value="10">Nov</option><option value="11">Dec</option>
+            </select>
+            <input type="number" id="exportYear" value="2026" class="input-field" style="width:80px;">
+            <button class="btn btn-success" onclick="exportReport()">📥 Download</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings (only sync + test) -->
+      <div class="tab-content" id="tab-settings">
+        <div class="card">
+          <h3>⚙️ Settings</h3>
+          <p style="color:var(--muted);">No AI key needed – all features work locally.</p>
+          <button class="btn btn-outline btn-sm" onclick="syncNow()">🔄 Force Sync</button>
+          <button class="btn btn-outline btn-sm" onclick="testConnection()" style="margin-left:6px;">🔍 Test Firebase</button>
+        </div>
+      </div>
+
+    </main>
   </div>
-</main>
 
-<script>
-(async () => {
-  const STORAGE = { PLANS:'sh_plans', SESSIONS:'sh_sessions', BCA:'sh_bca', SSC:'sh_ssc', ENG:'sh_eng', SKILLS:'sh_skills', REVISION:'sh_revision', TIMER:'sh_timer_state', ACCUMULATED:'sh_timer_accumulated' };
+  <!-- ==================== JAVASCRIPT ==================== -->
+  <script>
+    // ==================== FIREBASE CONFIGURATION ====================
+    const fbConfig = {
+      apiKey: "AIzaSyCvDg7YX8elm1MLzgp3BrYa_Z2f0jagZlA",
+      authDomain: "studyhub-ncy.firebaseapp.com",
+      projectId: "studyhub-ncy",
+      storageBucket: "studyhub-ncy.firebasestorage.app",
+      messagingSenderId: "188353390562",
+      appId: "1:188353390562:web:6b25313d8c651149c57bbb"
+    };
+    firebase.initializeApp(fbConfig);
+    const db = firebase.firestore();
+    db.enablePersistence({ synchronizeTabs: true }).catch(() => {});
+    const UID = 'ncy3594';  // Your user ID for Firestore
 
-  const defaultBCA = [
-    { name:'Semester 1', subjects:['Programming in C','Mathematics-I','Digital Electronics','Communication Skills','Environmental Studies'] },
-    { name:'Semester 2', subjects:['Data Structures','Mathematics-II','DBMS','Organizational Behavior','OOPS'] },
-    { name:'Semester 3', subjects:['Java','Computer Networks','Operating Systems','Software Engineering','Web Technologies'] },
-    { name:'Semester 4', subjects:['Python','Computer Architecture','Algorithms','Mobile App Dev','Cloud Computing'] },
-    { name:'Semester 5', subjects:['AI','Machine Learning','Cyber Security','IoT','Data Science'] },
-    { name:'Semester 6', subjects:['Blockchain','Big Data','Full Stack','Entrepreneurship','DevOps'] }
-  ];
-  const defaultSSC = { subjects: [
-    { name:'Reasoning', chapters:['Analogy','Classification','Series','Coding-Decoding','Blood Relations','Direction Sense','Syllogism'] },
-    { name:'Quantitative Aptitude', chapters:['Number System','Simplification','Percentage','Profit & Loss','Time & Work','Speed & Distance'] },
-    { name:'English', chapters:['Grammar','Vocabulary','Comprehension','Error Spotting','Sentence Improvement'] },
-    { name:'General Awareness', chapters:['History','Geography','Polity','Economics','Science','Current Affairs'] }
-  ]};
+    // ==================== GLOBAL STATE ====================
+    let plans = {};                // Planner tasks by date
+    let sessions = [];            // Completed study sessions
+    let bcaData = [];             // BCA syllabus
+    let sscData = {};             // SSC syllabus
+    let engData = {};             // English weekly plan
+    let skills = [];              // Other skills list
+    let revisionItems = [];       // Revision vault items
+    let timerState = { taskId: null, running: false, lastStart: null };
+    let accumulatedMap = {};      // Accumulated milliseconds per task
+    let timerInterval = null;     // setInterval reference
+    let charts = {};              // Chart.js instances
+    let revViewMode = 'list';     // 'list' or 'flashcard'
+    let revFlashIndex = 0;        // Current flashcard index
 
-  let plans = JSON.parse(localStorage.getItem(STORAGE.PLANS)) || {};
-  let sessions = JSON.parse(localStorage.getItem(STORAGE.SESSIONS)) || [];
-  let bcaData = JSON.parse(localStorage.getItem(STORAGE.BCA)) || defaultBCA.map(s=>({...s, subjects:s.subjects.map(sub=>({name:sub, topics:[]}))}));
-  let sscData = JSON.parse(localStorage.getItem(STORAGE.SSC)) || { subjects: defaultSSC.subjects.map(s=>({...s, chapters:s.chapters.map(c=>({text:c, completed:false, timeMin:0, revision:false}))})) };
-  let engData = JSON.parse(localStorage.getItem(STORAGE.ENG)) || {};
-  let skills = JSON.parse(localStorage.getItem(STORAGE.SKILLS)) || [];
-  let revisionItems = JSON.parse(localStorage.getItem(STORAGE.REVISION)) || [];
-  let timerState = JSON.parse(localStorage.getItem(STORAGE.TIMER)) || { taskId:null, running:false, lastStart:null };
-  let accumulatedMap = JSON.parse(localStorage.getItem(STORAGE.ACCUMULATED)) || {};
-  let timerInterval = null;
-  async function loadCloudData() {
+    // ==================== HELPER FUNCTIONS ====================
+    const today = () => new Date().toISOString().split('T')[0];           // YYYY-MM-DD
+    const fmt = m => { const h = Math.floor(m / 60), mn = m % 60; return `${h}h ${mn}m`; };   // Minutes to "Xh Ym"
+    const getMonday = d => {                                              // Monday of the week
+      const dt = new Date(d);
+      dt.setDate(dt.getDate() - dt.getDay() + (dt.getDay() === 0 ? -6 : 1));
+      return dt.toISOString().split('T')[0];
+    };
 
-  const snap = await window.getDoc(
-  window.doc(window.db, "studyhub", "nemi")
-);
+    // ==================== DEFAULT SYLLABUS DATA ====================
+    const defaultSSC = {
+      tiers: [
+        {
+          name: 'Tier-1',
+          sections: [
+            { name: 'General Intelligence & Reasoning', chapters: ['Analogy', 'Classification', 'Series', 'Coding-Decoding', 'Blood Relation', 'Direction Sense', 'Venn Diagram', 'Syllogism', 'Statement & Conclusion', 'Non-Verbal Reasoning'] },
+            { name: 'Quantitative Aptitude', chapters: ['Number System', 'Percentage', 'Ratio & Proportion', 'Average', 'Profit & Loss', 'Simple Interest', 'Compound Interest', 'Time & Work', 'Time, Speed & Distance', 'Algebra', 'Geometry', 'Mensuration', 'Trigonometry', 'Data Interpretation'] },
+            { name: 'English Comprehension', chapters: ['Grammar', 'Vocabulary', 'Synonyms', 'Antonyms', 'Idioms & Phrases', 'One Word Substitution', 'Error Spotting', 'Sentence Improvement', 'Cloze Test', 'Reading Comprehension'] },
+            { name: 'General Awareness', chapters: ['History', 'Geography', 'Polity', 'Economics', 'Physics', 'Chemistry', 'Biology', 'Current Affairs', 'Static GK', 'Government Schemes'] }
+          ]
+        },
+        {
+          name: 'Tier-2',
+          sections: [
+            { name: 'Mathematical Abilities', chapters: ['Number System', 'Algebra', 'Geometry', 'Mensuration', 'Trigonometry', 'Statistics', 'Probability', 'Data Interpretation'] },
+            { name: 'Reasoning & General Intelligence', chapters: ['Analogy', 'Classification', 'Coding-Decoding', 'Series', 'Blood Relation', 'Venn Diagram', 'Syllogism', 'Logical Reasoning'] },
+            { name: 'English Language & Comprehension', chapters: ['Vocabulary', 'Grammar', 'Sentence Correction', 'Reading Comprehension', 'Para Jumbles', 'Cloze Test', 'Idioms & Phrases'] },
+            { name: 'General Awareness', chapters: ['Current Affairs', 'History', 'Geography', 'Polity', 'Economics', 'Science', 'Static GK'] },
+            { name: 'Computer Knowledge', chapters: ['Computer Fundamentals', 'Hardware', 'Software', 'Operating System', 'MS Word', 'MS Excel', 'MS PowerPoint', 'Internet', 'Networking', 'Cyber Security'] },
+            { name: 'DEST', chapters: ['Data Entry Speed Test'] }
+          ]
+        }
+      ]
+    };
 
-  if (!snap.exists()) return;
+    const defaultBCA = [
+      { name: 'Sem 1', subjects: ['Programming in C', 'Mathematics-I', 'Digital Electronics', 'Communication Skills', 'Environmental Studies'] },
+      { name: 'Sem 2', subjects: ['Data Structures', 'Mathematics-II', 'DBMS', 'Organizational Behavior', 'OOPS'] },
+      { name: 'Sem 3', subjects: ['Java', 'Computer Networks', 'Operating Systems', 'Software Engineering', 'Web Technologies'] },
+      { name: 'Sem 4', subjects: ['Python', 'Computer Architecture', 'Algorithms', 'Mobile App Dev', 'Cloud Computing'] },
+      { name: 'Sem 5', subjects: ['AI', 'Machine Learning', 'Cyber Security', 'IoT', 'Data Science'] },
+      { name: 'Sem 6', subjects: ['Blockchain', 'Big Data', 'Full Stack', 'Entrepreneurship', 'DevOps'] }
+    ];
 
-  const data = snap.data();
-
-  plans = data.plans || plans;
-  sessions = data.sessions || sessions;
-  bcaData = data.bcaData || bcaData;
-  sscData = data.sscData || sscData;
-  engData = data.engData || engData;
-  skills = data.skills || skills;
-  revisionItems = data.revisionItems || revisionItems;
-  timerState = data.timerState || timerState;
-  accumulatedMap = data.accumulatedMap || accumulatedMap;
-
-  console.log("Cloud Data Loaded 🚀");
-}
-
-  async function saveAll() {
-
-  localStorage.setItem(STORAGE.PLANS, JSON.stringify(plans));
-  localStorage.setItem(STORAGE.SESSIONS, JSON.stringify(sessions));
-  localStorage.setItem(STORAGE.BCA, JSON.stringify(bcaData));
-  localStorage.setItem(STORAGE.SSC, JSON.stringify(sscData));
-  localStorage.setItem(STORAGE.ENG, JSON.stringify(engData));
-  localStorage.setItem(STORAGE.SKILLS, JSON.stringify(skills));
-  localStorage.setItem(STORAGE.REVISION, JSON.stringify(revisionItems));
-  localStorage.setItem(STORAGE.TIMER, JSON.stringify(timerState));
-  localStorage.setItem(STORAGE.ACCUMULATED, JSON.stringify(accumulatedMap));
-
-  await window.setDoc(
-  window.doc(window.db, "studyhub", "nemi"),
-{
-    plans,
-    sessions,
-    bcaData,
-    sscData,
-    engData,
-    skills,
-    revisionItems,
-    timerState,
-    accumulatedMap,
-    updatedAt: Date.now()
-  });
-}
-
-  const today = () => new Date().toISOString().split('T')[0];
-  const formatTime = (totalMin) => { const h=Math.floor(totalMin/60), m=totalMin%60; return `${h}h ${m}m`; };
-  const formatTimeDecimal = (totalMin) => (totalMin/60).toFixed(2);
-  const getMonday = (d) => { const date=new Date(d); const day=date.getDay(); const diff=date.getDate()-day+(day===0?-6:1); date.setDate(diff); return date.toISOString().split('T')[0]; };
-
-  function updateClock() {
-    const now=new Date();
-    document.getElementById('currentDay').textContent=now.toLocaleDateString('en-IN',{weekday:'long'});
-    document.getElementById('currentDate').textContent=now.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
-    document.getElementById('currentTime').textContent=now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
-  }
-  updateClock(); setInterval(updateClock,1000);
-
-  function switchTab(tabName) {
-    document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
-    const link=document.querySelector(`.nav-link[data-tab="${tabName}"]`);
-    if(link) link.classList.add('active');
-    document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
-    const content=document.getElementById('tab-'+tabName);
-    if(content) content.classList.add('active');
-    if(tabName==='dashboard') renderDashboard();
-    if(tabName==='planner') loadPlanner();
-    if(tabName==='timer') { populateTimerTaskSelect(); updateTimerDisplay(); renderTimerLogs(); }
-    if(tabName==='bca') renderBCA();
-    if(tabName==='ssc') renderSSC();
-    if(tabName==='english') renderEnglish();
-    if(tabName==='skills') renderSkills();
-    if(tabName==='revision') renderRevision();
-    if(tabName==='analytics') document.getElementById('analyticsDate').value=today();
-    if(tabName==='export') document.getElementById('exportMonth').value=new Date().getMonth();
-  }
-
-  document.querySelectorAll('.nav-link').forEach(link=>{
-    link.addEventListener('click',function(e){ e.preventDefault(); const tab=this.getAttribute('data-tab'); if(tab) switchTab(tab); });
-  });
-
-  // ===================== PLANNER =====================
-  function getPlannedTasks(date){ return plans[date]||[]; }
-  function getTaskById(date,id){ return (plans[date]||[]).find(t=>t.id==id); }
-  function addMinutesToTask(date,id,minutes){ const tasks=plans[date]||[]; const task=tasks.find(t=>t.id==id); if(task){ task.actualMin=(task.actualMin||0)+minutes; saveAll(); } }
-
-  function loadPlanner(){
-    const date=document.getElementById('planDate')?.value||today();
-    if(document.getElementById('planDate')) document.getElementById('planDate').value=date;
-    const tasks=getPlannedTasks(date);
-    document.getElementById('plannerTasks').innerHTML=tasks.map(t=>`
-      <div class="card" style="padding:12px;">
-        <div class="flex-row"><strong>${t.subject}</strong><span>Planned: ${formatTime(t.plannedMin)} | Actual: ${formatTime(t.actualMin||0)}</span>
-          <input type="checkbox" ${t.completed?'checked':''} onchange="togglePlanComplete('${date}',${t.id})">
-          <button class="btn btn-sm btn-danger" onclick="deletePlanTask('${date}',${t.id})">🗑️</button></div>
-      </div>`).join('');
-    const ws=getMonday(date); let wp=0,wa=0;
-    for(let i=0;i<7;i++){ const d=new Date(ws); d.setDate(d.getDate()+i); const k=d.toISOString().split('T')[0]; (plans[k]||[]).forEach(t=>{ wp+=t.plannedMin; wa+=(t.actualMin||0); }); }
-    document.getElementById('plannerWeekSummary').innerHTML=`<strong>Week (${ws})</strong> Planned: ${formatTime(wp)} | Actual: ${formatTime(wa)}`;
-    populateTimerTaskSelect();
-  }
-
-  window.togglePlanComplete=(date,id)=>{ const t=getTaskById(date,id); if(t){ t.completed=!t.completed; saveAll(); loadPlanner(); renderDashboard(); } };
-  window.deletePlanTask=(date,id)=>{ plans[date]=(plans[date]||[]).filter(t=>t.id!=id); saveAll(); loadPlanner(); renderDashboard(); };
-  window.addPlanTask=()=>{
-    const date=document.getElementById('planDate').value;
-    const sub=document.getElementById('planSubject').value.trim();
-    const h=parseInt(document.getElementById('planHrs').value)||0, m=parseInt(document.getElementById('planMins').value)||0;
-    if(!sub) return;
-    if(!plans[date]) plans[date]=[];
-    plans[date].push({ id:Date.now(), subject:sub, plannedMin:h*60+m, actualMin:0, completed:false });
-    saveAll(); document.getElementById('planSubject').value=''; document.getElementById('planHrs').value=''; document.getElementById('planMins').value=''; loadPlanner(); renderDashboard();
-  };
-  window.changePlanDate=(offset)=>{ const p=document.getElementById('planDate'); const d=new Date(p.value); d.setDate(d.getDate()+offset); p.value=d.toISOString().split('T')[0]; loadPlanner(); };
-  window.goToToday=()=>{ document.getElementById('planDate').value=today(); loadPlanner(); };
-
-  // ===================== TIMER =====================
-  function clearTimerInterval(){ if(timerInterval){ clearInterval(timerInterval); timerInterval=null; } }
-  function updateTimerDisplay(){
-    const base=timerState.taskId?(accumulatedMap[timerState.taskId]||0):0;
-    let total=base; if(timerState.running&&timerState.lastStart) total+=(Date.now()-timerState.lastStart);
-    const s=Math.floor(total/1000), h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sec=s%60;
-    document.getElementById('timerDisplay').textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
-  }
-  function startTimerForTask(){
-    const id=document.getElementById('timerTaskSelect')?.value; if(!id) return;
-    if(timerState.taskId&&timerState.taskId!==id&&timerState.running) pauseTimer();
-    timerState.taskId=id; timerState.running=true; timerState.lastStart=Date.now();
-    clearTimerInterval(); timerInterval=setInterval(updateTimerDisplay,1000); saveAll(); updateTimerDisplay();
-    document.getElementById('timerActiveLabel').textContent=`🔴 Running: ${getTimerTaskName(id)}`; populateTimerTaskSelect(); renderDashboard();
-  }
-  function pauseTimer(){
-    if(!timerState.running||!timerState.taskId) return;
-    accumulatedMap[timerState.taskId]=(accumulatedMap[timerState.taskId]||0)+(Date.now()-timerState.lastStart);
-    timerState.running=false; timerState.lastStart=null; clearTimerInterval(); saveAll(); updateTimerDisplay();
-    document.getElementById('timerActiveLabel').textContent=`⏸ Paused: ${getTimerTaskName(timerState.taskId)}`; populateTimerTaskSelect();
-  }
-  function stopTimer(){
-    if(!timerState.taskId) return; if(timerState.running) pauseTimer();
-    const ms=accumulatedMap[timerState.taskId]||0; const min=Math.floor(ms/60000);
-    if(min>0){ const [date,id]=timerState.taskId.split('|'); addMinutesToTask(date,parseInt(id),min);
-      const task=getTaskById(date,parseInt(id)); sessions.push({ id:Date.now(), task:task?.subject||'Unknown', date, durationMin:min, category:'Planned' }); }
-    delete accumulatedMap[timerState.taskId]; timerState={ taskId:null, running:false, lastStart:null };
-    clearTimerInterval(); saveAll(); updateTimerDisplay(); document.getElementById('timerActiveLabel').textContent='No active task';
-    populateTimerTaskSelect(); renderDashboard(); loadPlanner(); renderTimerLogs();
-  }
-  function getTimerTaskName(id){ if(!id) return ''; const [date,tid]=id.split('|'); const t=getTaskById(date,parseInt(tid)); return t?t.subject:'Unknown'; }
-  function populateTimerTaskSelect(){
-    const sel=document.getElementById('timerTaskSelect'); if(!sel) return;
-    const tp=getPlannedTasks(today());
-    sel.innerHTML='<option value="">-- Select planned task --</option>'+tp.map(t=>{ const tid=`${today()}|${t.id}`; const acc=accumulatedMap[tid]||0; return `<option value="${tid}" ${timerState.taskId===tid?'selected':''}>${t.subject}${acc>0?` (${Math.floor(acc/60000)}m saved)`:''}</option>`; }).join('');
-  }
-  function renderTimerLogs(){
-    const logs=sessions.filter(s=>s.date===today()).sort((a,b)=>b.id-a.id);
-    document.getElementById('timerTodayLogs').innerHTML=logs.map(s=>`<div>📌 ${s.task} - ${formatTime(s.durationMin)}</div>`).join('')||'<p style="color:var(--muted);">No sessions today.</p>';
-  }
-
-  // ===================== DASHBOARD =====================
-  function renderDashboard(){
-    const tasks=getPlannedTasks(today()); let tp=0,ta=0; tasks.forEach(t=>{ tp+=t.plannedMin; ta+=(t.actualMin||0); });
-    const gap=ta-tp, acc=tp?Math.min(100,Math.round((ta/tp)*100)):0;
-    document.getElementById('dashSummary').innerHTML=`
-      <div class="grid2"><div><span class="stat-num">${tasks.length}</span><br>Tasks</div>
-      <div><span class="stat-num">${formatTime(tp)}</span><br>Planned</div>
-      <div><span class="stat-num">${formatTime(ta)}</span><br>Actual</div>
-      <div><span class="stat-num" style="color:${gap<0?'var(--red)':'var(--green)'}">${gap>0?'+':''}${formatTime(Math.abs(gap))}</span><br>Gap</div>
-      <div><span class="stat-num">${acc}%</span><br>Accuracy</div></div>`;
-    document.getElementById('dashTimerStatus').innerHTML=timerState.taskId?`Active: <strong>${getTimerTaskName(timerState.taskId)}</strong> (${timerState.running?'Running':'Paused'})`:'No active timer';
-    document.getElementById('dashRecentSessions').innerHTML=sessions.sort((a,b)=>b.id-a.id).slice(0,5).map(s=>`<div>📌 ${s.date} - ${s.task} (${formatTime(s.durationMin)})</div>`).join('')||'<p>No sessions.</p>';
-  }
-
-  // ===================== BCA / SSC / SKILLS / ENGLISH / REVISION =====================
-  function renderBCA(){
-    document.getElementById('bcaContainer').innerHTML=bcaData.map(sem=>`
-      <div class="card"><h4 class="accordion" onclick="toggleAccordion(this)">${sem.name} ▼</h4><div class="accordion-content">
-        ${sem.subjects.map(sub=>`<div><strong class="accordion" onclick="toggleAccordion(this)">📘 ${sub.name} ▼</strong><div class="accordion-content" style="margin-left:20px;">
-          <div class="flex-row"><input type="text" id="bcaTopic_${sem.name}_${sub.name}" placeholder="Topic" class="input-field"><button class="btn btn-sm" onclick="addBCATopic('${sem.name}','${sub.name}')">+</button></div>
-          ${(sub.topics||[]).map((t,i)=>`<div class="flex-row"><input type="checkbox" ${t.completed?'checked':''} onchange="toggleBCATopic('${sem.name}','${sub.name}',${i})">${t.text}<input type="number" value="${t.timeMin||0}" class="input-field" style="width:60px;" onchange="updateBCATime('${sem.name}','${sub.name}',${i},this.value)">min<button class="btn btn-sm ${t.revision?'btn-danger':''}" onclick="toggleBCARevision('${sem.name}','${sub.name}',${i})">${t.revision?'Rev':'Add Rev'}</button></div>`).join('')}
-        </div></div>`).join('')}</div></div>`).join('');
-  }
-  window.toggleAccordion=(el)=>{ const c=el.nextElementSibling; if(c) c.style.display=c.style.display==='block'?'none':'block'; };
-  window.addBCATopic=(sem,sub)=>{ const inp=document.getElementById(`bcaTopic_${sem}_${sub}`); const txt=inp?.value.trim(); if(!txt) return; const s=bcaData.find(x=>x.name===sem)?.subjects.find(x=>x.name===sub); if(s){ s.topics.push({text:txt,completed:false,timeMin:0,revision:false}); saveAll(); renderBCA(); } };
-  window.toggleBCATopic=(sem,sub,idx)=>{ const s=bcaData.find(x=>x.name===sem)?.subjects.find(x=>x.name===sub); if(s?.topics[idx]){ s.topics[idx].completed=!s.topics[idx].completed; saveAll(); renderBCA(); } };
-  window.updateBCATime=(sem,sub,idx,val)=>{ const s=bcaData.find(x=>x.name===sem)?.subjects.find(x=>x.name===sub); if(s?.topics[idx]){ s.topics[idx].timeMin=parseInt(val)||0; saveAll(); } };
-  window.toggleBCARevision=(sem,sub,idx)=>{ const s=bcaData.find(x=>x.name===sem)?.subjects.find(x=>x.name===sub); if(s?.topics[idx]){ const t=s.topics[idx]; t.revision=!t.revision; if(t.revision) revisionItems.push({id:Date.now(),course:'BCA',subject:sub,topic:t.text,addedDate:today(),done:false}); else revisionItems=revisionItems.filter(r=>!(r.course==='BCA'&&r.subject===sub&&r.topic===t.text)); saveAll(); renderBCA(); renderRevision(); } };
-
-  function renderSSC(){
-    document.getElementById('sscContainer').innerHTML=sscData.subjects.map(sub=>`
-      <div class="card"><h4 class="accordion" onclick="toggleAccordion(this)">${sub.name} ▼</h4><div class="accordion-content">
-        ${sub.chapters.map((ch,idx)=>`<div class="flex-row"><input type="checkbox" ${ch.completed?'checked':''} onchange="toggleSSCChapter('${sub.name}',${idx})">${ch.text}<input type="number" value="${ch.timeMin||0}" class="input-field" style="width:60px;" onchange="updateSSCTime('${sub.name}',${idx},this.value)">min<button class="btn btn-sm ${ch.revision?'btn-danger':''}" onclick="toggleSSCRevision('${sub.name}',${idx})">${ch.revision?'Rev':'Add Rev'}</button></div>`).join('')}
-      </div></div>`).join('');
-  }
-  window.toggleSSCChapter=(n,idx)=>{ const s=sscData.subjects.find(x=>x.name===n); if(s?.chapters[idx]){ s.chapters[idx].completed=!s.chapters[idx].completed; saveAll(); renderSSC(); } };
-  window.updateSSCTime=(n,idx,val)=>{ const s=sscData.subjects.find(x=>x.name===n); if(s?.chapters[idx]){ s.chapters[idx].timeMin=parseInt(val)||0; saveAll(); } };
-  window.toggleSSCRevision=(n,idx)=>{ const s=sscData.subjects.find(x=>x.name===n); if(s?.chapters[idx]){ const c=s.chapters[idx]; c.revision=!c.revision; if(c.revision) revisionItems.push({id:Date.now(),course:'SSC',subject:n,topic:c.text,addedDate:today(),done:false}); else revisionItems=revisionItems.filter(r=>!(r.course==='SSC'&&r.subject===n&&r.topic===c.text)); saveAll(); renderSSC(); renderRevision(); } };
-
-  function renderEnglish(){
-    const ws=document.getElementById('engWeekStart')?.value||getMonday(today());
-    const topics=engData[ws]||[];
-    document.getElementById('englishContainer').innerHTML=`
-      <div class="flex-row"><input type="date" id="engWeekStart" class="input-field" value="${ws}" onchange="renderEnglish()"><button class="btn btn-outline" onclick="changeEngWeek(-7)">◀</button><button class="btn btn-outline" onclick="changeEngWeek(7)">▶</button></div>
-      <div class="flex-row"><input type="text" id="engTopicInput" placeholder="Weekly topic" class="input-field"><button class="btn" onclick="addEnglishTopic()">➕</button></div>
-      ${topics.map(t=>`<div class="card"><div class="flex-row"><input type="checkbox" ${t.completed?'checked':''} onchange="toggleEngComplete('${ws}',${t.id})"><strong>${t.text}</strong></div>
-        <div class="flex-row"><input type="text" id="engSub_${t.id}" placeholder="Sub-activity" class="input-field"><button class="btn btn-sm" onclick="addEngSub('${ws}',${t.id})">+</button></div>
-        ${(t.subTopics||[]).map((st,i)=>`<div class="flex-row">• ${st.text}<input type="number" value="${st.timeMin||0}" class="input-field" style="width:60px;" onchange="updateEngSubTime('${ws}',${t.id},${i},this.value)">min</div>`).join('')}
-      </div>`).join('')}`;
-  }
-  window.addEnglishTopic=()=>{ const w=document.getElementById('engWeekStart')?.value; const t=document.getElementById('engTopicInput')?.value.trim(); if(!w||!t) return; if(!engData[w]) engData[w]=[]; engData[w].push({id:Date.now(),text:t,completed:false,subTopics:[]}); saveAll(); renderEnglish(); };
-  window.toggleEngComplete=(w,id)=>{ const t=(engData[w]||[]).find(x=>x.id===id); if(t){ t.completed=!t.completed; saveAll(); renderEnglish(); } };
-  window.addEngSub=(w,tid)=>{ const inp=document.getElementById(`engSub_${tid}`); const txt=inp?.value.trim(); if(!txt) return; const t=(engData[w]||[]).find(x=>x.id===tid); if(t){ t.subTopics.push({text:txt,timeMin:0}); saveAll(); renderEnglish(); } };
-  window.updateEngSubTime=(w,tid,idx,val)=>{ const t=(engData[w]||[]).find(x=>x.id===tid); if(t?.subTopics[idx]){ t.subTopics[idx].timeMin=parseInt(val)||0; saveAll(); } };
-  window.changeEngWeek=(o)=>{ const p=document.getElementById('engWeekStart'); const d=new Date(p.value); d.setDate(d.getDate()+o); p.value=d.toISOString().split('T')[0]; renderEnglish(); };
-
-  function renderSkills(){
-    document.getElementById('skillsContainer').innerHTML=`
-      <div class="flex-row"><input type="text" id="newSkillName" placeholder="Skill name" class="input-field"><button class="btn" onclick="addSkill()">Add</button></div>
-      ${skills.map(s=>`<div class="card"><strong>${s.name}</strong><button class="btn btn-sm btn-danger" style="float:right;" onclick="deleteSkill('${s.name}')">Delete</button>
-        <div class="flex-row"><input type="text" id="skillTask_${s.name}" placeholder="Task" class="input-field"><button class="btn btn-sm" onclick="addSkillTask('${s.name}')">+</button></div>
-        ${(s.tasks||[]).map(t=>`<div class="flex-row"><input type="checkbox" ${t.completed?'checked':''} onchange="toggleSkillTask('${s.name}',${t.id})">${t.text}<input type="number" value="${t.timeMin||0}" class="input-field" style="width:60px;" onchange="updateSkillTime('${s.name}',${t.id},this.value)">min</div>`).join('')}
-      </div>`).join('')}`;
-  }
-  window.addSkill=()=>{ const n=document.getElementById('newSkillName')?.value.trim(); if(n&&!skills.find(s=>s.name===n)){ skills.push({name:n,tasks:[]}); saveAll(); renderSkills(); } };
-  window.deleteSkill=(n)=>{ skills=skills.filter(s=>s.name!==n); saveAll(); renderSkills(); };
-  window.addSkillTask=(n)=>{ const inp=document.getElementById(`skillTask_${n}`); const txt=inp?.value.trim(); if(!txt) return; const sk=skills.find(s=>s.name===n); if(sk){ sk.tasks.push({id:Date.now(),text:txt,completed:false,timeMin:0}); saveAll(); renderSkills(); } };
-  window.toggleSkillTask=(n,id)=>{ const sk=skills.find(s=>s.name===n); if(sk){ const t=sk.tasks.find(x=>x.id===id); if(t){ t.completed=!t.completed; saveAll(); renderSkills(); } } };
-  window.updateSkillTime=(n,id,val)=>{ const sk=skills.find(s=>s.name===n); if(sk){ const t=sk.tasks.find(x=>x.id===id); if(t){ t.timeMin=parseInt(val)||0; saveAll(); } } };
-
-  function renderRevision(){
-    document.getElementById('revisionContainer').innerHTML=revisionItems.map(r=>`<div class="flex-row"><input type="checkbox" ${r.done?'checked':''} onchange="markRevisionDone(${r.id})">[${r.course}] ${r.subject} - ${r.topic} (${r.addedDate})<button class="btn btn-sm btn-danger" onclick="deleteRevision(${r.id})">❌</button></div>`).join('')||'<p>No items.</p>';
-  }
-  window.markRevisionDone=(id)=>{ const r=revisionItems.find(x=>x.id===id); if(r){ r.done=!r.done; saveAll(); renderRevision(); } };
-  window.deleteRevision=(id)=>{ revisionItems=revisionItems.filter(r=>r.id!==id); saveAll(); renderRevision(); };
-
-  function renderAnalytics(){
-    const range=document.getElementById('analyticsRange')?.value||'day';
-    const di=document.getElementById('analyticsDate')?.value||today();
-    let f=[];
-    if(range==='day') f=sessions.filter(s=>s.date===di);
-    else if(range==='week'){ const s=getMonday(di); const e=new Date(s); e.setDate(e.getDate()+6); f=sessions.filter(x=>{ const d=new Date(x.date); return d>=new Date(s)&&d<=e; }); }
-    else if(range==='month'){ const p=di.substring(0,7); f=sessions.filter(s=>s.date.startsWith(p)); }
-    else if(range==='year'){ const y=di.substring(0,4); f=sessions.filter(s=>s.date.startsWith(y)); }
-    const tm={}; f.forEach(s=>{ tm[s.task]=(tm[s.task]||0)+s.durationMin; });
-    const ctx=document.getElementById('analyticsChart')?.getContext('2d');
-    if(ctx){ if(window.analyticsChart) window.analyticsChart.destroy(); window.analyticsChart=new Chart(ctx,{type:'pie',data:{labels:Object.keys(tm),datasets:[{data:Object.values(tm)}]}}); }
-    document.getElementById('analyticsTable').innerHTML=f.length?`<table><tr><th>Task</th><th>Duration</th></tr>${Object.entries(tm).map(([k,v])=>`<tr><td>${k}</td><td>${formatTime(v)}</td></tr>`).join('')}</table>`:'<p>No data.</p>';
-  }
-
-  // ===================== DETAILED EXPORT =====================
-  function exportDetailedReport() {
-    const month = parseInt(document.getElementById('exportMonth')?.value || 0);
-    const year = parseInt(document.getElementById('exportYear')?.value || 2026);
-    const monthPrefix = `${year}-${String(month+1).padStart(2,'0')}`;
-    const wb = XLSX.utils.book_new();
-
-    // Sheet 1: Daily Planner Detail (with gaps & accuracy)
-    const plannerRows = [];
-    Object.entries(plans).forEach(([date, tasks]) => {
-      if (date.startsWith(monthPrefix)) {
-        tasks.forEach(t => {
-          const plannedH = (t.plannedMin/60).toFixed(2);
-          const actualH = ((t.actualMin||0)/60).toFixed(2);
-          const gapH = ((t.actualMin||0 - t.plannedMin)/60).toFixed(2);
-          plannerRows.push({
-            'Date': date,
-            'Subject': t.subject,
-            'Planned (hrs)': plannedH,
-            'Actual (hrs)': actualH,
-            'Gap (hrs)': gapH,
-            'Efficiency': t.plannedMin ? Math.round(((t.actualMin||0)/t.plannedMin)*100) + '%' : 'N/A',
-            'Completed': t.completed ? 'Yes' : 'No'
-          });
-        });
-      }
-    });
-    if (plannerRows.length) {
-      const ws1 = XLSX.utils.json_to_sheet(plannerRows);
-      XLSX.utils.book_append_sheet(wb, ws1, 'Daily Planner');
-    }
-
-    // Sheet 2: Weekly Summary
-    const weeklyRows = [];
-    const weekMap = {};
-    Object.entries(plans).forEach(([date, tasks]) => {
-      if (date.startsWith(monthPrefix) || date.startsWith(`${year}-`)) {
-        const weekStart = getMonday(date);
-        if (!weekMap[weekStart]) weekMap[weekStart] = { planned: 0, actual: 0, tasks: 0 };
-        tasks.forEach(t => {
-          weekMap[weekStart].planned += t.plannedMin;
-          weekMap[weekStart].actual += (t.actualMin || 0);
-          weekMap[weekStart].tasks++;
-        });
-      }
-    });
-    Object.entries(weekMap).forEach(([week, data]) => {
-      weeklyRows.push({
-        'Week Starting': week,
-        'Planned (hrs)': (data.planned/60).toFixed(2),
-        'Actual (hrs)': (data.actual/60).toFixed(2),
-        'Gap (hrs)': ((data.actual - data.planned)/60).toFixed(2),
-        'Tasks': data.tasks,
-        'Accuracy': data.planned ? Math.round((data.actual/data.planned)*100) + '%' : '0%'
-      });
-    });
-    if (weeklyRows.length) {
-      const ws2 = XLSX.utils.json_to_sheet(weeklyRows);
-      XLSX.utils.book_append_sheet(wb, ws2, 'Weekly Summary');
-    }
-
-    // Sheet 3: Monthly Overview
-    const monthlyPlanned = Object.entries(plans).filter(([d]) => d.startsWith(monthPrefix)).reduce((sum, [, tasks]) => sum + tasks.reduce((s, t) => s + t.plannedMin, 0), 0);
-    const monthlyActual = Object.entries(plans).filter(([d]) => d.startsWith(monthPrefix)).reduce((sum, [, tasks]) => sum + tasks.reduce((s, t) => s + (t.actualMin || 0), 0), 0);
-    const monthlySessions = sessions.filter(s => s.date.startsWith(monthPrefix));
-    const monthlySessionsHrs = monthlySessions.reduce((s, x) => s + x.durationMin, 0);
-    const monthOverview = [{
-      'Month': `${year}-${String(month+1).padStart(2,'0')}`,
-      'Planned (hrs)': (monthlyPlanned/60).toFixed(2),
-      'Actual (hrs)': (monthlyActual/60).toFixed(2),
-      'Gap (hrs)': ((monthlyActual - monthlyPlanned)/60).toFixed(2),
-      'Sessions Logged': monthlySessions.length,
-      'Session Hours': (monthlySessionsHrs/60).toFixed(2),
-      'Overall Accuracy': monthlyPlanned ? Math.round((monthlyActual/monthlyPlanned)*100) + '%' : '0%'
-    }];
-    const ws3 = XLSX.utils.json_to_sheet(monthOverview);
-    XLSX.utils.book_append_sheet(wb, ws3, 'Monthly Overview');
-
-    // Sheet 4: Yearly Summary (if data exists for the year)
-    const yearPrefix = `${year}-`;
-    const yearlyRows = [];
-    for (let m = 0; m < 12; m++) {
-      const mp = `${year}-${String(m+1).padStart(2,'0')}`;
-      const mpPlanned = Object.entries(plans).filter(([d]) => d.startsWith(mp)).reduce((sum, [, tasks]) => sum + tasks.reduce((s, t) => s + t.plannedMin, 0), 0);
-      const mpActual = Object.entries(plans).filter(([d]) => d.startsWith(mp)).reduce((sum, [, tasks]) => sum + tasks.reduce((s, t) => s + (t.actualMin || 0), 0), 0);
-      if (mpPlanned > 0 || mpActual > 0) {
-        yearlyRows.push({
-          'Month': mp,
-          'Planned (hrs)': (mpPlanned/60).toFixed(2),
-          'Actual (hrs)': (mpActual/60).toFixed(2),
-          'Gap (hrs)': ((mpActual - mpPlanned)/60).toFixed(2),
-          'Accuracy': mpPlanned ? Math.round((mpActual/mpPlanned)*100) + '%' : '0%'
-        });
-      }
-    }
-    if (yearlyRows.length) {
-      const ws4 = XLSX.utils.json_to_sheet(yearlyRows);
-      XLSX.utils.book_append_sheet(wb, ws4, 'Yearly Summary');
-    }
-
-    // Sheet 5: Sessions Log
-    const sessionRows = sessions.filter(s => s.date.startsWith(monthPrefix)).map(s => ({
-      'Date': s.date,
-      'Task': s.task,
-      'Duration (hrs)': (s.durationMin/60).toFixed(2),
-      'Category': s.category || 'General'
-    }));
-    if (sessionRows.length) {
-      const ws5 = XLSX.utils.json_to_sheet(sessionRows);
-      XLSX.utils.book_append_sheet(wb, ws5, 'Sessions');
-    }
-
-    // Sheet 6: Revision Items
-    if (revisionItems.length) {
-      const revRows = revisionItems.map(r => ({
-        'Course': r.course,
-        'Subject': r.subject,
-        'Topic': r.topic,
-        'Added Date': r.addedDate,
-        'Done': r.done ? 'Yes' : 'No'
+    // ==================== DATA LOADING & SAVING ====================
+    function initSSCData() {
+      const fresh = JSON.parse(JSON.stringify(defaultSSC));
+      fresh.tiers.forEach(tier => tier.sections.forEach(sec => {
+        sec.chapters = sec.chapters.map(c => ({ text: c, completed: false, timeMin: 0, revision: false }));
       }));
-      const ws6 = XLSX.utils.json_to_sheet(revRows);
-      XLSX.utils.book_append_sheet(wb, ws6, 'Revision');
+      return fresh;
     }
 
-    XLSX.writeFile(wb, `StudyReport_${year}_${String(month+1).padStart(2,'0')}.xlsx`);
-  }
+    function loadLocal() {
+      plans = JSON.parse(localStorage.getItem('sh_plans') || '{}');
+      sessions = JSON.parse(localStorage.getItem('sh_sessions') || '[]');
+      bcaData = JSON.parse(localStorage.getItem('sh_bca')) || defaultBCA.map(s => ({ ...s, subjects: s.subjects.map(n => ({ name: n, topics: [] })) }));
+      const savedSSC = JSON.parse(localStorage.getItem('sh_ssc'));
+      if (savedSSC && savedSSC.tiers && Array.isArray(savedSSC.tiers) && savedSSC.tiers.length === 2) {
+        sscData = savedSSC;
+        sscData.tiers.forEach(tier => tier.sections.forEach(sec => {
+          sec.chapters = sec.chapters.map(c => typeof c === 'string' ? { text: c, completed: false, timeMin: 0, revision: false } : { ...c, completed: c.completed || false, timeMin: c.timeMin || 0, revision: c.revision || false });
+        }));
+      } else {
+        sscData = initSSCData();
+      }
+      engData = JSON.parse(localStorage.getItem('sh_eng') || '{}');
+      skills = JSON.parse(localStorage.getItem('sh_skills') || '[]');
+      revisionItems = JSON.parse(localStorage.getItem('sh_revision') || '[]').map(r => ({
+        id: r.id || Date.now(), course: r.course || '', subject: r.subject || '', topic: r.topic || '',
+        notes: r.notes || '', cardType: r.cardType || 'Q&A', status: r.status || 'Not Started',
+        doubt: r.doubt || false, image: r.image || null, addedDate: r.addedDate || today()
+      }));
+      timerState = JSON.parse(localStorage.getItem('sh_timer_state') || '{"taskId":null,"running":false,"lastStart":null}');
+      accumulatedMap = JSON.parse(localStorage.getItem('sh_timer_acc') || '{}');
+    }
 
-  window.startTimerForTask = startTimerForTask;
-  window.pauseTimer = pauseTimer;
-  window.stopTimer = stopTimer;
-  window.renderAnalytics = renderAnalytics;
-  window.exportDetailedReport = exportDetailedReport;
+    function saveLocal() {
+      localStorage.setItem('sh_plans', JSON.stringify(plans));
+      localStorage.setItem('sh_sessions', JSON.stringify(sessions));
+      localStorage.setItem('sh_bca', JSON.stringify(bcaData));
+      localStorage.setItem('sh_ssc', JSON.stringify(sscData));
+      localStorage.setItem('sh_eng', JSON.stringify(engData));
+      localStorage.setItem('sh_skills', JSON.stringify(skills));
+      localStorage.setItem('sh_revision', JSON.stringify(revisionItems));
+      localStorage.setItem('sh_timer_state', JSON.stringify(timerState));
+      localStorage.setItem('sh_timer_acc', JSON.stringify(accumulatedMap));
+    }
 
-  // Init
-  document.getElementById('planDate').value = today();
-  document.getElementById('analyticsDate').value = today();
-  document.getElementById('exportMonth').value = new Date().getMonth();
-  await loadCloudData();
-  loadPlanner(); renderDashboard(); renderBCA(); renderSSC(); renderEnglish(); renderSkills(); renderRevision();
-  populateTimerTaskSelect(); updateTimerDisplay();
-  if (timerState.running) { timerInterval = setInterval(updateTimerDisplay, 1000); document.getElementById('timerActiveLabel').textContent = `🔴 Running: ${getTimerTaskName(timerState.taskId)}`; }
-})();
-</script>
-  <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  setDoc
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-const firebaseConfig = {
-  apiKey: "AIzaSyDMvic5ec-KTGc9oDSw5hpoAJ45V3aEQ3c",
-  authDomain: "studyhub-pro-max.firebaseapp.com",
-  projectId: "studyhub-pro-max",
-  storageBucket: "studyhub-pro-max.firebasestorage.app",
-  messagingSenderId: "928355878552",
-  appId: "1:928355878552:web:2f13a7450a1891a7c4b2ed"
-};
+    function saveAll() {
+      saveLocal();
+      if (window._saveTimeout) clearTimeout(window._saveTimeout);
+      window._saveTimeout = setTimeout(() => saveCloud(), 2000);   // debounce cloud save
+    }
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+    async function saveCloud() {
+      try {
+        document.getElementById('syncDot').className = 'sync-dot syncing';
+        document.getElementById('syncText').textContent = 'Saving...';
+        await db.collection('users').doc(UID).set({
+          plans, sessions, bcaData, sscData, engData, skills, revisionItems,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+        document.getElementById('syncDot').className = 'sync-dot online';
+        document.getElementById('syncText').textContent = 'Synced';
+      } catch (e) {
+        document.getElementById('syncDot').className = 'sync-dot offline';
+        document.getElementById('syncText').textContent = 'Offline';
+      }
+    }
 
-window.db = db;
-    window.doc = doc;
-window.getDoc = getDoc;
-window.setDoc = setDoc;
-    
-console.log("Firebase Connected Successfully 🚀");
-</script>
+    async function loadCloud() {
+      try {
+        const doc = await db.collection('users').doc(UID).get();
+        if (doc.exists) {
+          const d = doc.data();
+          if (d.plans) plans = d.plans;
+          if (d.sessions) sessions = d.sessions;
+          if (d.bcaData) bcaData = d.bcaData;
+          if (d.sscData) sscData = d.sscData;
+          if (d.engData) engData = d.engData;
+          if (d.skills) skills = d.skills;
+          if (d.revisionItems) revisionItems = d.revisionItems;
+          saveLocal();
+        }
+        return true;
+      } catch (e) { return false; }
+    }
+
+    // ==================== CLOCK UPDATE (real time) ====================
+    function updateClock() {
+      const n = new Date();
+      document.getElementById('currentDay').textContent = n.toLocaleDateString('en-IN', { weekday: 'long' });
+      document.getElementById('currentDate').textContent = n.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+      document.getElementById('currentTime').textContent = n.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    // ==================== ACCORDION TOGGLE (SSC/BCA sections) ====================
+    window.toggleAcc = function(el) {
+      const content = el.nextElementSibling;
+      if (content && content.classList.contains('accordion-content')) {
+        const isOpen = content.classList.contains('open');
+        content.classList.toggle('open', !isOpen);
+        el.classList.toggle('open', !isOpen);
+      }
+    };
+
+    window.expandAllSSC = function() {
+      document.querySelectorAll('#sscContainer .accordion-content').forEach(c => c.classList.add('open'));
+      document.querySelectorAll('#sscContainer .accordion').forEach(a => a.classList.add('open'));
+    };
+    window.collapseAllSSC = function() {
+      document.querySelectorAll('#sscContainer .accordion-content').forEach(c => c.classList.remove('open'));
+      document.querySelectorAll('#sscContainer .accordion').forEach(a => a.classList.remove('open'));
+    };
+    window.resetSSCSyllabus = function() {
+      if (confirm('Reset SSC syllabus to default? This will clear all your progress.')) {
+        sscData = initSSCData();
+        saveAll();
+        renderSSC();
+      }
+    };
+
+    // ==================== TAB SWITCHING ====================
+    function switchTab(tab) {
+      // Update sidebar active link
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+      const link = document.querySelector(`.nav-link[data-tab="${tab}"]`);
+      if (link) link.classList.add('active');
+      // Show/Hide tab contents
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      const ct = document.getElementById('tab-' + tab);
+      if (ct) ct.classList.add('active');
+
+      // Refresh content depending on the tab
+      if (tab === 'dashboard') renderDashboard();
+      if (tab === 'planner') loadPlanner();
+      if (tab === 'timer') { populateTimerSelect(); updateTimerDisplay(); renderTimerLogs(); }
+      if (tab === 'bca') renderBCA();
+      if (tab === 'ssc') renderSSC();
+      if (tab === 'english') renderEnglish();
+      if (tab === 'skills') renderSkills();
+      if (tab === 'revision') renderRevision();
+      if (tab === 'analytics') {
+        document.getElementById('analyticsEnd').value = today();
+        const s = new Date(); s.setDate(s.getDate() - 7);
+        document.getElementById('analyticsStart').value = s.toISOString().split('T')[0];
+        renderAnalytics();
+      }
+      if (tab === 'export') document.getElementById('exportMonth').value = new Date().getMonth();
+    }
+
+    function refreshAll() {
+      if (document.getElementById('tab-dashboard').classList.contains('active')) renderDashboard();
+      if (document.getElementById('tab-planner').classList.contains('active')) loadPlanner();
+      if (document.getElementById('tab-analytics').classList.contains('active')) renderAnalytics();
+      renderTimerLogs();
+      populateTimerSelect();
+    }
+
+    // ==================== PLANNER ====================
+    function getTasks(date) { return plans[date] || []; }
+    function getTask(date, id) { return (plans[date] || []).find(t => t.id === id); }
+
+    function loadPlanner() {
+      const date = document.getElementById('planDate')?.value || today();
+      if (document.getElementById('planDate')) document.getElementById('planDate').value = date;
+      const tasks = getTasks(date);
+      document.getElementById('plannerTasks').innerHTML = tasks.map(t => `
+        <div class="card" style="padding:10px;">
+          <div class="flex-row">
+            <strong>${t.subject}</strong> | Planned: ${fmt(t.plannedMin)} | Actual: ${fmt(t.actualMin||0)}
+            <input type="checkbox" ${t.completed?'checked':''} onchange="togglePlan('${date}',${t.id})">
+            <button class="btn btn-sm btn-danger" onclick="delPlan('${date}',${t.id})">🗑️</button>
+          </div>
+        </div>`).join('') || '<p style="color:var(--muted);">No tasks for this date.</p>';
+
+      // Weekly summary
+      const ws = getMonday(date);
+      let wp = 0, wa = 0;
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(ws); d.setDate(d.getDate() + i);
+        const k = d.toISOString().split('T')[0];
+        (plans[k] || []).forEach(t => { wp += t.plannedMin; wa += (t.actualMin || 0); });
+      }
+      document.getElementById('plannerWeekSummary').innerHTML = `<strong>Week (${ws})</strong> | Planned: ${fmt(wp)} | Actual: ${fmt(wa)}`;
+      populateTimerSelect();
+    }
+
+    window.togglePlan = (date, id) => {
+      const t = getTask(date, id);
+      if (t) { t.completed = !t.completed; saveAll(); loadPlanner(); renderDashboard(); }
+    };
+    window.delPlan = (date, id) => {
+      plans[date] = (plans[date] || []).filter(t => t.id !== id);
+      saveAll(); loadPlanner(); renderDashboard();
+    };
+    window.addPlanTask = () => {
+      const date = document.getElementById('planDate').value;
+      const sub = document.getElementById('planSubject').value.trim();
+      const h = parseInt(document.getElementById('planHrs').value) || 0;
+      const m = parseInt(document.getElementById('planMins').value) || 0;
+      if (!sub || (h === 0 && m === 0)) return;
+      if (!plans[date]) plans[date] = [];
+      plans[date].push({ id: Date.now(), subject: sub, plannedMin: h * 60 + m, actualMin: 0, completed: false });
+      saveAll();
+      document.getElementById('planSubject').value = '';
+      document.getElementById('planHrs').value = '';
+      document.getElementById('planMins').value = '';
+      loadPlanner();
+      renderDashboard();
+    };
+    window.changePlanDate = (o) => {
+      const el = document.getElementById('planDate');
+      const d = new Date(el.value); d.setDate(d.getDate() + o);
+      el.value = d.toISOString().split('T')[0];
+      loadPlanner();
+    };
+    window.goToToday = () => {
+      document.getElementById('planDate').value = today();
+      loadPlanner();
+    };
+
+    // ==================== TIMER ====================
+    function clearTimer() { if (timerInterval) { clearInterval(timerInterval); timerInterval = null; } }
+
+    function updateTimerDisplay() {
+      const base = timerState.taskId ? (accumulatedMap[timerState.taskId] || 0) : 0;
+      let total = base;
+      if (timerState.running && timerState.lastStart) total += (Date.now() - timerState.lastStart);
+      const s = Math.floor(total / 1000),
+            h = Math.floor(s / 3600),
+            m = Math.floor((s % 3600) / 60),
+            sec = s % 60;
+      document.getElementById('timerDisplay').textContent =
+        `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+    }
+
+    function getTimerName(id) {
+      if (!id) return '';
+      const [d, tid] = id.split('|');
+      const t = getTask(d, parseInt(tid));
+      return t ? t.subject : 'Unknown';
+    }
+
+    function populateTimerSelect() {
+      const sel = document.getElementById('timerTaskSelect');
+      if (!sel) return;
+      const tasks = getTasks(today());
+      sel.innerHTML = '<option value="">-- Select task --</option>' +
+        tasks.map(t => {
+          const tid = `${today()}|${t.id}`;
+          const acc = accumulatedMap[tid] || 0;
+          return `<option value="${tid}" ${timerState.taskId===tid?'selected':''}>${t.subject}${acc>0?` (${Math.floor(acc/60000)}m)`:''}</option>`;
+        }).join('');
+    }
+
+    function startTimerForTask() {
+      const id = document.getElementById('timerTaskSelect')?.value;
+      if (!id) return;
+      if (timerState.taskId && timerState.taskId !== id && timerState.running) pauseTimer();
+      timerState.taskId = id; timerState.running = true; timerState.lastStart = Date.now();
+      clearTimer();
+      timerInterval = setInterval(updateTimerDisplay, 1000);
+      saveAll();
+      updateTimerDisplay();
+      document.getElementById('timerActiveLabel').textContent = `🔴 Running: ${getTimerName(id)}`;
+      populateTimerSelect();
+      renderDashboard();
+    }
+
+    function pauseTimer() {
+      if (!timerState.running || !timerState.taskId) return;
+      accumulatedMap[timerState.taskId] = (accumulatedMap[timerState.taskId] || 0) + (Date.now() - timerState.lastStart);
+      timerState.running = false; timerState.lastStart = null;
+      clearTimer();
+      saveAll();
+      updateTimerDisplay();
+      document.getElementById('timerActiveLabel').textContent = `⏸ Paused: ${getTimerName(timerState.taskId)}`;
+      populateTimerSelect();
+    }
+
+    function stopTimer() {
+      if (!timerState.taskId) return;
+      if (timerState.running) pauseTimer();
+      const ms = accumulatedMap[timerState.taskId] || 0;
+      const min = Math.floor(ms / 60000);
+      if (min > 0) {
+        const [date, tid] = timerState.taskId.split('|');
+        const task = getTask(date, parseInt(tid));
+        if (task) task.actualMin = (task.actualMin || 0) + min;
+        sessions.push({ id: Date.now(), task: task?.subject || 'Unknown', date, durationMin: min });
+      }
+      delete accumulatedMap[timerState.taskId];
+      timerState = { taskId: null, running: false, lastStart: null };
+      clearTimer();
+      saveAll();
+      updateTimerDisplay();
+      document.getElementById('timerActiveLabel').textContent = 'No active task';
+      populateTimerSelect();
+      renderDashboard();
+      loadPlanner();
+      renderTimerLogs();
+    }
+
+    function renderTimerLogs() {
+      const logs = sessions.filter(s => s.date === today()).sort((a, b) => b.id - a.id);
+      document.getElementById('timerTodayLogs').innerHTML = logs.map(s => `<div>📌 ${s.task} - ${fmt(s.durationMin)}</div>`).join('') || '<p style="color:var(--muted);">No sessions today.</p>';
+    }
+
+    // ==================== DASHBOARD ====================
+    function renderDashboard() {
+      const tasks = getTasks(today());
+      let tp = 0, ta = 0;
+      tasks.forEach(t => { tp += t.plannedMin; ta += (t.actualMin || 0); });
+      const gap = ta - tp,
+            acc = tp > 0 ? Math.min(100, Math.round((ta / tp) * 100)) : (ta > 0 ? 100 : 0);
+      document.getElementById('dashSummary').innerHTML = `
+        <div class="grid2">
+          <div><span class="stat-num">${tasks.length}</span><br>Tasks</div>
+          <div><span class="stat-num">${fmt(tp)}</span><br>Planned</div>
+          <div><span class="stat-num">${fmt(ta)}</span><br>Actual</div>
+          <div><span class="stat-num" style="color:${gap<0?'var(--red)':'var(--green)'}">${gap>0?'+':''}${fmt(Math.abs(gap))}</span><br>Gap</div>
+          <div><span class="stat-num">${acc}%</span><br>Accuracy</div>
+        </div>`;
+      document.getElementById('dashTimerStatus').innerHTML = timerState.taskId
+        ? `Active: <strong>${getTimerName(timerState.taskId)}</strong> (${timerState.running?'Running':'Paused'})`
+        : 'No active timer';
+      document.getElementById('dashRecentSessions').innerHTML = sessions.sort((a, b) => b.id - a.id).slice(0, 5).map(s => `<div>📌 ${s.date} - ${s.task} (${fmt(s.durationMin)})</div>`).join('') || '<p>No sessions yet.</p>';
+    }
+
+    // ==================== BCA RENDERING ====================
+    function renderBCA() {
+      document.getElementById('bcaContainer').innerHTML = bcaData.map(sem => `
+        <div class="card">
+          <h4 class="accordion" onclick="toggleAcc(this)">${sem.name}</h4>
+          <div class="accordion-content">
+            ${sem.subjects.map(sub => `
+              <div>
+                <strong class="accordion" onclick="toggleAcc(this)">📘 ${sub.name}</strong>
+                <div class="accordion-content" style="margin-left:16px;">
+                  <div class="flex-row">
+                    <input type="text" id="bcaT_${sem.name}_${sub.name}" placeholder="Add topic" class="input-field">
+                    <button class="btn btn-sm" onclick="addBCATopic('${sem.name}','${sub.name}')">+</button>
+                  </div>
+                  ${(sub.topics || []).map((t,i) => `
+                    <div class="flex-row">
+                      <input type="checkbox" ${t.completed?'checked':''} onchange="togBCATopic('${sem.name}','${sub.name}',${i})">${t.text}
+                      <input type="number" value="${t.timeMin||0}" class="input-field" style="width:55px;" onchange="upBCATime('${sem.name}','${sub.name}',${i},this.value)">min
+                      <button class="btn btn-sm ${t.revision?'btn-danger':''}" onclick="togBCARev('${sem.name}','${sub.name}',${i})">${t.revision?'Rev':'Add Rev'}</button>
+                    </div>`).join('')}
+                </div>
+              </div>`).join('')}
+          </div>
+        </div>`).join('');
+    }
+    window.addBCATopic = (sem, sub) => {
+      const inp = document.getElementById(`bcaT_${sem}_${sub}`);
+      const txt = inp?.value.trim();
+      if (!txt) return;
+      const s = bcaData.find(x => x.name === sem)?.subjects.find(x => x.name === sub);
+      if (s) { s.topics.push({ text: txt, completed: false, timeMin: 0, revision: false }); saveAll(); renderBCA(); }
+    };
+    window.togBCATopic = (sem, sub, i) => {
+      const s = bcaData.find(x => x.name === sem)?.subjects.find(x => x.name === sub);
+      if (s?.topics[i]) { s.topics[i].completed = !s.topics[i].completed; saveAll(); renderBCA(); }
+    };
+    window.upBCATime = (sem, sub, i, v) => {
+      const s = bcaData.find(x => x.name === sem)?.subjects.find(x => x.name === sub);
+      if (s?.topics[i]) { s.topics[i].timeMin = parseInt(v) || 0; saveAll(); }
+    };
+    window.togBCARev = (sem, sub, i) => {
+      const s = bcaData.find(x => x.name === sem)?.subjects.find(x => x.name === sub);
+      if (s?.topics[i]) { s.topics[i].revision = !s.topics[i].revision; saveAll(); renderBCA(); }
+    };
+
+    // ==================== SSC RENDERING ====================
+    function renderSSC() {
+      let html = '';
+      sscData.tiers.forEach((tier, ti) => {
+        html += `<div class="card" style="margin-bottom:16px;">
+          <h3 class="accordion open" onclick="toggleAcc(this)" style="font-size:1.2rem;background:var(--accent);color:#fff;">🏛️ ${tier.name}</h3>
+          <div class="accordion-content open">`;
+        tier.sections.forEach((sec, si) => {
+          html += `<div style="margin:6px 0;">
+            <strong class="accordion" onclick="toggleAcc(this)">📚 ${sec.name}</strong>
+            <div class="accordion-content" style="margin-left:12px;">
+              <div class="flex-row">
+                <input type="text" id="sscAdd_${ti}_${si}" placeholder="Add custom chapter" class="input-field" style="flex:1;">
+                <button class="btn btn-sm" onclick="addSSCChapter(${ti},${si})">+ Add</button>
+              </div>`;
+          (sec.chapters || []).forEach((ch, ci) => {
+            html += `<div class="flex-row" style="justify-content:space-between;padding:6px 0;border-bottom:1px solid #1a1a3a;">
+              <span><input type="checkbox" ${ch.completed?'checked':''} onchange="togSSCChapter(${ti},${si},${ci})"> ${ch.text}</span>
+              <span>
+                <input type="number" value="${ch.timeMin||0}" class="input-field" style="width:50px;padding:4px 6px;" onchange="upSSCTime(${ti},${si},${ci},this.value)">min
+                <button class="btn btn-sm ${ch.revision?'btn-danger':''}" onclick="togSSCRev(${ti},${si},${ci})">${ch.revision?'Rev':'Add Rev'}</button>
+              </span>
+            </div>`;
+          });
+          html += `</div></div>`;
+        });
+        html += `</div></div>`;
+      });
+      document.getElementById('sscContainer').innerHTML = html || '<p style="color:var(--muted);">No SSC data loaded. Click "Reset Syllabus" to load default.</p>';
+    }
+
+    window.addSSCChapter = (ti, si) => {
+      const inp = document.getElementById(`sscAdd_${ti}_${si}`);
+      const txt = inp?.value.trim();
+      if (!txt) return;
+      if (!sscData.tiers[ti].sections[si].chapters) sscData.tiers[ti].sections[si].chapters = [];
+      sscData.tiers[ti].sections[si].chapters.push({ text: txt, completed: false, timeMin: 0, revision: false });
+      saveAll(); renderSSC();
+    };
+    window.togSSCChapter = (ti, si, ci) => {
+      sscData.tiers[ti].sections[si].chapters[ci].completed = !sscData.tiers[ti].sections[si].chapters[ci].completed;
+      saveAll(); renderSSC();
+    };
+    window.upSSCTime = (ti, si, ci, v) => {
+      sscData.tiers[ti].sections[si].chapters[ci].timeMin = parseInt(v) || 0;
+      saveAll();
+    };
+    window.togSSCRev = (ti, si, ci) => {
+      sscData.tiers[ti].sections[si].chapters[ci].revision = !sscData.tiers[ti].sections[si].chapters[ci].revision;
+      saveAll(); renderSSC();
+    };
+
+    // ==================== ENGLISH & SKILLS ====================
+    function renderEnglish() {
+      const ws = document.getElementById('engWeekStart')?.value || getMonday(today());
+      const topics = engData[ws] || [];
+      document.getElementById('englishContainer').innerHTML = `
+        <div class="flex-row">
+          <input type="date" id="engWeekStart" class="input-field" value="${ws}" onchange="renderEnglish()">
+          <button class="btn btn-outline btn-sm" onclick="chEngWeek(-7)">◀</button>
+          <button class="btn btn-outline btn-sm" onclick="chEngWeek(7)">▶</button>
+        </div>
+        <div class="flex-row">
+          <input type="text" id="engTopicInput" placeholder="Topic" class="input-field">
+          <button class="btn btn-sm" onclick="addEngTopic()">➕</button>
+        </div>
+        ${topics.map(t => `
+          <div class="card" style="padding:10px;">
+            <div class="flex-row">
+              <input type="checkbox" ${t.completed?'checked':''} onchange="togEngTopic('${ws}',${t.id})"><strong>${t.text}</strong>
+            </div>
+            <div class="flex-row">
+              <input type="text" id="engSub_${t.id}" placeholder="Sub-activity" class="input-field">
+              <button class="btn btn-sm" onclick="addEngSub('${ws}',${t.id})">+</button>
+            </div>
+            ${(t.subTopics||[]).map((st,i) => `<div class="flex-row">• ${st.text} <input type="number" value="${st.timeMin||0}" class="input-field" style="width:55px;" onchange="upEngSub('${ws}',${t.id},${i},this.value)">min</div>`).join('')}
+          </div>`).join('')}`;
+    }
+    window.addEngTopic = () => {
+      const w = document.getElementById('engWeekStart')?.value;
+      const txt = document.getElementById('engTopicInput')?.value.trim();
+      if (!w || !txt) return;
+      if (!engData[w]) engData[w] = [];
+      engData[w].push({ id: Date.now(), text: txt, completed: false, subTopics: [] });
+      saveAll(); renderEnglish();
+    };
+    window.togEngTopic = (w, id) => {
+      const t = (engData[w] || []).find(x => x.id === id);
+      if (t) { t.completed = !t.completed; saveAll(); renderEnglish(); }
+    };
+    window.addEngSub = (w, tid) => {
+      const inp = document.getElementById(`engSub_${tid}`);
+      const txt = inp?.value.trim();
+      if (!txt) return;
+      const t = (engData[w] || []).find(x => x.id === tid);
+      if (t) { t.subTopics.push({ text: txt, timeMin: 0 }); saveAll(); renderEnglish(); }
+    };
+    window.upEngSub = (w, tid, i, v) => {
+      const t = (engData[w] || []).find(x => x.id === tid);
+      if (t?.subTopics[i]) { t.subTopics[i].timeMin = parseInt(v) || 0; saveAll(); }
+    };
+    window.chEngWeek = o => {
+      const el = document.getElementById('engWeekStart');
+      const d = new Date(el.value);
+      d.setDate(d.getDate() + o);
+      el.value = d.toISOString().split('T')[0];
+      renderEnglish();
+    };
+
+    function renderSkills() {
+      document.getElementById('skillsContainer').innerHTML = `
+        <div class="flex-row">
+          <input type="text" id="newSkillName" placeholder="Skill name" class="input-field">
+          <button class="btn btn-sm" onclick="addSkill()">Add Skill</button>
+        </div>
+        ${skills.map(s => `
+          <div class="card" style="padding:10px;">
+            <strong>${s.name}</strong>
+            <button class="btn btn-sm btn-danger" style="float:right;" onclick="delSkill('${s.name}')">Delete</button>
+            <div class="flex-row">
+              <input type="text" id="skTask_${s.name}" placeholder="Task" class="input-field">
+              <button class="btn btn-sm" onclick="addSkTask('${s.name}')">+</button>
+            </div>
+            ${(s.tasks||[]).map(t => `
+              <div class="flex-row">
+                <input type="checkbox" ${t.completed?'checked':''} onchange="togSkTask('${s.name}',${t.id})">${t.text}
+                <input type="number" value="${t.timeMin||0}" class="input-field" style="width:55px;" onchange="upSkTime('${s.name}',${t.id},this.value)">min
+              </div>`).join('')}
+          </div>`).join('')}`;
+    }
+    window.addSkill = () => {
+      const n = document.getElementById('newSkillName')?.value.trim();
+      if (n && !skills.find(s => s.name === n)) { skills.push({ name: n, tasks: [] }); saveAll(); renderSkills(); }
+    };
+    window.delSkill = n => { skills = skills.filter(s => s.name !== n); saveAll(); renderSkills(); };
+    window.addSkTask = n => {
+      const inp = document.getElementById(`skTask_${n}`);
+      const txt = inp?.value.trim();
+      if (!txt) return;
+      const sk = skills.find(s => s.name === n);
+      if (sk) { sk.tasks.push({ id: Date.now(), text: txt, completed: false, timeMin: 0 }); saveAll(); renderSkills(); }
+    };
+    window.togSkTask = (n, id) => {
+      const sk = skills.find(s => s.name === n);
+      if (sk) { const t = sk.tasks.find(x => x.id === id); if (t) { t.completed = !t.completed; saveAll(); renderSkills(); } }
+    };
+    window.upSkTime = (n, id, v) => {
+      const sk = skills.find(s => s.name === n);
+      if (sk) { const t = sk.tasks.find(x => x.id === id); if (t) { t.timeMin = parseInt(v) || 0; saveAll(); } }
+    };
+
+    // ==================== REVISION VAULT ====================
+    function toggleRevView() { revViewMode = revViewMode === 'list' ? 'flashcard' : 'list'; renderRevision(); }
+    function showAddRevForm() { document.getElementById('revAddForm').style.display = 'block'; }
+    function previewRevImage() {
+      const file = document.getElementById('revImage').files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          document.getElementById('revImagePreview').src = e.target.result;
+          document.getElementById('revImagePreview').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+    function addRevisionItem() {
+      const course = document.getElementById('revCourse').value;
+      const subject = document.getElementById('revSubject').value.trim();
+      const topic = document.getElementById('revTopic').value.trim();
+      if (!subject || !topic) return;
+      revisionItems.push({
+        id: Date.now(), course, subject, topic,
+        notes: document.getElementById('revNotes').value,
+        cardType: document.getElementById('revCardType').value,
+        status: document.getElementById('revStatus').value,
+        doubt: document.getElementById('revDoubt').checked,
+        image: document.getElementById('revImagePreview').style.display !== 'none' ? document.getElementById('revImagePreview').src : null,
+        addedDate: today()
+      });
+      saveAll(); renderRevision();
+      document.getElementById('revAddForm').style.display = 'none';
+      document.getElementById('revSubject').value = '';
+      document.getElementById('revTopic').value = '';
+      document.getElementById('revNotes').value = '';
+      document.getElementById('revImagePreview').style.display = 'none';
+    }
+
+    function renderRevision() {
+      const listContainer = document.getElementById('revisionContainer');
+      const flashContainer = document.getElementById('flashcardContainer');
+      if (revViewMode === 'list') {
+        if (flashContainer) flashContainer.style.display = 'none';
+        if (listContainer) listContainer.style.display = 'block';
+        listContainer.innerHTML = revisionItems.map(r => `
+          <div class="revision-card">
+            <strong>[${r.course}] ${r.subject} - ${r.topic}</strong>
+            <div class="flex-row" style="font-size:0.8rem;color:var(--muted);">
+              Status: <select onchange="updateRevStatus(${r.id},this.value)" class="input-field" style="padding:4px 8px;font-size:0.7rem;">
+                <option ${r.status=='Not Started'?'selected':''}>Not Started</option>
+                <option ${r.status=='Learning'?'selected':''}>Learning</option>
+                <option ${r.status=='Revised'?'selected':''}>Revised</option>
+                <option ${r.status=='Mastered'?'selected':''}>Mastered</option>
+              </select>
+              ${r.doubt?'<span style="color:var(--red);">❗ Doubt</span>':''}
+            </div>
+            ${r.notes?`<p style="margin-top:6px;white-space:pre-wrap;">${r.notes}</p>`:''}
+            ${r.image?`<img src="${r.image}" style="max-width:150px;border-radius:8px;margin-top:6px;">`:''}
+            <button class="btn btn-sm btn-danger" onclick="delRev(${r.id})" style="float:right;">🗑️</button>
+          </div>`).join('') || '<p style="color:var(--muted);">No revision items. Add manually.</p>';
+      } else {
+        if (listContainer) listContainer.style.display = 'none';
+        if (flashContainer) flashContainer.style.display = 'block';
+        if (revisionItems.length === 0) { flashContainer.innerHTML = '<p>No cards</p>'; return; }
+        revFlashIndex = Math.min(revFlashIndex, revisionItems.length - 1);
+        const item = revisionItems[revFlashIndex];
+        flashContainer.innerHTML = `
+          <div class="flex-row" style="justify-content:center;">
+            <button class="btn btn-sm" onclick="prevFlashcard()">◀</button>
+            <span>${revFlashIndex+1}/${revisionItems.length}</span>
+            <button class="btn btn-sm" onclick="nextFlashcard()">▶</button>
+          </div>
+          <div class="flashcard" id="flashcardMain" onclick="this.classList.toggle('flipped')">
+            <div class="flashcard-inner">
+              <div class="flashcard-front"><h4>${item.topic}</h4><p>${item.course} - ${item.subject}</p></div>
+              <div class="flashcard-back"><p>${item.notes||'No answer'}</p></div>
+            </div>
+          </div>`;
+      }
+    }
+    window.updateRevStatus = (id, status) => {
+      const r = revisionItems.find(x => x.id === id);
+      if (r) { r.status = status; saveAll(); renderRevision(); }
+    };
+    window.delRev = (id) => { revisionItems = revisionItems.filter(r => r.id !== id); saveAll(); renderRevision(); };
+    window.prevFlashcard = () => { if (revFlashIndex > 0) revFlashIndex--; renderRevision(); };
+    window.nextFlashcard = () => { if (revFlashIndex < revisionItems.length - 1) revFlashIndex++; renderRevision(); };
+
+    // ==================== ANALYTICS ====================
+    function destroyCharts() { Object.values(charts).forEach(c => { try { c.destroy(); } catch (e) {} }); charts = {}; }
+    function setAnalyticsWeek() {
+      document.getElementById('analyticsStart').value = getMonday(today());
+      document.getElementById('analyticsEnd').value = today();
+      renderAnalytics();
+    }
+
+    function renderAnalytics() {
+      destroyCharts();
+      const start = document.getElementById('analyticsStart')?.value || (() => { const d = new Date(); d.setDate(d.getDate() - 7); return d.toISOString().split('T')[0]; })();
+      const end = document.getElementById('analyticsEnd')?.value || today();
+      const dates = [];
+      for (let d = new Date(start); d <= new Date(end); d.setDate(d.getDate() + 1)) dates.push(d.toISOString().split('T')[0]);
+
+      const labels = dates.map(d => new Date(d).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }));
+      const plannedHrs = dates.map(d => (plans[d] || []).reduce((a, t) => a + t.plannedMin, 0) / 60);
+      const actualHrs = dates.map(d => {
+        const pa = (plans[d] || []).reduce((a, t) => a + (t.actualMin || 0), 0);
+        const ss = sessions.filter(s => s.date === d).reduce((a, s) => a + s.durationMin, 0);
+        return (pa + ss) / 60;
+      });
+
+      const subjectTime = {};
+      dates.forEach(d => { (plans[d] || []).forEach(t => { subjectTime[t.subject] = (subjectTime[t.subject] || 0) + (t.actualMin || 0); }); });
+
+      // Bar chart
+      const barCtx = document.getElementById('chartBar')?.getContext('2d');
+      if (barCtx) charts.bar = new Chart(barCtx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [
+            { label: 'Planned', data: plannedHrs, backgroundColor: 'rgba(124,58,237,0.6)', borderColor: '#7c3aed', borderWidth: 1, borderRadius: 4 },
+            { label: 'Actual', data: actualHrs, backgroundColor: 'rgba(16,185,129,0.6)', borderColor: '#10b981', borderWidth: 1, borderRadius: 4 }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { labels: { color: '#cbd5e1' } } },
+          scales: { x: { ticks: { color: '#94a3b8', maxRotation: 45 } }, y: { ticks: { color: '#94a3b8' } } }
+        }
+      });
+
+      // Pie chart
+      const pieCtx = document.getElementById('chartPie')?.getContext('2d');
+      if (pieCtx) {
+        const entries = Object.entries(subjectTime).sort((a, b) => b[1] - a[1]).slice(0, 8);
+        if (entries.length === 0) entries.push(['No Data', 1]);
+        charts.pie = new Chart(pieCtx, {
+          type: 'doughnut',
+          data: {
+            labels: entries.map(e => e[0]),
+            datasets: [{ data: entries.map(e => e[1] / 60), backgroundColor: ['#7c3aed', '#10b981', '#f59e0b', '#06b6d4', '#ef4444', '#a78bfa', '#ec4899', '#84cc16'], borderColor: '#1a1a3a', borderWidth: 2 }]
+          },
+          options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', padding: 10 } } } }
+        });
+      }
+
+      // Area chart
+      const areaCtx = document.getElementById('chartArea')?.getContext('2d');
+      if (areaCtx) {
+        let cum = 0;
+        const cumData = dates.map((d, i) => { cum += actualHrs[i]; return parseFloat(cum.toFixed(1)); });
+        charts.area = new Chart(areaCtx, {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [{ label: 'Cumulative Hours', data: cumData, fill: true, backgroundColor: 'rgba(6,182,212,0.2)', borderColor: '#06b6d4', borderWidth: 2, tension: 0.4, pointRadius: 3, pointBackgroundColor: '#06b6d4' }]
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { labels: { color: '#cbd5e1' } } },
+            scales: { x: { ticks: { color: '#94a3b8', maxRotation: 45 } }, y: { ticks: { color: '#94a3b8' } } }
+          }
+        });
+      }
+
+      // Analytics table
+      document.getElementById('analyticsTable').innerHTML = `<table><tr><th>Date</th><th>Planned</th><th>Actual</th><th>Gap</th><th>Accuracy</th></tr>
+        ${dates.map((d,i) => {
+          const gap = actualHrs[i] - plannedHrs[i];
+          const acc = plannedHrs[i] > 0 ? Math.round((actualHrs[i]/plannedHrs[i])*100) : (actualHrs[i] > 0 ? 100 : 0);
+          return `<tr>
+            <td>${d}</td>
+            <td>${plannedHrs[i].toFixed(1)}h</td>
+            <td>${actualHrs[i].toFixed(1)}h</td>
+            <td style="color:${gap>=0?'var(--green)':'var(--red)'}">${gap>0?'+':''}${gap.toFixed(1)}h</td>
+            <td>${acc}%</td>
+          </tr>`;
+        }).join('')}</table>`;
+    }
+
+    // ==================== EXPORT ====================
+    function exportReport() {
+      const month = parseInt(document.getElementById('exportMonth')?.value || 0);
+      const year = parseInt(document.getElementById('exportYear')?.value || 2026);
+      const prefix = `${year}-${String(month+1).padStart(2,'0')}`;
+      const wb = XLSX.utils.book_new();
+
+      const pRows = [];
+      Object.entries(plans).forEach(([d, tasks]) => {
+        if (d.startsWith(prefix)) tasks.forEach(t => pRows.push({
+          Date: d, Subject: t.subject,
+          'Planned(hrs)': (t.plannedMin / 60).toFixed(2),
+          'Actual(hrs)': ((t.actualMin || 0) / 60).toFixed(2),
+          Gap: (((t.actualMin || 0) - t.plannedMin) / 60).toFixed(2),
+          Completed: t.completed ? 'Yes' : 'No'
+        }));
+      });
+      if (pRows.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(pRows), 'Planner');
+
+      const sRows = sessions.filter(s => s.date.startsWith(prefix)).map(s => ({
+        Date: s.date, Task: s.task, 'Duration(hrs)': (s.durationMin / 60).toFixed(2)
+      }));
+      if (sRows.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(sRows), 'Sessions');
+
+      XLSX.writeFile(wb, `StudyReport_${year}_${String(month+1).padStart(2,'0')}.xlsx`);
+    }
+
+    // ==================== SETTINGS ====================
+    async function syncNow() { await saveCloud(); await loadCloud(); refreshAll(); alert('✅ Synced!'); }
+    async function testConnection() {
+      const d = await db.collection('users').doc(UID).get();
+      alert(d.exists ? '✅ Connected!' : '✅ Ready');
+    }
+
+    // ==================== INITIALIZATION ====================
+    async function initApp() {
+      loadLocal();
+      await loadCloud();
+      saveLocal();
+
+      // Sidebar navigation clicks
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          switchTab(this.getAttribute('data-tab'));
+        });
+      });
+
+      // Set default dates
+      document.getElementById('planDate').value = today();
+      document.getElementById('analyticsEnd').value = today();
+      const st = new Date(); st.setDate(st.getDate() - 7);
+      document.getElementById('analyticsStart').value = st.toISOString().split('T')[0];
+      document.getElementById('exportMonth').value = new Date().getMonth();
+      document.getElementById('engWeekStart').value = getMonday(today());
+
+      // Start clock
+      updateClock();
+      setInterval(updateClock, 1000);
+
+      // Render all tabs initially
+      loadPlanner();
+      renderDashboard();
+      renderBCA();
+      renderSSC();
+      renderEnglish();
+      renderSkills();
+      renderRevision();
+      populateTimerSelect();
+      updateTimerDisplay();
+      if (timerState.running) {
+        timerInterval = setInterval(updateTimerDisplay, 1000);
+      }
+
+      // Real‑time Firestore listener
+      db.collection('users').doc(UID).onSnapshot(doc => {
+        if (doc.exists && !doc.metadata.hasPendingWrites) {
+          const d = doc.data();
+          if (d.plans) plans = d.plans;
+          if (d.sessions) sessions = d.sessions;
+          if (d.bcaData) bcaData = d.bcaData;
+          if (d.sscData) sscData = d.sscData;
+          if (d.engData) engData = d.engData;
+          if (d.skills) skills = d.skills;
+          if (d.revisionItems) revisionItems = d.revisionItems;
+          saveLocal();
+          refreshAll();
+          document.getElementById('syncDot').className = 'sync-dot online';
+          document.getElementById('syncText').textContent = 'Synced';
+        }
+      });
+
+      // Auto‑save to cloud every minute
+      setInterval(() => saveCloud(), 60000);
+      console.log('✅ StudyHub Pro Max Ready – No AI, just pure study tools.');
+    }
+
+    // Expose global functions (so HTML onclick works)
+    window.startTimerForTask = startTimerForTask;
+    window.pauseTimer = pauseTimer;
+    window.stopTimer = stopTimer;
+    window.renderAnalytics = renderAnalytics;
+    window.setAnalyticsWeek = setAnalyticsWeek;
+    window.exportReport = exportReport;
+    window.syncNow = syncNow;
+    window.testConnection = testConnection;
+
+    // Start the app
+    initApp();
+  </script>
 </body>
 </html>
