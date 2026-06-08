@@ -186,18 +186,52 @@
   let timerState = JSON.parse(localStorage.getItem(STORAGE.TIMER)) || { taskId:null, running:false, lastStart:null };
   let accumulatedMap = JSON.parse(localStorage.getItem(STORAGE.ACCUMULATED)) || {};
   let timerInterval = null;
+  async function loadCloudData() {
 
-  function saveAll() {
-    localStorage.setItem(STORAGE.PLANS, JSON.stringify(plans));
-    localStorage.setItem(STORAGE.SESSIONS, JSON.stringify(sessions));
-    localStorage.setItem(STORAGE.BCA, JSON.stringify(bcaData));
-    localStorage.setItem(STORAGE.SSC, JSON.stringify(sscData));
-    localStorage.setItem(STORAGE.ENG, JSON.stringify(engData));
-    localStorage.setItem(STORAGE.SKILLS, JSON.stringify(skills));
-    localStorage.setItem(STORAGE.REVISION, JSON.stringify(revisionItems));
-    localStorage.setItem(STORAGE.TIMER, JSON.stringify(timerState));
-    localStorage.setItem(STORAGE.ACCUMULATED, JSON.stringify(accumulatedMap));
-  }
+  const snap = await getDoc(doc(db, "studyhub", "nemi"));
+
+  if (!snap.exists()) return;
+
+  const data = snap.data();
+
+  plans = data.plans || plans;
+  sessions = data.sessions || sessions;
+  bcaData = data.bcaData || bcaData;
+  sscData = data.sscData || sscData;
+  engData = data.engData || engData;
+  skills = data.skills || skills;
+  revisionItems = data.revisionItems || revisionItems;
+  timerState = data.timerState || timerState;
+  accumulatedMap = data.accumulatedMap || accumulatedMap;
+
+  console.log("Cloud Data Loaded 🚀");
+}
+
+  async function saveAll() {
+
+  localStorage.setItem(STORAGE.PLANS, JSON.stringify(plans));
+  localStorage.setItem(STORAGE.SESSIONS, JSON.stringify(sessions));
+  localStorage.setItem(STORAGE.BCA, JSON.stringify(bcaData));
+  localStorage.setItem(STORAGE.SSC, JSON.stringify(sscData));
+  localStorage.setItem(STORAGE.ENG, JSON.stringify(engData));
+  localStorage.setItem(STORAGE.SKILLS, JSON.stringify(skills));
+  localStorage.setItem(STORAGE.REVISION, JSON.stringify(revisionItems));
+  localStorage.setItem(STORAGE.TIMER, JSON.stringify(timerState));
+  localStorage.setItem(STORAGE.ACCUMULATED, JSON.stringify(accumulatedMap));
+
+  await setDoc(doc(db, "studyhub", "nemi"), {
+    plans,
+    sessions,
+    bcaData,
+    sscData,
+    engData,
+    skills,
+    revisionItems,
+    timerState,
+    accumulatedMap,
+    updatedAt: Date.now()
+  });
+}
 
   const today = () => new Date().toISOString().split('T')[0];
   const formatTime = (totalMin) => { const h=Math.floor(totalMin/60), m=totalMin%60; return `${h}h ${m}m`; };
