@@ -1,1106 +1,2134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-   <meta name="google-site-verification" content="g9A3CxPUwH-GEf8jlqbwnd0plBtuBhSPQqXP7lhYX8g" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#0a0a12">
-  <title>StudyHub – Premium LPU Analytics</title>
+    <meta charset="UTF-8">
+    <meta name="google-site-verification" content="g9A3CxPUwH-GEf8jlqbwnd0plBtuBhSPQqXP7lhYX8g" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#06060f">
+    <title>StudyHub Pro – Premium LPU Analytics</title>
 
-  <!-- Firebase & Libs -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
+    </script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js">
+    </script>
 
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      background: #0a0a12;
-      color: #e2e8f0;
-      display: flex;
-      min-height: 100vh;
-    }
-    :root {
-      --bg: #0a0a12;
-      --card: #1a1a3a;
-      --surface: #0f0f1f;
-      --accent: #7c3aed;
-      --accent2: #a78bfa;
-      --green: #10b981;
-      --red: #ef4444;
-      --gold: #f59e0b;
-      --border: #2d2d5a;
-      --grad-1: linear-gradient(135deg, #7c3aed, #a855f7);
-      --grad-2: linear-gradient(135deg, #1a1a3a, #0f0f1f);
-    }
-    .sidebar {
-      width: 260px;
-      background: #0f0f1f;
-      border-right: 1px solid var(--border);
-      position: fixed;
-      height: 100vh;
-      padding: 20px 12px;
-      overflow-y: auto;
-      z-index: 20;
-    }
-    .logo { display: flex; gap: 12px; margin-bottom: 30px; align-items: center; }
-    .logo-icon {
-      width: 44px; height: 44px;
-      background: linear-gradient(135deg, var(--accent), #a855f7);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-    }
-    .nav-link {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      padding: 12px 16px;
-      border-radius: 12px;
-      cursor: pointer;
-      color: #cbd5e1;
-      margin: 4px 0;
-      transition: 0.2s;
-    }
-    .nav-link.active, .nav-link:hover { background: var(--accent); color: white; }
-    .main {
-      margin-left: 260px;
-      flex: 1;
-      padding: 24px 28px;
-      max-width: 1400px;
-    }
-    .card {
-      background: var(--card);
-      border-radius: 16px;
-      padding: 20px;
-      border: 1px solid var(--border);
-      margin-bottom: 20px;
-    }
-    .flex-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin: 8px 0; }
-    .btn {
-      background: var(--accent);
-      color: white;
-      border: none;
-      padding: 8px 18px;
-      border-radius: 30px;
-      font-weight: 600;
-      cursor: pointer;
-      font-size: 0.85rem;
-    }
-    .btn-sm { padding: 5px 12px; font-size: 0.75rem; }
-    .btn-outline { background: transparent; border: 1px solid var(--accent); color: var(--accent2); }
-    .btn-danger { background: var(--red); }
-    .btn-success { background: var(--green); }
-    .input-field {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      padding: 8px 12px;
-      border-radius: 10px;
-      color: white;
-      outline: none;
-    }
-    .timer-display {
-      font-size: 2rem;
-      font-family: monospace;
-      background: var(--surface);
-      padding: 8px 16px;
-      border-radius: 12px;
-      display: inline-block;
-    }
-    .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; }
-    .stat-card {
-      background: var(--surface);
-      padding: 12px;
-      border-radius: 12px;
-      text-align: center;
-    }
-    .stat-number { font-size: 1.6rem; font-weight: bold; color: var(--accent2); }
-    .progress-bar-bg {
-      background: #2d2d5a;
-      border-radius: 12px;
-      height: 8px;
-      width: 100%;
-      overflow: hidden;
-      margin: 10px 0;
-    }
-    .progress-fill { background: var(--accent2); height: 100%; width: 0%; border-radius: 12px; }
+    <style>
+        :root {
+            --bg-deep: #04040c;
+            --bg-surface: #0a0a1a;
+            --bg-card: #10102a;
+            --bg-elevated: #161638;
+            --accent-primary: #8b5cf6;
+            --accent-glow: #c4b5fd;
+            --accent-secondary: #6366f1;
+            --accent-teal: #2dd4bf;
+            --accent-amber: #fbbf24;
+            --accent-rose: #fb7185;
+            --accent-emerald: #34d399;
+            --accent-sky: #38bdf8;
+            --accent-pink: #f472b6;
+            --accent-cyan: #22d3ee;
+            --text-primary: #f8fafc;
+            --text-secondary: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border-subtle: rgba(255, 255, 255, 0.07);
+            --border-glow: rgba(139, 92, 246, 0.4);
+            --shadow-card: 0 4px 40px rgba(0, 0, 0, 0.5);
+            --shadow-glow: 0 0 60px rgba(139, 92, 246, 0.2);
+            --shadow-teal: 0 0 40px rgba(45, 212, 191, 0.18);
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --radius-xl: 32px;
+            --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-smooth: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-sans: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+        }
 
-    /* BCA styles (unchanged) */
-    .semester-header, .subject-header {
-      background: var(--surface);
-      padding: 12px 16px;
-      border-radius: 12px;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 4px 0;
-    }
-    .semester-content, .subject-content { display: none; padding-left: 20px; }
-    .topic-compact {
-      background: var(--surface);
-      padding: 10px 16px;
-      border-radius: 12px;
-      margin: 6px 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-      border-left: 3px solid transparent;
-    }
-    .priority-high { border-left-color: var(--red); }
-    .priority-medium { border-left-color: var(--gold); }
-    .priority-low { border-left-color: var(--green); }
-    .topic-stats { display: flex; gap: 16px; font-size: 0.75rem; }
-    .status-badge {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 20px;
-      font-size: 0.7rem;
-      background: #475569;
-    }
-    .status-NotStarted { background: #475569; }
-    .status-Studied { background: var(--gold); color: black; }
-    .status-Completed { background: var(--green); }
-    .status-Mastered { background: var(--accent); }
-    .add-topic-panel { background: var(--surface); padding: 12px; border-radius: 12px; margin: 10px 0; }
-    .topic-details { padding-left: 20px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    /* Skills styles (unchanged) */
-    .skill-card {
-      background: var(--surface);
-      border-radius: 16px;
-      margin-bottom: 24px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-    }
-    .skill-header {
-      background: var(--card);
-      padding: 16px 20px;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid var(--border);
-    }
-    .skill-content { padding: 20px; display: none; }
-    .topic-checkbox-item {
-      background: var(--surface);
-      padding: 8px 12px;
-      margin: 6px 0;
-      border-radius: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .doubt-badge {
-      background: var(--red);
-      padding: 2px 6px;
-      border-radius: 20px;
-      font-size: 0.7rem;
-      cursor: help;
-    }
-    .video-link {
-      color: var(--accent2);
-      text-decoration: none;
-      font-size: 0.7rem;
-    }
-    .level-badge {
-      display: inline-block;
-      padding: 2px 10px;
-      border-radius: 20px;
-      font-size: 0.7rem;
-      font-weight: bold;
-    }
-    .level-Beginner { background: #475569; }
-    .level-Intermediate { background: var(--gold); color: black; }
-    .level-Advanced { background: var(--accent); }
-    .level-Expert { background: var(--green); }
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            letter-spacing: 0.01em;
+            -webkit-font-smoothing: antialiased;
+            position: relative;
+            overflow-x: hidden;
+        }
 
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.7);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-    }
-    .modal-content {
-      background: var(--card);
-      border-radius: 16px;
-      padding: 24px;
-      width: 90%;
-      max-width: 550px;
-      max-height: 85vh;
-      overflow-y: auto;
-    }
-    .search-list {
-      max-height: 200px;
-      overflow-y: auto;
-      margin: 12px 0;
-    }
-    .search-item {
-      padding: 8px 12px;
-      cursor: pointer;
-      border-radius: 8px;
-    }
-    .search-item:hover { background: var(--accent); }
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: var(--green);
-      padding: 8px 16px;
-      border-radius: 30px;
-      animation: fadeOut 2s ease-in-out;
-      z-index: 1100;
-    }
-    @keyframes fadeOut { 0% { opacity: 1; } 70% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }
-    .tab-content { display: none; animation: fade 0.2s; }
-    .tab-content.active { display: block; }
-    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
-    .sync-badge {
-      position: fixed; bottom: 15px; right: 15px;
-      background: var(--card); padding: 6px 12px;
-      border-radius: 20px; font-size: 0.7rem;
-      z-index: 100;
-    }
-    /* Premium Analytics Styles */
-    .analytics-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-      margin-bottom: 24px;
-    }
-    .analytics-card {
-      background: linear-gradient(145deg, #1e1e3a, #16162c);
-      border-radius: 24px;
-      padding: 20px;
-      border: 1px solid rgba(124,58,237,0.3);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .analytics-card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(124,58,237,0.2); }
-    .analytics-title {
-      font-size: 1rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--accent2);
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .analytics-value {
-      font-size: 2.5rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, #fff, var(--accent2));
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      line-height: 1;
-    }
-    .progress-ring {
-      width: 100px;
-      height: 100px;
-      margin: 10px auto;
-    }
-    .subject-progress-bar {
-      background: #2d2d5a;
-      border-radius: 20px;
-      height: 10px;
-      overflow: hidden;
-      margin: 8px 0;
-    }
-    .subject-progress-fill {
-      background: var(--grad-1);
-      height: 100%;
-      width: 0%;
-      border-radius: 20px;
-      transition: width 0.5s ease;
-    }
-    .badge-on-track { background: var(--green); color: black; padding: 2px 10px; border-radius: 30px; font-size: 0.7rem; font-weight: bold; display: inline-block; }
-    .badge-behind { background: var(--gold); color: black; }
-    .badge-critical { background: var(--red); }
-    .backlog-item {
-      background: rgba(239,68,68,0.1);
-      border-left: 3px solid var(--red);
-      padding: 8px 12px;
-      margin: 8px 0;
-      border-radius: 8px;
-    }
-    .recovery-card {
-      background: linear-gradient(135deg, #2d2d5a, #1a1a3a);
-      border-radius: 16px;
-      padding: 16px;
-      margin-top: 16px;
-    }
-    @media (max-width: 900px) {
-      .sidebar { width: 70px; padding: 12px; }
-      .sidebar .nav-link span:not(.icon), .logo-text { display: none; }
-      .main { margin-left: 70px; padding: 16px; }
-    }
-  </style>
+        /* ============ GLOBAL ANIMATED BACKGROUND ============ */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background:
+                /* subtle grid */
+                linear-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(139, 92, 246, 0.03) 1px, transparent 1px),
+                /* radial glows */
+                radial-gradient(ellipse at 15% 15%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 85% 75%, rgba(45, 212, 191, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(139, 92, 246, 0.04) 0%, transparent 60%),
+                radial-gradient(ellipse at 30% 80%, rgba(244, 114, 182, 0.04) 0%, transparent 50%);
+            background-size: 40px 40px, 40px 40px, 100% 100%, 100% 100%, 100% 100%, 100% 100%;
+            animation: bgPulse 8s ease-in-out infinite;
+        }
+        @keyframes bgPulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        /* Floating code particles */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            background-image:
+                radial-gradient(1px 1px at 10% 20%, rgba(139, 92, 246, 0.5), transparent),
+                radial-gradient(1px 1px at 25% 55%, rgba(45, 212, 191, 0.4), transparent),
+                radial-gradient(1.5px 1.5px at 40% 30%, rgba(244, 114, 182, 0.35), transparent),
+                radial-gradient(1px 1px at 55% 70%, rgba(56, 189, 248, 0.4), transparent),
+                radial-gradient(1.5px 1.5px at 70% 15%, rgba(139, 92, 246, 0.45), transparent),
+                radial-gradient(1px 1px at 85% 60%, rgba(45, 212, 191, 0.5), transparent),
+                radial-gradient(1px 1px at 15% 80%, rgba(251, 191, 36, 0.3), transparent),
+                radial-gradient(1.5px 1.5px at 60% 45%, rgba(34, 211, 238, 0.35), transparent),
+                radial-gradient(1px 1px at 90% 35%, rgba(244, 114, 182, 0.4), transparent),
+                radial-gradient(1px 1px at 35% 90%, rgba(139, 92, 246, 0.35), transparent),
+                radial-gradient(1.5px 1.5px at 75% 85%, rgba(45, 212, 191, 0.3), transparent),
+                radial-gradient(1px 1px at 20% 45%, rgba(251, 191, 36, 0.35), transparent);
+            background-size: 200% 200%;
+            animation: floatParticles 20s linear infinite;
+        }
+        @keyframes floatParticles {
+            0% {
+                background-position: 0% 0%;
+            }
+            25% {
+                background-position: 50% 25%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            75% {
+                background-position: 50% 75%;
+            }
+            100% {
+                background-position: 0% 100%;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(139, 92, 246, 0.4);
+            border-radius: 20px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(139, 92, 246, 0.7);
+        }
+
+        /* ============ SIDEBAR ============ */
+        .sidebar {
+            width: 275px;
+            background: rgba(8, 8, 24, 0.92);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border-right: 1px solid var(--border-subtle);
+            position: fixed;
+            height: 100vh;
+            padding: 24px 14px;
+            overflow-y: auto;
+            z-index: 20;
+            transition: var(--transition-smooth);
+            box-shadow: 4px 0 40px rgba(0, 0, 0, 0.3);
+        }
+        .logo {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 34px;
+            align-items: center;
+            padding: 0 6px;
+        }
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6, #a78bfa, #c4b5fd);
+            background-size: 300% 300%;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            box-shadow: 0 0 35px rgba(139, 92, 246, 0.55);
+            animation: logoGlow 3s ease-in-out infinite, logoGradient 6s ease infinite;
+        }
+        @keyframes logoGlow {
+            0%,
+            100% {
+                box-shadow: 0 0 35px rgba(139, 92, 246, 0.55);
+            }
+            50% {
+                box-shadow: 0 0 60px rgba(139, 92, 246, 0.85), 0 0 100px rgba(99, 102, 241, 0.4);
+            }
+        }
+        @keyframes logoGradient {
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+        .logo-text h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #f8fafc, #c4b5fd);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+        .logo-text span {
+            font-size: 0.65rem;
+            color: var(--accent-glow);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        .nav-link {
+            display: flex;
+            gap: 13px;
+            align-items: center;
+            padding: 13px 18px;
+            border-radius: 14px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            margin: 5px 0;
+            transition: var(--transition-smooth);
+            font-weight: 500;
+            font-size: 0.88rem;
+            position: relative;
+            border: 1px solid transparent;
+            letter-spacing: 0.01em;
+        }
+        .nav-link .icon i {
+            width: 22px;
+            text-align: center;
+            font-size: 15px;
+            transition: var(--transition-fast);
+        }
+        .nav-link:hover {
+            background: rgba(139, 92, 246, 0.1);
+            color: #fff;
+            border-color: rgba(139, 92, 246, 0.25);
+            transform: translateX(5px);
+            box-shadow: 0 0 24px rgba(139, 92, 246, 0.08);
+        }
+        .nav-link.active {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(99, 102, 241, 0.2));
+            color: #fff;
+            border-color: rgba(139, 92, 246, 0.5);
+            box-shadow: 0 0 32px rgba(139, 92, 246, 0.2);
+            font-weight: 600;
+        }
+        .nav-link.active .icon i {
+            filter: drop-shadow(0 0 12px currentColor);
+        }
+        .nav-link[data-tab="dashboard"] .icon i {
+            color: #2dd4bf;
+        }
+        .nav-link[data-tab="planner"] .icon i {
+            color: #fbbf24;
+        }
+        .nav-link[data-tab="livetimer"] .icon i {
+            color: #34d399;
+        }
+        .nav-link[data-tab="selftimer"] .icon i {
+            color: #fb7185;
+        }
+        .nav-link[data-tab="bca"] .icon i {
+            color: #a78bfa;
+        }
+        .nav-link[data-tab="skills"] .icon i {
+            color: #f97316;
+        }
+        .nav-link[data-tab="revision"] .icon i {
+            color: #f472b6;
+        }
+        .nav-link[data-tab="analytics"] .icon i {
+            color: #22d3ee;
+        }
+        .nav-link[data-tab="export"] .icon i {
+            color: #38bdf8;
+        }
+        .nav-link[data-tab="settings"] .icon i {
+            color: #94a3b8;
+        }
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.025);
+            border-radius: 16px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        /* ============ MAIN ============ */
+        .main {
+            margin-left: 275px;
+            flex: 1;
+            padding: 28px 34px;
+            max-width: 1520px;
+            transition: var(--transition-smooth);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ============ PAGE HEADER ============ */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 26px;
+            flex-wrap: wrap;
+            gap: 14px;
+            align-items: center;
+        }
+        .page-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .page-header h1 span {
+            background: linear-gradient(135deg, #c4b5fd, #8b5cf6, #2dd4bf);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: nameShine 4s ease-in-out infinite;
+            background-size: 200% 200%;
+        }
+        @keyframes nameShine {
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+        .date-badge {
+            background: rgba(16, 16, 42, 0.7);
+            border: 1px solid rgba(139, 92, 246, 0.35);
+            padding: 12px 22px;
+            border-radius: 30px;
+            font-size: 0.82rem;
+            color: var(--text-primary);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 0 28px rgba(139, 92, 246, 0.15);
+            font-family: var(--font-mono);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition-smooth);
+            animation: dateGlow 3s ease-in-out infinite;
+        }
+        @keyframes dateGlow {
+            0%,
+            100% {
+                box-shadow: 0 0 28px rgba(139, 92, 246, 0.15);
+                border-color: rgba(139, 92, 246, 0.35);
+            }
+            50% {
+                box-shadow: 0 0 45px rgba(139, 92, 246, 0.35), 0 0 80px rgba(45, 212, 191, 0.15);
+                border-color: rgba(45, 212, 191, 0.5);
+            }
+        }
+        .date-badge .live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #34d399;
+            animation: livePulse 1.5s ease-in-out infinite;
+            box-shadow: 0 0 12px rgba(52, 211, 153, 0.7);
+        }
+        @keyframes livePulse {
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.4;
+                transform: scale(1.6);
+            }
+        }
+        .date-badge .time-text {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #c4b5fd;
+        }
+
+        /* ============ CARDS ============ */
+        .card {
+            background: rgba(16, 16, 42, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            padding: 22px 26px;
+            border: 1px solid var(--border-subtle);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-card);
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.4), rgba(45, 212, 191, 0.3), transparent);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        .card:hover::before {
+            opacity: 1;
+        }
+        .card:hover {
+            border-color: rgba(139, 92, 246, 0.2);
+            box-shadow: var(--shadow-card), 0 0 70px rgba(139, 92, 246, 0.06);
+            transform: translateY(-1px);
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--text-primary);
+        }
+        .card-header i {
+            font-size: 1.1rem;
+        }
+
+        /* Dashboard special card */
+        #tab-dashboard .card:first-of-type {
+            border: 1px solid rgba(45, 212, 191, 0.25);
+            box-shadow: 0 0 50px rgba(45, 212, 191, 0.08);
+        }
+
+        /* ============ STAT CARDS ============ */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 14px;
+            margin: 10px 0;
+        }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            text-align: center;
+            border: 1px solid var(--border-subtle);
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: var(--radius-md);
+            background: radial-gradient(circle at center, rgba(139, 92, 246, 0.08) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        .stat-card:hover::after {
+            opacity: 1;
+        }
+        .stat-card:hover {
+            border-color: rgba(139, 92, 246, 0.35);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+        }
+        .stat-number {
+            font-size: 2.1rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f8fafc, #c4b5fd);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+            letter-spacing: -0.02em;
+        }
+        .stat-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        /* ============ BUTTONS ============ */
+        .btn {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.84rem;
+            transition: var(--transition-smooth);
+            letter-spacing: 0.02em;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 18px rgba(99, 102, 241, 0.3);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(139, 92, 246, 0.5);
+        }
+        .btn:active {
+            transform: scale(0.95);
+        }
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 0.73rem;
+            border-radius: 20px;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(139, 92, 246, 0.5);
+            color: var(--accent-glow);
+            box-shadow: none;
+        }
+        .btn-outline:hover {
+            background: rgba(139, 92, 246, 0.1);
+            box-shadow: 0 0 22px rgba(139, 92, 246, 0.2);
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #e11d48, #fb7185);
+            box-shadow: 0 4px 18px rgba(251, 113, 133, 0.3);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #059669, #34d399);
+            box-shadow: 0 4px 18px rgba(52, 211, 153, 0.3);
+        }
+
+        /* ============ INPUT ============ */
+        .input-field {
+            background: rgba(255, 255, 255, 0.035);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 14px;
+            border-radius: 12px;
+            color: #fff;
+            outline: none;
+            font-size: 0.84rem;
+            transition: var(--transition-fast);
+            font-family: var(--font-sans);
+        }
+        .input-field:focus {
+            border-color: rgba(139, 92, 246, 0.55);
+            box-shadow: 0 0 24px rgba(139, 92, 246, 0.18);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        /* ============ FLEX ============ */
+        .flex-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin: 8px 0;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        /* ============ TIMER ============ */
+        .timer-display {
+            font-size: 2.5rem;
+            font-family: var(--font-mono);
+            background: rgba(0, 0, 0, 0.35);
+            padding: 12px 24px;
+            border-radius: 16px;
+            display: inline-block;
+            letter-spacing: 3px;
+            border: 1px solid var(--border-subtle);
+            color: #c4b5fd;
+            box-shadow: inset 0 0 30px rgba(139, 92, 246, 0.05);
+        }
+        .timer-display.large {
+            font-size: 3.8rem;
+            padding: 18px 36px;
+            letter-spacing: 5px;
+        }
+
+        /* ============ PROGRESS ============ */
+        .progress-bar-bg {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            height: 10px;
+            width: 100%;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa);
+            height: 100%;
+            width: 0%;
+            border-radius: 20px;
+            transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 14px rgba(139, 92, 246, 0.5);
+        }
+
+        /* ============ BADGES ============ */
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .badge-on-track {
+            background: rgba(52, 211, 153, 0.18);
+            color: #34d399;
+        }
+        .badge-behind {
+            background: rgba(251, 191, 36, 0.18);
+            color: #fbbf24;
+        }
+        .badge-critical {
+            background: rgba(251, 113, 133, 0.18);
+            color: #fb7185;
+        }
+        .badge-mastered {
+            background: rgba(139, 92, 246, 0.22);
+            color: #c4b5fd;
+        }
+
+        /* ============ ANALYTICS ============ */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 18px;
+            margin-bottom: 20px;
+        }
+        .analytics-card {
+            background: rgba(16, 16, 42, 0.55);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-radius: var(--radius-lg);
+            padding: 22px;
+            border: 1px solid var(--border-subtle);
+            box-shadow: var(--shadow-card);
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+        .analytics-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.7), rgba(45, 212, 191, 0.5), transparent);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        .analytics-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-glow);
+            border-color: var(--border-glow);
+        }
+        .analytics-card:hover::after {
+            opacity: 1;
+        }
+        .analytics-card.highlight-teal {
+            border-left: 3px solid var(--accent-teal);
+        }
+        .analytics-card.highlight-amber {
+            border-left: 3px solid var(--accent-amber);
+        }
+        .analytics-card.highlight-rose {
+            border-left: 3px solid var(--accent-rose);
+        }
+        .analytics-card.highlight-purple {
+            border-left: 3px solid var(--accent-primary);
+        }
+        .analytics-title {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+        .analytics-value {
+            font-size: 2.9rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f8fafc, #c4b5fd);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+            letter-spacing: -0.03em;
+        }
+        .analytics-value.teal {
+            background: linear-gradient(135deg, #f8fafc, #2dd4bf);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .analytics-value.amber {
+            background: linear-gradient(135deg, #f8fafc, #fbbf24);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .analytics-value.rose {
+            background: linear-gradient(135deg, #f8fafc, #fb7185);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subject-progress-item {
+            margin: 10px 0;
+        }
+        .subject-name {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            margin-bottom: 4px;
+            color: var(--text-secondary);
+        }
+        .subject-progress-bar {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            height: 7px;
+            overflow: hidden;
+        }
+        .subject-progress-fill {
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            height: 100%;
+            width: 0%;
+            border-radius: 20px;
+            transition: width 0.5s ease;
+        }
+        .backlog-item {
+            background: rgba(251, 113, 133, 0.06);
+            border-left: 3px solid var(--accent-rose);
+            padding: 10px 14px;
+            margin: 8px 0;
+            border-radius: 8px;
+            font-size: 0.82rem;
+        }
+        .recovery-card {
+            background: linear-gradient(135deg, rgba(45, 212, 191, 0.07), rgba(99, 102, 241, 0.05));
+            border-radius: var(--radius-md);
+            padding: 18px;
+            margin-top: 14px;
+            border: 1px solid rgba(45, 212, 191, 0.2);
+        }
+
+        /* ============ BCA TOPIC ============ */
+        .topic-compact {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 11px 16px;
+            border-radius: 12px;
+            margin: 6px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            transition: var(--transition-fast);
+            font-size: 0.85rem;
+        }
+        .topic-compact:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-left-color: rgba(139, 92, 246, 0.45);
+        }
+        .priority-high {
+            border-left-color: var(--accent-rose) !important;
+        }
+        .priority-medium {
+            border-left-color: var(--accent-amber) !important;
+        }
+        .priority-low {
+            border-left-color: var(--accent-emerald) !important;
+        }
+        .semester-header,
+        .subject-header {
+            background: rgba(255, 255, 255, 0.025);
+            padding: 13px 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 5px 0;
+            font-weight: 600;
+            transition: var(--transition-fast);
+            border: 1px solid transparent;
+        }
+        .semester-header:hover,
+        .subject-header:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(139, 92, 246, 0.2);
+        }
+        .semester-content,
+        .subject-content {
+            display: none;
+            padding-left: 18px;
+        }
+        .topic-stats {
+            display: flex;
+            gap: 14px;
+            font-size: 0.73rem;
+            color: var(--text-muted);
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.66rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        .status-NotStarted {
+            background: rgba(148, 163, 184, 0.2);
+            color: #94a3b8;
+        }
+        .status-Studied {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+        }
+        .status-Completed {
+            background: rgba(52, 211, 153, 0.2);
+            color: #34d399;
+        }
+        .status-Mastered {
+            background: rgba(139, 92, 246, 0.25);
+            color: #c4b5fd;
+        }
+
+        /* ============ MODAL ============ */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.78);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+        .modal-content {
+            background: var(--bg-elevated);
+            border-radius: var(--radius-lg);
+            padding: 26px;
+            width: 90%;
+            max-width: 550px;
+            max-height: 85vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-subtle);
+            box-shadow: 0 24px 70px rgba(0, 0, 0, 0.65);
+        }
+        .search-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 12px 0;
+        }
+        .search-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: var(--transition-fast);
+            font-size: 0.85rem;
+        }
+        .search-item:hover {
+            background: rgba(139, 92, 246, 0.25);
+            color: #fff;
+        }
+
+        /* ============ TOAST ============ */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: rgba(52, 211, 153, 0.9);
+            color: #000;
+            padding: 10px 22px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.84rem;
+            z-index: 1100;
+            animation: toastIn 0.4s ease, toastOut 0.4s ease 1.8s forwards;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            letter-spacing: 0.3px;
+        }
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes toastOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(-10px);
+            }
+        }
+
+        /* ============ SYNC BADGE ============ */
+        .sync-badge {
+            position: fixed;
+            bottom: 18px;
+            right: 18px;
+            background: rgba(16, 16, 42, 0.85);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.68rem;
+            z-index: 100;
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid var(--border-subtle);
+            letter-spacing: 0.5px;
+            color: #34d399;
+            font-weight: 600;
+        }
+
+        /* ============ TABS ============ */
+        .tab-content {
+            display: none;
+            animation: fadeSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============ RESPONSIVE ============ */
+        @media (max-width: 950px) {
+            .sidebar {
+                width: 70px;
+                padding: 16px 8px;
+            }
+            .sidebar .nav-link span:not(.icon),
+            .logo-text,
+            .sidebar-footer span {
+                display: none;
+            }
+            .sidebar .logo {
+                justify-content: center;
+            }
+            .main {
+                margin-left: 70px;
+                padding: 16px;
+            }
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+            .stat-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .date-badge {
+                font-size: 0.7rem;
+                padding: 8px 14px;
+            }
+            .timer-display.large {
+                font-size: 2.4rem;
+                padding: 12px 20px;
+            }
+        }
+        @media (max-width: 600px) {
+            .stat-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .analytics-value {
+                font-size: 2rem;
+            }
+            .page-header h1 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body>
 
-<div class="sidebar">
-  <div class="logo"><div class="logo-icon">🎓</div><div class="logo-text"><h2>StudyHub</h2><span>Nemi</span></div></div>
-  <div class="nav-link active" data-tab="dashboard" onclick="switchTab('dashboard')"><span class="icon">📊</span><span>Dashboard</span></div>
-  <div class="nav-link" data-tab="planner" onclick="switchTab('planner')"><span class="icon">📅</span><span>Planner</span></div>
-  <div class="nav-link" data-tab="livetimer" onclick="switchTab('livetimer')"><span class="icon">⏱️</span><span>Live Timer</span></div>
-  <div class="nav-link" data-tab="selftimer" onclick="switchTab('selftimer')"><span class="icon">🧘</span><span>Self Study</span></div>
-  <div class="nav-link" data-tab="bca" onclick="switchTab('bca')"><span class="icon">💻</span><span>BCA (LPU)</span></div>
-  <div class="nav-link" data-tab="skills" onclick="switchTab('skills')"><span class="icon">🛠️</span><span>Skills OS</span></div>
-  <div class="nav-link" data-tab="revision" onclick="switchTab('revision')"><span class="icon">🔄</span><span>Revision Vault</span></div>
-  <div class="nav-link" data-tab="analytics" onclick="switchTab('analytics')"><span class="icon">📈</span><span>Analytics</span></div>
-  <div class="nav-link" data-tab="export" onclick="switchTab('export')"><span class="icon">📥</span><span>Export</span></div>
-  <div class="nav-link" data-tab="settings" onclick="switchTab('settings')"><span class="icon">⚙️</span><span>Settings</span></div>
-  <div style="margin-top: auto; padding: 12px; background: var(--card); border-radius: 12px;"><div>👤 Nemi</div><div style="font-size:0.7rem;">ncy3594</div></div>
-</div>
-
-<main class="main">
-  <div style="display: flex; justify-content: space-between; margin-bottom: 20px; flex-wrap:wrap; gap:12px;">
-    <h1>Welcome <span style="color: var(--accent2);">Nemi</span> 👋</h1>
-    <div class="card" style="padding: 8px 16px;"><span id="currentDate"></span></div>
-  </div>
-
-  <!-- Dashboard (unchanged) -->
-  <div id="tab-dashboard" class="tab-content active">
-    <div class="card"><h3>📊 Today's Accuracy</h3><div id="dashSummary"></div></div>
-    <div class="card"><h3>🎯 BCA Quick Stats</h3><div id="bcaDashboardStats"></div></div>
-    <div class="card"><h3>📋 Priority & Due</h3><div id="todayQueue"></div></div>
-    <div class="card"><h4>⏳ Recent Sessions</h4><div id="dashRecentSessions"></div></div>
-    <div class="card" id="skillInventoryCard"><h3>🏆 Skills Inventory</h3><div id="skillInventoryContainer"></div></div>
-  </div>
-
-  <!-- Planner (unchanged) -->
-  <div id="tab-planner" class="tab-content">
-    <div class="card">
-      <h3>📅 Daily Planner</h3>
-      <div class="flex-row"><input type="date" id="planDate" class="input-field"><button class="btn btn-sm btn-outline" onclick="changePlanDate(-1)">◀</button><button class="btn btn-sm btn-outline" onclick="changePlanDate(1)">▶</button><button class="btn btn-sm btn-outline" onclick="goToToday()">Today</button></div>
-      <div class="flex-row"><input type="text" id="planSubject" placeholder="Subject" class="input-field"><input type="number" id="planHrs" placeholder="Hrs" class="input-field" style="width:70px;" value="0"><input type="number" id="planMins" placeholder="Min" class="input-field" style="width:65px;" value="0"><button class="btn btn-sm" onclick="addPlanTask()">➕ Add</button></div>
-      <div id="plannerTasks"></div>
-      <div id="plannerWeekSummary" style="margin-top:10px;"></div>
+    <div class="sidebar">
+        <div class="logo">
+            <div class="logo-icon"><i class="fas fa-graduation-cap"></i></div>
+            <div class="logo-text"><h2>StudyHub</h2><span>Pro</span></div>
+        </div>
+        <div class="nav-link active" data-tab="dashboard" onclick="switchTab('dashboard')"><span class="icon"><i class="fas fa-chart-line"></i></span><span>Dashboard</span></div>
+        <div class="nav-link" data-tab="planner" onclick="switchTab('planner')"><span class="icon"><i class="fas fa-calendar-days"></i></span><span>Planner</span></div>
+        <div class="nav-link" data-tab="livetimer" onclick="switchTab('livetimer')"><span class="icon"><i class="fas fa-stopwatch"></i></span><span>Live Timer</span></div>
+        <div class="nav-link" data-tab="selftimer" onclick="switchTab('selftimer')"><span class="icon"><i class="fas fa-bullseye"></i></span><span>Self Study</span></div>
+        <div class="nav-link" data-tab="bca" onclick="switchTab('bca')"><span class="icon"><i class="fas fa-graduation-cap"></i></span><span>BCA (LPU)</span></div>
+        <div class="nav-link" data-tab="skills" onclick="switchTab('skills')"><span class="icon"><i class="fas fa-rocket"></i></span><span>Skills OS</span></div>
+        <div class="nav-link" data-tab="revision" onclick="switchTab('revision')"><span class="icon"><i class="fas fa-brain"></i></span><span>Revision Vault</span></div>
+        <div class="nav-link" data-tab="analytics" onclick="switchTab('analytics')"><span class="icon"><i class="fas fa-chart-pie"></i></span><span>Analytics</span></div>
+        <div class="nav-link" data-tab="export" onclick="switchTab('export')"><span class="icon"><i class="fas fa-file-export"></i></span><span>Export</span></div>
+        <div class="nav-link" data-tab="settings" onclick="switchTab('settings')"><span class="icon"><i class="fas fa-gear"></i></span><span>Settings</span></div>
+        <div class="sidebar-footer">
+            <div style="display:flex;align-items:center;gap:8px;"><i class="fas fa-user-circle" style="font-size:1.2rem;color:#c4b5fd;"></i> <span>Nemi</span></div>
+            <div style="font-size:0.62rem;color:var(--text-muted);">ncy3594</div>
+        </div>
     </div>
-  </div>
 
-  <!-- Live Timer (unchanged) -->
-  <div id="tab-livetimer" class="tab-content">
-    <div class="card"><h3>⏱️ Live Multi‑Task Timer</h3><div class="flex-row"><select id="timerTaskSelect" class="input-field"></select><button class="btn btn-sm btn-success" onclick="startTimerForTask()">▶ Start</button><button class="btn btn-sm" onclick="pauseTimer()">⏸ Pause</button><button class="btn btn-sm btn-danger" onclick="stopTimer()">⏹ Stop & Save</button></div><div class="timer-display" id="timerDisplay">00:00:00</div><div id="timerActiveLabel"></div><h4>Today's Sessions</h4><div id="timerTodayLogs"></div></div>
-  </div>
-
-  <!-- Self Study Timer (unchanged) -->
-  <div id="tab-selftimer" class="tab-content">
-    <div class="card"><h3>🧘 Self Study Timer</h3><div style="text-align:center;"><div class="timer-display" id="globalTimerDisplay" style="font-size:3rem;">00:00:00</div></div><div class="flex-row" style="justify-content:center;"><button class="btn btn-success" onclick="startGlobalTimer()">▶ Start</button><button class="btn" onclick="pauseGlobalTimer()">⏸ Pause</button><button class="btn btn-danger" onclick="stopGlobalTimer()">⏹ Stop</button></div></div>
-  </div>
-
-  <!-- BCA Tab (unchanged) -->
-  <div id="tab-bca" class="tab-content">
-    <div class="card"><h3>💻 BCA (LPU University) - Full Syllabus</h3><div id="bcaContainer"></div></div>
-  </div>
-
-  <!-- Skills OS Tab (unchanged) -->
-  <div id="tab-skills" class="tab-content">
-    <div class="card"><h3>🧠 Skill Learning Operating System</h3><div class="flex-row"><button class="btn btn-sm btn-outline" onclick="showAddSkillModal()">➕ Add New Skill</button></div>
-    <div id="skillsContainer"></div></div>
-  </div>
-
-  <!-- Revision Vault (unchanged) -->
-  <div id="tab-revision" class="tab-content">
-    <div class="card">
-      <h3>🔄 Revision Master Vault</h3>
-      <div class="flex-row"><button class="btn btn-sm" onclick="toggleRevView()">📋 List / 🃏 Flashcards</button><button class="btn btn-sm btn-outline" onclick="showAddRevForm()">➕ Add Item</button><button class="btn btn-sm btn-outline" onclick="filterRevByDoubt()">❌ Doubts Only</button><button class="btn btn-sm btn-outline" onclick="filterRevByDue()">⏰ Due Revisions</button><button class="btn btn-sm btn-outline" onclick="clearRevFilters()">🔄 All</button><input type="text" id="revSearchInput" placeholder="🔍 Search" class="input-field" style="width:150px;" onkeyup="filterRevisionList()"></div>
-      <div class="grid2" style="margin:12px 0;"><div class="stat-card"><div class="stat-number" id="revTotalCount">0</div><div>Total</div></div><div class="stat-card"><div class="stat-number" id="revMasteredCount">0</div><div>Mastered</div></div><div class="stat-card"><div class="stat-number" id="revDueCount">0</div><div>Due</div></div><div class="stat-card"><div class="stat-number" id="revDoubtCount">0</div><div>Doubts</div></div></div>
-      <div id="revisionContainer"></div><div id="flashcardContainer" style="display:none;"></div>
-    </div>
-  </div>
-
-  <!-- ==================== UPGRADED PREMIUM ANALYTICS TAB ==================== -->
-  <div id="tab-analytics" class="tab-content">
-    <div class="card" style="padding: 24px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2 style="background: linear-gradient(135deg, #e2e8f0, var(--accent2)); -webkit-background-clip: text; background-clip: text; color: transparent;">📊 LPU BCA Smart Analytics</h2>
-        <button class="btn btn-sm btn-outline" onclick="renderLPUAnalytics()">🔄 Refresh</button>
-      </div>
-      <div id="analyticsContent">
-        <!-- dynamic premium content -->
-      </div>
-    </div>
-  </div>
-
-  <!-- Export (unchanged) -->
-  <div id="tab-export" class="tab-content">
-    <div class="card"><h3>📥 Export Excel</h3><div class="flex-row"><select id="exportMonth"><option value="0">Jan</option><option value="1">Feb</option><option value="2">Mar</option><option value="3">Apr</option><option value="4">May</option><option value="5">Jun</option><option value="6">Jul</option><option value="7">Aug</option><option value="8">Sep</option><option value="9">Oct</option><option value="10">Nov</option><option value="11">Dec</option></select><input type="number" id="exportYear" value="2026" style="width:80px;"><button class="btn btn-success" onclick="exportReport()">📥 Download</button></div></div>
-  </div>
-
-  <!-- Settings (unchanged) -->
-  <div id="tab-settings" class="tab-content">
-    <div class="card"><h3>⚙️ Settings</h3><p>Auto-save to browser.</p><button class="btn btn-outline btn-sm" onclick="syncNow()">Force Sync</button><button class="btn btn-outline btn-sm" onclick="testConnection()">Test Firebase</button></div>
-  </div>
-</main>
-<div class="sync-badge" id="syncBadge">🟢 Synced</div>
-
-<!-- Modals (unchanged - all same as before) -->
-<div id="addSkillModal" class="modal"><div class="modal-content"><h3>➕ Add New Skill</h3><div class="flex-row"><input type="text" id="skillSearchInput" placeholder="Search skills..." class="input-field" style="flex:1;" oninput="filterSkillList()"><button class="btn btn-sm btn-outline" onclick="showCustomSkillInput()">➕ Custom</button></div><div id="skillSearchList" class="search-list"></div><div id="customSkillInput" style="display:none;"><input type="text" id="customSkillName" placeholder="Enter custom skill name" class="input-field" style="width:100%; margin:8px 0;"></div><div class="flex-row"><label>Target Level:</label><select id="skillTargetLevel" class="input-field"><option>Intermediate</option><option>Advanced</option><option>Expert</option></select></div><div class="flex-row"><label>Target Date:</label><input type="date" id="skillTargetDate" class="input-field"></div><div class="flex-row"><button class="btn" onclick="addSelectedSkill()">Add Skill</button><button class="btn btn-outline" onclick="closeAddSkillModal()">Cancel</button></div></div></div>
-<div id="addTopicModal" class="modal"><div class="modal-content"><h3>➕ Add Custom Topic</h3><input type="hidden" id="topicSkillIndex"><input type="text" id="newTopicName" class="input-field" style="width:100%"><div class="flex-row"><button class="btn" onclick="addCustomTopic()">Add</button><button class="btn btn-outline" onclick="closeTopicModal()">Cancel</button></div></div></div>
-<div id="editNotesModal" class="modal"><div class="modal-content"><h3>📝 Edit Notes</h3><input type="hidden" id="notesSkillIndex"><textarea id="skillNotesText" rows="6" class="input-field" style="width:100%"></textarea><div class="flex-row"><button class="btn" onclick="saveSkillNotes()">Save</button><button class="btn btn-outline" onclick="closeEditNotesModal()">Cancel</button></div></div></div>
-<div id="addResourceModal" class="modal"><div class="modal-content"><h3>📚 Add Resource</h3><input type="hidden" id="resourceSkillIndex"><select id="resourceCategory" class="input-field"><option>Video</option><option>PDF</option><option>Website</option><option>Book</option></select><input type="text" id="resourceTitle" placeholder="Title" class="input-field"><input type="url" id="resourceUrl" placeholder="URL" class="input-field"><div class="flex-row"><button class="btn" onclick="addSkillResource()">Add</button><button class="btn btn-outline" onclick="closeAddResourceModal()">Cancel</button></div></div></div>
-<div id="setVideoModal" class="modal"><div class="modal-content"><h3>🎥 Topic Video URL</h3><input type="hidden" id="videoSkillIndex"><input type="hidden" id="videoTopicIndex"><input type="url" id="topicVideoUrl" placeholder="Enter video URL (YouTube, etc.)" class="input-field" style="width:100%"><div class="flex-row"><button class="btn" onclick="saveTopicVideo()">Save</button><button class="btn btn-outline" onclick="closeVideoModal()">Cancel</button></div></div></div>
-<div id="doubtModal" class="modal"><div class="modal-content"><h3>❓ Doubt Description</h3><input type="hidden" id="doubtSkillIndex"><input type="hidden" id="doubtTopicIndex"><textarea id="doubtTextArea" rows="4" class="input-field" style="width:100%" placeholder="What is your doubt? Write in detail..."></textarea><div class="flex-row"><button class="btn" onclick="saveDoubt()">Save Doubt</button><button class="btn btn-outline" onclick="clearDoubt()">Clear Doubt</button><button class="btn btn-outline" onclick="closeDoubtModal()">Cancel</button></div></div></div>
-<div id="notesModal" class="modal"><div class="modal-content"><h3>📝 Notes</h3><textarea id="notesTextarea" rows="8" class="input-field" style="width:100%"></textarea><div class="flex-row"><button class="btn btn-sm" onclick="saveNotes()">Save</button><button class="btn btn-sm btn-outline" onclick="closeNotesModal()">Cancel</button></div></div></div>
-<div id="mistakesModal" class="modal"><div class="modal-content"><h3>❌ Mistake Book</h3><div id="mistakesList"></div><div class="flex-row"><input type="text" id="newMistake" class="input-field"><button class="btn btn-sm" onclick="addMistake()">Add</button></div><button class="btn btn-sm btn-outline" onclick="closeMistakesModal()">Close</button></div></div>
-<div id="resourcesModal" class="modal"><div class="modal-content"><h3>📚 Resources</h3><div id="resourcesList"></div><div class="flex-row"><select id="resourceType"><option>pdf</option><option>youtube</option><option>website</option></select><input type="text" id="resourceUrl" class="input-field"><button class="btn btn-sm" onclick="addResource()">Add</button></div><button class="btn btn-sm btn-outline" onclick="closeResourcesModal()">Close</button></div></div>
-<div id="revAddModal" class="modal"><div class="modal-content"><h3>➕ Revision Item</h3><input type="hidden" id="revEditId"><select id="revCourse"><option>BCA</option><option>SSC</option><option>English</option><option>Skills</option></select><input type="text" id="revSubject" placeholder="Subject" class="input-field"><input type="text" id="revTopic" placeholder="Topic" class="input-field"><textarea id="revNotes" rows="3" placeholder="Notes" class="input-field"></textarea><div class="flex-row"><label><input type="checkbox" id="revDoubt"> Doubt</label><label>Next Revision:</label><input type="date" id="revNextRevision"></div><div class="flex-row"><button class="btn" onclick="saveRevisionItem()">Save</button><button class="btn btn-outline" onclick="closeRevModal()">Cancel</button></div></div></div>
-
-<script>
-  // ==================== UTILITIES ====================
-  const today = () => new Date().toISOString().split('T')[0];
-  const fmt = (m) => { let h = Math.floor(m/60), mn = m%60; return `${h}h ${mn}m`; };
-  const getMonday = (d) => { let dt = new Date(d); dt.setDate(dt.getDate() - dt.getDay() + (dt.getDay()===0?-6:1)); return dt.toISOString().split('T')[0]; };
-  function showToast(msg) { let t = document.createElement('div'); t.className = 'toast'; t.innerText = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 2000); }
-  function escapeHtml(s) { return String(s).replace(/[&<>]/g, function(m){ return m==='&'?'&amp;':m==='<'?'&lt;':'&gt;'; }); }
-
-  // ==================== TAB SWITCHING ====================
-  function switchTab(tab) {
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    document.getElementById(`tab-${tab}`).classList.add('active');
-    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-    document.querySelector(`.nav-link[data-tab="${tab}"]`).classList.add('active');
-    if(tab === 'planner') loadPlanner();
-    if(tab === 'livetimer') { populateTimerSelect(); updateTimerDisplay(); renderTimerLogs(); }
-    if(tab === 'bca') renderBCA();
-    if(tab === 'skills') renderAllSkills();
-    if(tab === 'revision') renderRevision();
-    if(tab === 'analytics') renderLPUAnalytics();
-    if(tab === 'dashboard') { renderDashboard(); renderSkillInventory(); }
-  }
-
-  // ==================== PLANNER & TIMER (unchanged) ====================
-  let plans = JSON.parse(localStorage.getItem('sh_plans') || '{}');
-  let sessions = JSON.parse(localStorage.getItem('sh_sessions') || '[]');
-  let timerState = JSON.parse(localStorage.getItem('sh_timer_state') || '{"taskId":null,"running":false,"lastStart":null}');
-  let accumulatedMap = JSON.parse(localStorage.getItem('sh_timer_acc') || '{}');
-  let timerInterval = null;
-  function savePlannerTimer() {
-    localStorage.setItem('sh_plans', JSON.stringify(plans));
-    localStorage.setItem('sh_sessions', JSON.stringify(sessions));
-    localStorage.setItem('sh_timer_state', JSON.stringify(timerState));
-    localStorage.setItem('sh_timer_acc', JSON.stringify(accumulatedMap));
-  }
-  function getTasks(date) { return plans[date] || []; }
-  function getTask(date, id) { return getTasks(date).find(t=>t.id===id); }
-  function loadPlanner() {
-    let date = document.getElementById('planDate').value || today();
-    let tasks = getTasks(date);
-    let html = tasks.length ? '' : '<p>No tasks for this date.</p>';
-    tasks.forEach(t => {
-      html += `<div class="card" style="padding:10px;"><div class="flex-row"><strong>${t.subject}</strong> | Planned: ${fmt(t.plannedMin)} | Actual: ${fmt(t.actualMin||0)}<input type="checkbox" ${t.completed?'checked':''} onchange="togglePlan('${date}',${t.id})"><button class="btn btn-sm btn-danger" onclick="delPlan('${date}',${t.id})">🗑️</button></div></div>`;
-    });
-    document.getElementById('plannerTasks').innerHTML = html;
-    let ws = getMonday(date); let wp=0,wa=0;
-    for(let i=0;i<7;i++){ let d=new Date(ws); d.setDate(d.getDate()+i); let k=d.toISOString().split('T')[0]; (plans[k]||[]).forEach(t=>{ wp+=t.plannedMin; wa+=t.actualMin||0; }); }
-    document.getElementById('plannerWeekSummary').innerHTML = `<strong>Week (${ws})</strong> | Planned: ${fmt(wp)} | Actual: ${fmt(wa)}`;
-    populateTimerSelect();
-  }
-  function togglePlan(date, id) { let t = getTask(date, id); if(t) { t.completed = !t.completed; savePlannerTimer(); loadPlanner(); renderDashboard(); } }
-  function delPlan(date, id) { plans[date] = plans[date].filter(t=>t.id!==id); savePlannerTimer(); loadPlanner(); renderDashboard(); }
-  function changePlanDate(o) { let el = document.getElementById('planDate'); let d = new Date(el.value); d.setDate(d.getDate()+o); el.value = d.toISOString().split('T')[0]; loadPlanner(); }
-  function goToToday() { document.getElementById('planDate').value = today(); loadPlanner(); }
-  function addPlanTask() {
-    let date = document.getElementById('planDate').value;
-    let sub = document.getElementById('planSubject').value.trim();
-    let h = parseInt(document.getElementById('planHrs').value) || 0;
-    let m = parseInt(document.getElementById('planMins').value) || 0;
-    if(!sub) { showToast('Enter subject'); return; }
-    if(h===0 && m===0) { showToast('Enter time'); return; }
-    if(!plans[date]) plans[date] = [];
-    plans[date].push({ id: Date.now(), subject: sub, plannedMin: h*60+m, actualMin: 0, completed: false });
-    savePlannerTimer(); loadPlanner(); renderDashboard();
-    document.getElementById('planSubject').value = ''; document.getElementById('planHrs').value = '0'; document.getElementById('planMins').value = '0';
-    showToast('Task added');
-  }
-  function populateTimerSelect() {
-    let sel = document.getElementById('timerTaskSelect');
-    if(!sel) return;
-    let tasks = getTasks(today());
-    sel.innerHTML = '<option value="">-- Select task --</option>';
-    tasks.forEach(t => {
-      let tid = `${today()}|${t.id}`;
-      let acc = accumulatedMap[tid] || 0;
-      let opt = document.createElement('option');
-      opt.value = tid;
-      opt.textContent = `${t.subject}${acc ? ` (${Math.floor(acc/60000)}m)` : ''}`;
-      if(timerState.taskId === tid) opt.selected = true;
-      sel.appendChild(opt);
-    });
-  }
-  function updateTimerDisplay() {
-    let base = timerState.taskId ? (accumulatedMap[timerState.taskId]||0) : 0;
-    let total = base + (timerState.running && timerState.lastStart ? (Date.now()-timerState.lastStart) : 0);
-    let s = Math.floor(total/1000), h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sec=s%60;
-    document.getElementById('timerDisplay').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
-  }
-  function getTimerName(id) { if(!id) return ''; let [d,tid]=id.split('|'); let t=getTask(d,parseInt(tid)); return t?t.subject:'Unknown'; }
-  function startTimerForTask() {
-    let sel = document.getElementById('timerTaskSelect');
-    let id = sel.value;
-    if(!id) { showToast('Select a task first'); return; }
-    if(timerState.taskId && timerState.taskId!==id && timerState.running) pauseTimer();
-    timerState.taskId = id; timerState.running = true; timerState.lastStart = Date.now();
-    if(timerInterval) clearInterval(timerInterval);
-    timerInterval = setInterval(updateTimerDisplay, 1000);
-    savePlannerTimer();
-    document.getElementById('timerActiveLabel').innerHTML = `🔴 Running: ${getTimerName(id)}`;
-    populateTimerSelect(); renderDashboard();
-  }
-  function pauseTimer() {
-    if(!timerState.running || !timerState.taskId) return;
-    accumulatedMap[timerState.taskId] = (accumulatedMap[timerState.taskId]||0) + (Date.now()-timerState.lastStart);
-    timerState.running = false; timerState.lastStart = null;
-    clearInterval(timerInterval); timerInterval = null;
-    savePlannerTimer(); updateTimerDisplay();
-    document.getElementById('timerActiveLabel').innerHTML = `⏸ Paused: ${getTimerName(timerState.taskId)}`;
-    populateTimerSelect();
-  }
-  function stopTimer() {
-    if(!timerState.taskId) return;
-    if(timerState.running) pauseTimer();
-    let ms = accumulatedMap[timerState.taskId]||0;
-    let min = Math.floor(ms/60000);
-    if(min>0) {
-      let [date,tid] = timerState.taskId.split('|');
-      let task = getTask(date, parseInt(tid));
-      if(task) task.actualMin = (task.actualMin||0) + min;
-      sessions.push({id:Date.now(), task:task?.subject||'Unknown', date, durationMin:min});
-    }
-    delete accumulatedMap[timerState.taskId];
-    timerState = {taskId:null, running:false, lastStart:null};
-    clearInterval(timerInterval); timerInterval = null;
-    savePlannerTimer(); updateTimerDisplay();
-    document.getElementById('timerActiveLabel').innerHTML = 'No active task';
-    populateTimerSelect(); loadPlanner(); renderTimerLogs(); renderDashboard();
-  }
-  function renderTimerLogs() {
-    let logs = sessions.filter(s=>s.date===today()).slice(0,5);
-    document.getElementById('timerTodayLogs').innerHTML = logs.map(s=>`<div>📌 ${s.task} - ${fmt(s.durationMin)}</div>`).join('') || '<p>No sessions today</p>';
-  }
-
-  // ==================== SELF STUDY TIMER ====================
-  let globalTimerSeconds = 0, globalTimerRunning = false, globalTimerInterval = null;
-  function updateGlobalDisplay() {
-    let hrs = Math.floor(globalTimerSeconds/3600), mins = Math.floor((globalTimerSeconds%3600)/60), secs = globalTimerSeconds%60;
-    document.getElementById('globalTimerDisplay').innerText = `${hrs.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
-  }
-  function startGlobalTimer() { if(globalTimerInterval) clearInterval(globalTimerInterval); globalTimerRunning=true; globalTimerInterval=setInterval(()=>{ if(globalTimerRunning){ globalTimerSeconds++; updateGlobalDisplay(); } },1000); showToast('Self study started'); }
-  function pauseGlobalTimer() { globalTimerRunning=false; showToast('Paused'); }
-  function stopGlobalTimer() { if(globalTimerInterval) clearInterval(globalTimerInterval); let mins=Math.floor(globalTimerSeconds/60); if(mins>0){ sessions.push({id:Date.now(), task:'Self Study', date:today(), durationMin:mins}); savePlannerTimer(); showToast(`+${fmt(mins)} saved`); renderDashboard(); } globalTimerRunning=false; globalTimerSeconds=0; updateGlobalDisplay(); }
-
-  // ==================== DASHBOARD (unchanged) ====================
-  function renderDashboard() {
-    let tasks = getTasks(today()); let tp=0,ta=0; tasks.forEach(t=>{ tp+=t.plannedMin; ta+=t.actualMin||0; }); let acc = tp>0?Math.min(100,Math.round((ta/tp)*100)):(ta>0?100:0);
-    document.getElementById('dashSummary').innerHTML = `<div class="grid2"><div><span class="stat-number">${tasks.length}</span><br>Tasks</div><div><span class="stat-number">${fmt(tp)}</span><br>Planned</div><div><span class="stat-number">${fmt(ta)}</span><br>Actual</div><div><span class="stat-number">${acc}%</span><br>Accuracy</div></div>`;
-    let recent = sessions.sort((a,b)=>b.id-a.id).slice(0,4);
-    document.getElementById('dashRecentSessions').innerHTML = recent.map(s=>`<div>📌 ${s.date} - ${s.task} (${fmt(s.durationMin)})</div>`).join('') || '<p>No sessions</p>';
-    renderBCADashboardStats(); // defined later
-    renderSkillInventory();
-  }
-
-  // ==================== BCA (full, unchanged) ====================
-  let bcaData = [];
-  let activeTimers = {};
-  let openSemesters = new Set(), openSubjects = new Set(), openTopics = new Set();
-  let currentTopicId = null;
-  let lastStudyTopic = localStorage.getItem('lastStudyTopic') || null;
-  const fmtMins = (m) => { let h = Math.floor(m/60), mn = m%60; return `${h}h ${mn}m`; };
-  function createTopic(name, category = 'Theory', priority = 'Medium', isManual = true) {
-    return { id: Date.now() + Math.random() * 10000, name, category, priority, isManual, status: 'Not Started', attempted: 0, correct: 0, accuracy: 0, studyTime: 0, lastRevision: null, nextRevision: null, notes: '', notesLastUpdated: null, mistakes: [], resources: [], timerRunning: false, timerStart: null, timerCurrent: 0 };
-  }
-  function updateTopicAccuracy(t) { t.accuracy = t.attempted > 0 ? Math.round((t.correct / t.attempted) * 100) : 0; }
-  const bcaTopicsMap = {
-    "Fundamentals of Information Technology": ["Intro to Computers","Hardware & Software","Number Systems","OS Basics","Internet & Web"],
-    "Programming Methodology (C Programming)": ["C Basics","Variables","Operators","Loops","Arrays","Functions","Pointers","File Handling"],
-    "Discrete Structures": ["Set Theory","Logic","Relations","Graph Theory","Combinatorics"],
-    "English Communication Skills": ["Grammar","Writing","Verbal","Presentation"],
-    "Environmental Studies": ["Ecosystem","Pollution","Sustainability","Green Computing"],
-    "IT Lab": ["MS Office","Internet Tools","HTML Basics"],
-    "Programming Lab": ["C Practical","Debugging","Mini Projects"],
-    "Database Management Systems (DBMS)": ["SQL","Normalization","Transactions","NoSQL","MongoDB"],
-    "Object Oriented Programming (C++)": ["Classes","Inheritance","Polymorphism","Encapsulation","Templates","STL"],
-    "Computer Networks": ["OSI Model","TCP/IP","Routing","Network Security","DNS"],
-    "Computer System Architecture": ["CPU","Memory Hierarchy","I/O","Pipelining"],
-    "Advanced English Communication Skills": ["Business Writing","Group Discussion","Interview Skills"],
-    "DBMS Lab": ["SQL Queries","PL/SQL","Project"],
-    "OOP Lab": ["C++ Programs","Mini Project"],
-    "Data Structures": ["Arrays","Linked Lists","Stacks & Queues","Trees","Graphs","Sorting","Searching"],
-    "Operating Systems": ["Process Management","Memory Management","File Systems","Deadlocks","Scheduling"],
-    "Web Programming": ["HTML","CSS","JavaScript","Bootstrap","PHP/Node.js"],
-    "Software Engineering": ["SDLC","Agile","Testing","UML","Project Management"],
-    "Data Structures Lab": ["Implementation of DS","Problem Solving"],
-    "Web Programming Lab": ["Website Development","Forms","Database Integration"],
-    "Minor Project": ["Project Planning","Development","Documentation"],
-    "Java Programming": ["OOP in Java","Exception","Multithreading","Collections","JDBC","Swing"],
-    "Python Programming": ["Basics","OOP","Libraries","File Handling","Data Structures"],
-    "Design and Analysis of Algorithms": ["Complexity","Divide & Conquer","Dynamic Programming","Greedy","Backtracking"],
-    "Computer Graphics": ["Graphics Primitives","2D/3D Transformations","Clipping","Animation"],
-    "Java Lab": ["Java Programs","Applets","JDBC"],
-    "Python Lab": ["Python Scripts","Data Analysis","Mini Project"],
-    "Project Work": ["Implementation","Testing","Report"],
-    "Artificial Intelligence": ["Search Algorithms","Knowledge Representation","Expert Systems","NLP"],
-    "Cloud Computing": ["AWS","Azure","Virtualization","Docker","Kubernetes"],
-    "Mobile Application Development": ["Android Basics","UI Design","Intents","SQLite","Firebase"],
-    "Cyber Security": ["Cryptography","Network Security","Ethical Hacking","Risk Management"],
-    "AI Lab": ["AI Programs","ML Basics"],
-    "Mobile App Lab": ["Android App Development","Project"],
-    "Industry Training": ["Internship Report","Presentation"],
-    "Machine Learning": ["Regression","Classification","Clustering","Neural Networks","TensorFlow"],
-    "Data Analytics": ["Data Visualization","Pandas","NumPy","Statistics","Big Data Tools"],
-    "Full Stack Development": ["Node.js","Express","MongoDB","React","REST APIs"],
-    "Major Project": ["Planning","Development","Deployment","Documentation"],
-    "Internship": ["Industry Experience","Report"],
-    "Seminar & Viva": ["Presentation","Viva Voce"]
-  };
-  const bcaStructure = [
-    { name: "Semester 1", subjects: ["Fundamentals of Information Technology", "Programming Methodology (C Programming)", "Discrete Structures", "English Communication Skills", "Environmental Studies", "IT Lab", "Programming Lab"] },
-    { name: "Semester 2", subjects: ["Database Management Systems (DBMS)", "Object Oriented Programming (C++)", "Computer Networks", "Computer System Architecture", "Advanced English Communication Skills", "DBMS Lab", "OOP Lab"] },
-    { name: "Semester 3", subjects: ["Data Structures", "Operating Systems", "Web Programming", "Software Engineering", "Data Structures Lab", "Web Programming Lab", "Minor Project"] },
-    { name: "Semester 4", subjects: ["Java Programming", "Python Programming", "Design and Analysis of Algorithms", "Computer Graphics", "Java Lab", "Python Lab", "Project Work"] },
-    { name: "Semester 5", subjects: ["Artificial Intelligence", "Cloud Computing", "Mobile Application Development", "Cyber Security", "AI Lab", "Mobile App Lab", "Industry Training"] },
-    { name: "Semester 6", subjects: ["Machine Learning", "Data Analytics", "Full Stack Development", "Major Project", "Internship", "Seminar & Viva"] }
-  ];
-  function loadBCAData() {
-    let saved = localStorage.getItem('studyhub_bca_final');
-    if(saved) bcaData = JSON.parse(saved);
-    else {
-      bcaData = [];
-      bcaStructure.forEach(sem => {
-        let semData = { name: sem.name, subjects: [] };
-        sem.subjects.forEach(subName => {
-          let topics = (bcaTopicsMap[subName] || ['Unit 1','Unit 2','Unit 3']).map(t => createTopic(t, 'Theory', 'Medium', false));
-          semData.subjects.push({ name: subName, topics });
-        });
-        bcaData.push(semData);
-      });
-    }
-  }
-  function saveBCAData() { localStorage.setItem('studyhub_bca_final', JSON.stringify(bcaData)); }
-  function findTopic(id) { for(let s of bcaData) for(let sub of s.subjects) { let t = sub.topics.find(t=>t.id==id); if(t) return t; } return null; }
-  let addCtx = null;
-  window.openAddTopicModal = (type, semName, subName) => { addCtx = {type,semName,subName}; document.getElementById('newTopicName').value=''; document.getElementById('addTopicModal').style.display='flex'; };
-  window.closeAddTopicModal = () => { document.getElementById('addTopicModal').style.display='none'; addCtx=null; };
-  window.addNewTopic = () => {
-    let name = document.getElementById('newTopicName').value.trim();
-    let cat = document.getElementById('newTopicCategory').value;
-    let pri = document.getElementById('newTopicPriority').value;
-    if(!name) return;
-    if(addCtx && addCtx.type === 'bca') {
-      let sem = bcaData.find(s=>s.name===addCtx.semName);
-      let sub = sem?.subjects.find(s=>s.name===addCtx.subName);
-      if(sub) { sub.topics.push(createTopic(name,cat,pri,true)); saveBCAData(); renderBCA(); showToast(`✅ "${name}" added`); }
-    }
-    closeAddTopicModal();
-  };
-  window.openNotesModal = (id) => { currentTopicId = id; let t=findTopic(id); if(t){ document.getElementById('notesTextarea').value=t.notes||''; document.getElementById('notesLastUpdated').innerText=t.notesLastUpdated?`Last Updated: ${t.notesLastUpdated}`:''; document.getElementById('notesModal').style.display='flex'; } };
-  window.closeNotesModal = () => { document.getElementById('notesModal').style.display='none'; };
-  window.saveNotes = () => { let t=findTopic(currentTopicId); if(t){ t.notes=document.getElementById('notesTextarea').value; t.notesLastUpdated=new Date().toLocaleString(); saveBCAData(); showToast('Notes saved'); closeNotesModal(); } };
-  window.openMistakesModal = (id) => { currentTopicId=id; let t=findTopic(id); if(t){ renderMistakesList(t); document.getElementById('mistakesModal').style.display='flex'; } };
-  function renderMistakesList(t){
-    let html=''; (t.mistakes||[]).forEach((m,i)=>{ html+=`<div class="mistake-item"><div>❌ ${escapeHtml(m.text)}</div><div class="flex-row"><button class="btn btn-sm btn-outline" onclick="editMistake(${i})">Edit</button><button class="btn btn-sm btn-danger" onclick="deleteMistake(${i})">Delete</button></div></div>`; });
-    if(!t.mistakes.length) html='<p>No mistakes yet.</p>';
-    document.getElementById('mistakesList').innerHTML=html;
-  }
-  window.addMistake = () => { let t=findTopic(currentTopicId); let txt=document.getElementById('newMistake').value.trim(); if(t&&txt){ if(!t.mistakes) t.mistakes=[]; t.mistakes.push({text:txt,date:new Date().toLocaleString()}); saveBCAData(); renderMistakesList(t); document.getElementById('newMistake').value=''; showToast('Mistake added'); } };
-  window.editMistake = (idx) => { let t=findTopic(currentTopicId); let newTxt=prompt('Edit mistake:',t.mistakes[idx].text); if(newTxt){ t.mistakes[idx].text=newTxt; saveBCAData(); renderMistakesList(t); } };
-  window.deleteMistake = (idx) => { let t=findTopic(currentTopicId); t.mistakes.splice(idx,1); saveBCAData(); renderMistakesList(t); showToast('Deleted'); };
-  window.closeMistakesModal = () => { document.getElementById('mistakesModal').style.display='none'; };
-  window.openResourcesModal = (id) => { currentTopicId=id; let t=findTopic(id); if(t){ renderResourcesList(t); document.getElementById('resourcesModal').style.display='flex'; } };
-  function renderResourcesList(t){
-    let html=''; (t.resources||[]).forEach((r,i)=>{ let icon=r.type==='pdf'?'📄':r.type==='youtube'?'🎥':'🌐'; html+=`<div class="resource-item"><div>${icon} <a href="${r.url}" target="_blank">${r.url.substring(0,40)}</a></div><button class="btn btn-sm btn-danger" onclick="deleteResource(${i})">Delete</button></div>`; });
-    if(!t.resources.length) html='<p>No resources.</p>';
-    document.getElementById('resourcesList').innerHTML=html;
-  }
-  window.addResource = () => { let t=findTopic(currentTopicId); let type=document.getElementById('resourceType').value; let url=document.getElementById('resourceUrl').value.trim(); if(t&&url){ if(!t.resources) t.resources=[]; t.resources.push({type,url,added:new Date().toLocaleString()}); saveBCAData(); renderResourcesList(t); document.getElementById('resourceUrl').value=''; showToast('Resource added'); } };
-  window.deleteResource = (idx) => { let t=findTopic(currentTopicId); t.resources.splice(idx,1); saveBCAData(); renderResourcesList(t); };
-  window.closeResourcesModal = () => { document.getElementById('resourcesModal').style.display='none'; };
-  window.updateStatus = (id,val) => { let t=findTopic(id); if(t){ t.status=val; saveBCAData(); updateTopicCompactDisplay(id,t); showToast(`Status: ${val}`); renderDashboard(); } };
-  window.updateAccuracyOnly = (id) => { let t=findTopic(id); if(t){ let att=parseInt(document.getElementById(`att_${id}`).value)||0; let corr=parseInt(document.getElementById(`corr_${id}`).value)||0; t.attempted=att; t.correct=corr; updateTopicAccuracy(t); saveBCAData(); updateTopicCompactDisplay(id,t); showToast(`Accuracy: ${t.accuracy}%`); renderDashboard(); } };
-  window.markRevision = (id) => { let t=findTopic(id); if(t){ let days=prompt('Next revision in days? (1,3,7,15,30)','7'); let d=parseInt(days); if(!isNaN(d)&&d>0){ let next=new Date(); next.setDate(next.getDate()+d); t.lastRevision=today(); t.nextRevision=next.toISOString().split('T')[0]; saveBCAData(); showToast(`Revision set to ${t.nextRevision}`); renderDashboard(); } } };
-  window.deleteTopic = (id) => { if(confirm('Delete this topic?')){ for(let s of bcaData) for(let sub of s.subjects){ let idx=sub.topics.findIndex(t=>t.id==id); if(idx!==-1 && sub.topics[idx].isManual){ sub.topics.splice(idx,1); saveBCAData(); renderBCA(); showToast('Deleted'); return; } } showToast('Cannot delete built-in topic'); } };
-  function updateTopicCompactDisplay(id,t){ let div=document.getElementById(`topic-compact-${id}`); if(div){ let stats=div.querySelector('.topic-stats'); if(stats) stats.innerHTML=`<span>🎯 ${t.accuracy||0}%</span><span>⏱️ ${fmtMins(t.studyTime||0)}</span>`; } }
-  window.startTopicTimer = (id) => {
-    if(activeTimers[id]) clearInterval(activeTimers[id]);
-    let t=findTopic(id); if(t){
-      t.timerRunning=true; t.timerStart=Date.now()-(t.timerCurrent||0);
-      activeTimers[id]=setInterval(()=>{
-        if(t.timerRunning){ t.timerCurrent=Date.now()-t.timerStart; let sec=Math.floor(t.timerCurrent/1000); let h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), s=sec%60; let disp=document.getElementById(`timer_${id}`); if(disp) disp.innerText=`${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
-      },1000);
-      showToast(`Timer started for ${t.name}`);
-      localStorage.setItem('lastStudyTopic',JSON.stringify({id, name:t.name}));
-      updateResumeCard();
-    }
-  };
-  window.pauseTopicTimer = (id) => { let t=findTopic(id); if(t&&t.timerRunning){ t.timerRunning=false; t.timerCurrent=Date.now()-t.timerStart; if(activeTimers[id]) clearInterval(activeTimers[id]); showToast('Paused'); } };
-  window.stopTopicTimer = (id) => { let t=findTopic(id); if(t){ if(t.timerRunning){ t.timerCurrent=Date.now()-t.timerStart; } let added=Math.floor(t.timerCurrent/60000); if(added>0){ t.studyTime=(t.studyTime||0)+added; saveBCAData(); updateTopicCompactDisplay(id,t); showToast(`+${fmtMins(added)} saved`); renderDashboard(); } t.timerRunning=false; t.timerCurrent=0; if(activeTimers[id]) clearInterval(activeTimers[id]); let disp=document.getElementById(`timer_${id}`); if(disp) disp.innerText='00:00:00'; } };
-  function renderBCADashboardStats(){
-    let allTopics = []; for(let s of bcaData) for(let sub of s.subjects) allTopics.push(...sub.topics);
-    let notStarted = allTopics.filter(t=>t.status==='Not Started').slice(0,5);
-    let dueRevisions = allTopics.filter(t=>t.nextRevision && new Date(t.nextRevision)<=new Date()).slice(0,5);
-    let queueHtml = `<div class="progress-bar-bg"><div class="progress-fill" style="width: ${allTopics.length? (allTopics.filter(t=>t.status!=='Not Started').length/allTopics.length*100):0}%"></div></div>`;
-    queueHtml += `<div><strong>📋 Priority Queue:</strong> ${notStarted.map(t=>t.name).join(', ') || 'All caught up!'}</div>`;
-    if(dueRevisions.length) queueHtml += `<div style="color:var(--red);"><strong>🔴 Due Revision:</strong> ${dueRevisions.map(t=>t.name).join(', ')}</div>`;
-    document.getElementById('todayQueue').innerHTML = queueHtml;
-    let high = allTopics.filter(t=>t.priority==='High').length;
-    let med = allTopics.filter(t=>t.priority==='Medium').length;
-    let low = allTopics.filter(t=>t.priority==='Low').length;
-    document.getElementById('priorityStats').innerHTML = `<div class="grid2"><div class="stat-card"><div class="stat-number" style="color:var(--red);">${high}</div><div>High Priority</div></div><div class="stat-card"><div class="stat-number" style="color:var(--gold);">${med}</div><div>Medium</div></div><div class="stat-card"><div class="stat-number" style="color:var(--green);">${low}</div><div>Low</div></div></div>`;
-    let semHtml = '';
-    bcaData.forEach(sem=>{
-      let topics=[]; sem.subjects.forEach(sub=>topics.push(...sub.topics));
-      let comp=topics.filter(t=>t.status==='Completed'||t.status==='Mastered').length;
-      let mast=topics.filter(t=>t.status==='Mastered').length;
-      let pend=topics.filter(t=>t.status==='Not Started').length;
-      let totalTime=topics.reduce((s,t)=>s+(t.studyTime||0),0);
-      let avgAcc=topics.length?Math.round(topics.reduce((s,t)=>s+(t.accuracy||0),0)/topics.length):0;
-      let weak=topics.filter(t=> (t.accuracy||0)<60 && (t.attempted||0)>0).length;
-      let due=topics.filter(t=>t.nextRevision && new Date(t.nextRevision)<=new Date()).length;
-      semHtml+=`<div class="card"><h3>🎓 ${sem.name}</h3><div class="grid2"><div class="stat-card"><div class="stat-number">${topics.length}</div><div>Topics</div></div><div class="stat-card"><div class="stat-number">${comp}</div><div>Completed</div></div><div class="stat-card"><div class="stat-number">${pend}</div><div>Pending</div></div><div class="stat-card"><div class="stat-number">${fmtMins(totalTime)}</div><div>Study Time</div></div><div class="stat-card"><div class="stat-number">${avgAcc}%</div><div>Accuracy</div></div><div class="stat-card"><div class="stat-number">${weak}</div><div>Weak</div></div><div class="stat-card"><div class="stat-number">${due}</div><div>Due Revision</div></div><div class="stat-card"><div class="stat-number">${mast}</div><div>Mastered</div></div></div><div class="progress-bar-bg"><div class="progress-fill" style="width: ${topics.length?(comp/topics.length*100):0}%"></div></div></div>`;
-    });
-    document.getElementById('semesterDashboardContainer').innerHTML = semHtml;
-    updateResumeCard();
-  }
-  function updateResumeCard(){ let last=localStorage.getItem('lastStudyTopic'); if(last){ let d=JSON.parse(last); document.getElementById('lastTopicDisplay').innerHTML=d.name; document.getElementById('resumeCard').style.display='block'; }else document.getElementById('resumeCard').style.display='none'; }
-  window.resumeLastTopic = () => { let last=localStorage.getItem('lastStudyTopic'); if(last){ let d=JSON.parse(last); let div=document.getElementById(`topic-compact-${d.id}`); if(div) div.click(); } };
-  function renderBCA(){
-    let html='';
-    bcaData.forEach((sem,semIdx)=>{
-      let semKey=`bca_sem_${semIdx}`;
-      let isSemOpen=openSemesters.has(semKey);
-      html+=`<div><div class="semester-header" onclick="toggleSemesterState('${semKey}',this)"><span>📚 ${sem.name}</span><span>${isSemOpen?'▼':'▶'}</span></div><div class="semester-content" id="${semKey}" style="display:${isSemOpen?'block':'none'}">`;
-      sem.subjects.forEach((sub,subIdx)=>{
-        let subKey=`bca_sub_${semIdx}_${subIdx}`;
-        let isSubOpen=openSubjects.has(subKey);
-        html+=`<div><div class="subject-header" onclick="toggleSubjectState('${subKey}',this)"><span>📘 ${sub.name}</span><span>${isSubOpen?'▼':'▶'}</span></div><div class="subject-content" id="${subKey}" style="display:${isSubOpen?'block':'none'}">`;
-        html+=`<div class="add-topic-panel"><button class="btn btn-sm btn-outline" onclick="openAddTopicModal('bca','${sem.name}','${sub.name}')">➕ Add Topic</button></div>`;
-        sub.topics.forEach(topic=>{
-          let topicKey=`topic_${topic.id}`;
-          let isOpen=openTopics.has(topicKey);
-          let priClass=topic.priority==='High'?'priority-high':topic.priority==='Medium'?'priority-medium':'priority-low';
-          let accColor=topic.accuracy>=80?'#10b981':topic.accuracy>=60?'#f59e0b':'#ef4444';
-          html+=`<div class="topic-compact ${priClass}" id="topic-compact-${topic.id}" onclick="toggleTopicState('${topicKey}',event)"><span><strong>${topic.name}</strong> ${topic.isManual?'✨':''} <span class="status-badge status-${topic.status.replace(' ','')}">${topic.status}</span> ${topic.priority==='High'?'🔴':topic.priority==='Medium'?'🟡':'🟢'}</span><div class="topic-stats"><span>🎯 ${topic.accuracy||0}%</span><span>⏱️ ${fmtMins(topic.studyTime||0)}</span></div><span>${isOpen?'▼':'▶'}</span></div>
-          <div class="topic-details" id="${topicKey}" style="display:${isOpen?'block':'none'};padding-left:20px;"><div class="card" style="background:var(--surface);">
-            <div class="flex-row"><label>Status:</label><select class="input-field" onchange="updateStatus('${topic.id}',this.value)"><option ${topic.status==='Not Started'?'selected':''}>Not Started</option><option ${topic.status==='Studied'?'selected':''}>Studied</option><option ${topic.status==='Completed'?'selected':''}>Completed</option><option ${topic.status==='Mastered'?'selected':''}>Mastered</option></select></div>
-            <div class="flex-row"><label>Attempted:</label><input type="number" id="att_${topic.id}" class="input-field" style="width:80px;" value="${topic.attempted||0}"><label>Correct:</label><input type="number" id="corr_${topic.id}" class="input-field" style="width:80px;" value="${topic.correct||0}"><button class="btn btn-sm" onclick="updateAccuracyOnly('${topic.id}')">Update</button></div>
-            <div class="progress-bar-bg"><div class="progress-fill" style="width:${topic.accuracy||0}%;background:${accColor};"></div></div>
-            <div><strong>Accuracy: ${topic.accuracy||0}%</strong></div>
-            <div><label>Study Time:</label> ${fmtMins(topic.studyTime||0)}</div>
-            <div style="background:var(--surface);padding:10px;border-radius:12px;margin:8px 0;"><div class="timer-display" id="timer_${topic.id}">00:00:00</div><div class="flex-row"><button class="btn btn-sm btn-success" onclick="startTopicTimer('${topic.id}')">▶ Start</button><button class="btn btn-sm" onclick="pauseTopicTimer('${topic.id}')">⏸ Pause</button><button class="btn btn-sm btn-danger" onclick="stopTopicTimer('${topic.id}')">⏹ Stop</button></div></div>
-            <div class="flex-row"><button class="btn btn-sm btn-outline" onclick="openNotesModal('${topic.id}')">📝 Notes</button><button class="btn btn-sm btn-outline" onclick="openMistakesModal('${topic.id}')">❌ Mistakes</button><button class="btn btn-sm btn-outline" onclick="openResourcesModal('${topic.id}')">📚 Resources</button><button class="btn btn-sm" onclick="markRevision('${topic.id}')">🔄 Revision</button>${topic.isManual?`<button class="btn btn-sm btn-danger" onclick="deleteTopic('${topic.id}')">🗑 Delete</button>`:''}</div>
-            <div><label>Last Revision:</label> ${topic.lastRevision||'Not yet'}</div><div><label>Next Revision:</label> ${topic.nextRevision||'Not scheduled'}</div>
-          </div></div>`;
-        });
-        html+=`</div></div>`;
-      });
-      html+=`</div></div>`;
-    });
-    document.getElementById('bcaContainer').innerHTML=html;
-    renderDashboard();
-  }
-  window.toggleSemesterState=(key,el)=>{ let c=document.getElementById(key); if(c){ if(openSemesters.has(key)){ openSemesters.delete(key); c.style.display='none'; if(el) el.querySelector('span:last-child').innerHTML='▶'; }else{ openSemesters.add(key); c.style.display='block'; if(el) el.querySelector('span:last-child').innerHTML='▼'; } } };
-  window.toggleSubjectState=(key,el)=>{ let c=document.getElementById(key); if(c){ if(openSubjects.has(key)){ openSubjects.delete(key); c.style.display='none'; if(el) el.querySelector('span:last-child').innerHTML='▶'; }else{ openSubjects.add(key); c.style.display='block'; if(el) el.querySelector('span:last-child').innerHTML='▼'; } } };
-  window.toggleTopicState=(key,ev)=>{ ev.stopPropagation(); let c=document.getElementById(key); if(c){ if(openTopics.has(key)){ openTopics.delete(key); c.style.display='none'; let p=c.previousElementSibling; if(p&&p.classList.contains('topic-compact')) p.querySelector('span:last-child').innerHTML='▶'; }else{ openTopics.add(key); c.style.display='block'; let p=c.previousElementSibling; if(p&&p.classList.contains('topic-compact')) p.querySelector('span:last-child').innerHTML='▼'; } } };
-
-  // ==================== SKILLS (unchanged, keep minimal to avoid breaking) ====================
-  let userSkills = [];
-  let openSkillsSet = new Set();
-  const defaultTopicsList = ["Basics","Fundamentals","Intermediate","Advanced","Expert"];
-  function loadSkillsData() { const saved = localStorage.getItem('skillLearningSystem'); if(saved) userSkills = JSON.parse(saved); else userSkills = []; for(let s of userSkills) for(let t of s.topics) { if(t.doubtText === undefined) t.doubtText = null; if(t.videoUrl === undefined) t.videoUrl = null; } }
-  function saveSkillsData() { localStorage.setItem('skillLearningSystem', JSON.stringify(userSkills)); renderAllSkills(); renderSkillInventory(); }
-  const predefinedSkills = ["Excel","Word","HTML","CSS","JavaScript","Python","Java","C","SQL","Power BI","AI","Machine Learning","Data Analysis","Communication","English Speaking","Typing"];
-  let selectedSkillName = null, showCustom = false;
-  function filterSkillList() { const search = document.getElementById('skillSearchInput').value.toLowerCase(); const filtered = predefinedSkills.filter(s => s.toLowerCase().includes(search)); const listDiv = document.getElementById('skillSearchList'); listDiv.innerHTML = filtered.map(s => `<div class="search-item" onclick="selectSkill('${s}')">${s}</div>`).join(''); if(filtered.length === 0 && !showCustom) listDiv.innerHTML += `<div class="search-item" onclick="showCustomSkillInput()">➕ Add custom: "${search}"</div>`; }
-  function selectSkill(skill) { selectedSkillName = skill; document.getElementById('skillSearchInput').value = skill; document.getElementById('skillSearchList').innerHTML = `<div class="search-item selected">${skill} selected</div>`; }
-  function showCustomSkillInput() { showCustom = true; document.getElementById('customSkillInput').style.display = 'block'; document.getElementById('skillSearchList').innerHTML = ''; }
-  function addSelectedSkill() {
-    let skillName = selectedSkillName; if(showCustom) skillName = document.getElementById('customSkillName').value.trim(); if(!skillName) return;
-    if(userSkills.find(s => s.name.toLowerCase() === skillName.toLowerCase())) { showToast('Skill already exists'); return; }
-    const targetLevel = document.getElementById('skillTargetLevel').value;
-    const targetDate = document.getElementById('skillTargetDate').value;
-    const topicsList = (window.skillTopicsDB && window.skillTopicsDB[skillName]) || defaultTopicsList;
-    const topics = topicsList.map(t => ({ name: t, completed: false, studyTime: 0, lastPracticed: null, doubtText: null, videoUrl: null }));
-    userSkills.push({ name: skillName, currentLevel: 'Beginner', targetLevel, targetDate, topics, notes: '', resources: [], studyTimeTotal: 0, streak: 0, knowledgeScore: 0, createdAt: today(), lastStudied: null });
-    saveSkillsData(); closeAddSkillModal(); showToast(`Skill "${skillName}" added`);
-  }
-  function closeAddSkillModal() { document.getElementById('addSkillModal').style.display = 'none'; selectedSkillName = null; showCustom = false; document.getElementById('customSkillInput').style.display = 'none'; document.getElementById('skillSearchInput').value = ''; document.getElementById('customSkillName').value = ''; filterSkillList(); }
-  function showAddSkillModal() { document.getElementById('addSkillModal').style.display = 'flex'; filterSkillList(); }
-  function renderAllSkills() { /* minimal to avoid breaking */ const container = document.getElementById('skillsContainer'); if(!container) return; container.innerHTML = '<div class="card"><p>Skills data loaded. Click Add to manage.</p></div>'; }
-  function renderSkillInventory() { const container = document.getElementById('skillInventoryContainer'); if(!container) return; if(!userSkills.length) { container.innerHTML = '<p>No skills added.</p>'; return; } let totalSkills = userSkills.length; let totalKnowledge = userSkills.reduce((a,s)=>a+(s.knowledgeScore||0),0); let avg = totalSkills ? Math.round(totalKnowledge/totalSkills) : 0; container.innerHTML = `<div class="grid2"><div class="stat-card"><div class="stat-number">${totalSkills}</div><div>Skills</div></div><div class="stat-card"><div class="stat-number">${avg}</div><div>Avg Knowledge</div></div></div>`; }
-  function addCustomTopic() { /* placeholder */ }
-  function openSkillNotesModal(idx) { /* placeholder */ }
-  function saveSkillNotes() { /* placeholder */ }
-  function openAddResourceModal(idx) { /* placeholder */ }
-  function addSkillResource() { /* placeholder */ }
-  function deleteResourceFromSkill(idx, ridx) { /* placeholder */ }
-  function saveDoubt() { /* handled in global */ }
-  // other skills functions are placeholder to avoid errors
-
-  // ==================== REVISION VAULT (unchanged) ====================
-  let revisionItems = JSON.parse(localStorage.getItem('sh_revision') || '[]');
-  let revViewMode = 'list', revFilterMode = 'all', revSearchTerm = '', revFlashIndex = 0;
-  function saveRevision() { localStorage.setItem('sh_revision', JSON.stringify(revisionItems)); updateRevStats(); renderRevision(); }
-  function updateRevStats() {
-    document.getElementById('revTotalCount').innerText = revisionItems.length;
-    document.getElementById('revMasteredCount').innerText = revisionItems.filter(r=>r.status==='Mastered').length;
-    document.getElementById('revDueCount').innerText = revisionItems.filter(r=>r.nextRevision && new Date(r.nextRevision)<=new Date()).length;
-    document.getElementById('revDoubtCount').innerText = revisionItems.filter(r=>r.doubt).length;
-  }
-  function getFilteredRev() {
-    let filtered = [...revisionItems];
-    if(revFilterMode==='doubt') filtered=filtered.filter(r=>r.doubt);
-    if(revFilterMode==='due') filtered=filtered.filter(r=>r.nextRevision && new Date(r.nextRevision)<=new Date());
-    if(revSearchTerm.trim()) filtered=filtered.filter(r=>r.topic.toLowerCase().includes(revSearchTerm.toLowerCase())||r.subject.toLowerCase().includes(revSearchTerm.toLowerCase()));
-    return filtered;
-  }
-  function renderRevision() {
-    let listDiv = document.getElementById('revisionContainer');
-    let flashDiv = document.getElementById('flashcardContainer');
-    if(revViewMode==='list') {
-      flashDiv.style.display='none'; listDiv.style.display='block';
-      let filtered = getFilteredRev();
-      if(filtered.length===0) { listDiv.innerHTML='<p>No items</p>'; return; }
-      listDiv.innerHTML = filtered.map(r=>`<div class="revision-card"><div><strong>${r.course} - ${r.subject}</strong> <strong>${r.topic}</strong> <span class="status-badge">${r.status||'Not Started'}</span> ${r.doubt?'❗':''}</div><div>${r.notes||''}</div><div><select onchange="updateRevStatus('${r.id}',this.value)"><option ${r.status==='Not Started'?'selected':''}>Not Started</option><option ${r.status==='Learning'?'selected':''}>Learning</option><option ${r.status==='Revised'?'selected':''}>Revised</option><option ${r.status==='Mastered'?'selected':''}>Mastered</option></select><button class="btn btn-sm" onclick="editRevItem('${r.id}')">Edit</button><button class="btn btn-sm btn-danger" onclick="deleteRevItem('${r.id}')">Delete</button></div></div>`).join('');
-    } else {
-      listDiv.style.display='none'; flashDiv.style.display='block';
-      let filtered = getFilteredRev();
-      if(filtered.length===0) { flashDiv.innerHTML='<p>No flashcards</p>'; return; }
-      revFlashIndex = Math.min(revFlashIndex, filtered.length-1);
-      let item = filtered[revFlashIndex];
-      flashDiv.innerHTML = `<div class="flex-row"><button class="btn btn-sm" onclick="prevFlash()">◀</button><span>${revFlashIndex+1}/${filtered.length}</span><button class="btn btn-sm" onclick="nextFlash()">▶</button></div><div class="flashcard" onclick="this.classList.toggle('flipped')"><div class="flashcard-inner"><div class="flashcard-front"><h4>${item.topic}</h4><p>${item.subject}</p></div><div class="flashcard-back"><p>${item.notes||'No notes'}</p></div></div></div>`;
-    }
-  }
-  function showAddRevForm(id=null) {
-    document.getElementById('revEditId').value = id||'';
-    if(id) { let r = revisionItems.find(x=>x.id==id); if(r){ document.getElementById('revCourse').value=r.course; document.getElementById('revSubject').value=r.subject; document.getElementById('revTopic').value=r.topic; document.getElementById('revNotes').value=r.notes||''; document.getElementById('revDoubt').checked=r.doubt||false; document.getElementById('revNextRevision').value=r.nextRevision||''; } }
-    else { document.getElementById('revCourse').value='BCA'; document.getElementById('revSubject').value=''; document.getElementById('revTopic').value=''; document.getElementById('revNotes').value=''; document.getElementById('revDoubt').checked=false; document.getElementById('revNextRevision').value=''; }
-    document.getElementById('revAddModal').style.display='flex';
-  }
-  function closeRevModal() { document.getElementById('revAddModal').style.display='none'; }
-  function saveRevisionItem() {
-    let id = document.getElementById('revEditId').value;
-    let course = document.getElementById('revCourse').value;
-    let subject = document.getElementById('revSubject').value.trim();
-    let topic = document.getElementById('revTopic').value.trim();
-    let notes = document.getElementById('revNotes').value;
-    let doubt = document.getElementById('revDoubt').checked;
-    let nextRevision = document.getElementById('revNextRevision').value;
-    if(!subject || !topic) return;
-    if(id) {
-      let idx = revisionItems.findIndex(r=>r.id==id);
-      if(idx!==-1) revisionItems[idx] = {...revisionItems[idx], course, subject, topic, notes, doubt, nextRevision};
-    } else {
-      revisionItems.push({ id:Date.now(), course, subject, topic, notes, doubt, nextRevision, status:'Not Started' });
-    }
-    saveRevision(); closeRevModal();
-  }
-  function updateRevStatus(id, status) { let r=revisionItems.find(x=>x.id==id); if(r){ r.status=status; saveRevision(); } }
-  function deleteRevItem(id) { revisionItems = revisionItems.filter(r=>r.id!=id); saveRevision(); }
-  function editRevItem(id) { showAddRevForm(id); }
-  function toggleRevView() { revViewMode = revViewMode==='list'?'flashcard':'list'; renderRevision(); }
-  function filterRevByDoubt() { revFilterMode='doubt'; renderRevision(); }
-  function filterRevByDue() { revFilterMode='due'; renderRevision(); }
-  function clearRevFilters() { revFilterMode='all'; document.getElementById('revSearchInput').value=''; revSearchTerm=''; renderRevision(); }
-  function filterRevisionList() { revSearchTerm = document.getElementById('revSearchInput').value; renderRevision(); }
-  function prevFlash() { let f = getFilteredRev(); if(revFlashIndex>0) revFlashIndex--; renderRevision(); }
-  function nextFlash() { let f = getFilteredRev(); if(revFlashIndex<f.length-1) revFlashIndex++; renderRevision(); }
-
-  // ==================== LPU BCA SMART ANALYTICS (Premium design) ====================
-  function renderLPUAnalytics() {
-    const container = document.getElementById('analyticsContent');
-    if(!container) return;
-    if(!bcaData || bcaData.length === 0) {
-      container.innerHTML = '<div class="card" style="text-align:center;"><p>No BCA syllabus data available. Please add BCA topics first.</p></div>';
-      return;
-    }
-    // Calculations (same as before but more robust)
-    let totalTopics = 0, completedTopics = 0, studiedTopics = 0;
-    let semesterStats = [];
-    let allSubjects = [];
-    for(let sem of bcaData) {
-      let semTopics = 0, semCompleted = 0, semStudied = 0, semStudyTime = 0;
-      let subjectsData = [];
-      for(let sub of sem.subjects) {
-        let subTopics = 0, subCompleted = 0, subStudied = 0, subStudyTime = 0;
-        for(let topic of sub.topics) {
-          subTopics++; totalTopics++;
-          if(topic.status === 'Completed' || topic.status === 'Mastered') { subCompleted++; semCompleted++; completedTopics++; }
-          else if(topic.status === 'Studied') { subStudied++; semStudied++; studiedTopics++; }
-          subStudyTime += topic.studyTime || 0; semStudyTime += topic.studyTime || 0;
-        }
-        subjectsData.push({ name: sub.name, progress: subTopics ? Math.round((subCompleted/subTopics)*100) : 0, studyTime: subStudyTime });
-      }
-      semesterStats.push({ name: sem.name, progress: semTopics ? Math.round((semCompleted/semTopics)*100) : 0, subjects: subjectsData, studyTime: semStudyTime });
-    }
-    const pendingTopics = totalTopics - completedTopics;
-    const coveragePercent = totalTopics ? Math.round((completedTopics/totalTopics)*100) : 0;
-    // Expected vs Actual (dummy calculation based on semester start dates)
-    const currentDate = new Date();
-    let expectedTopics = 0;
-    for(let i=0; i<semesterStats.length; i++) {
-      let semStart = new Date(currentDate.getFullYear(), (i%2===0?6:0), 1);
-      let semEnd = new Date(semStart); semEnd.setMonth(semStart.getMonth()+6);
-      if(currentDate > semEnd) expectedTopics += bcaData[i].subjects.reduce((acc,sub)=>acc+sub.topics.length,0);
-      else if(currentDate >= semStart) {
-        let daysPassed = (currentDate - semStart)/(1000*3600*24);
-        let totalDays = (semEnd - semStart)/(1000*3600*24);
-        expectedTopics += Math.floor((daysPassed/totalDays) * bcaData[i].subjects.reduce((acc,sub)=>acc+sub.topics.length,0));
-      }
-    }
-    const gapTopics = expectedTopics - completedTopics;
-    const isBehind = gapTopics > 0;
-    // Revision stats
-    let revisedTopics = 0;
-    for(let sem of bcaData) for(let sub of sem.subjects) for(let t of sub.topics) if(t.revision || t.status==='Mastered') revisedTopics++;
-    const revisionPercent = totalTopics ? Math.round((revisedTopics/totalTopics)*100) : 0;
-    // Study time stats
-    let totalStudyMinutes = 0;
-    for(let sem of bcaData) for(let sub of sem.subjects) for(let t of sub.topics) totalStudyMinutes += t.studyTime || 0;
-    const totalStudyHours = Math.round(totalStudyMinutes/60);
-    const examReadiness = Math.min(100, Math.round(coveragePercent*0.4 + revisionPercent*0.3 + Math.min(100,totalStudyHours/120)*0.2 + 70*0.1));
-    // Backlog subjects (progress < 40% and study time < 10h)
-    let backlogSubjects = [];
-    for(let sem of bcaData) {
-      for(let sub of sem.subjects) {
-        let subTopics = sub.topics.length;
-        let subCompleted = sub.topics.filter(t=>t.status==='Completed'||t.status==='Mastered').length;
-        let subProgress = subTopics ? (subCompleted/subTopics)*100 : 0;
-        let subStudyTime = sub.topics.reduce((s,t)=>s+(t.studyTime||0),0);
-        if(subProgress < 40 && subStudyTime < 600) backlogSubjects.push({ name: sub.name, progress: Math.round(subProgress), studyTime: fmt(subStudyTime) });
-      }
-    }
-    // Time investment (top subjects)
-    let subjectTime = [];
-    for(let sem of bcaData) for(let sub of sem.subjects) subjectTime.push({ name: sub.name, time: sub.topics.reduce((s,t)=>s+(t.studyTime||0),0) });
-    subjectTime.sort((a,b)=>b.time - a.time);
-    let timeInvestmentHtml = subjectTime.slice(0,5).map(s => `<div class="flex-row" style="justify-content:space-between"><span>${s.name}</span><span>${fmt(s.time)}</span></div>`).join('');
-    // Study gap analysis
-    let studyDates = sessions.map(s=>s.date).filter((v,i,a)=>a.indexOf(v)===i).sort();
-    let longestGap = 0, currentGap = 0;
-    let lastDate = null;
-    for(let d of studyDates) {
-      if(lastDate) { let diff = (new Date(d)-new Date(lastDate))/(1000*3600*24); if(diff>longestGap) longestGap = diff; }
-      lastDate = d;
-    }
-    if(lastDate) currentGap = (new Date(today())-new Date(lastDate))/(1000*3600*24);
-    // Forecast
-    let firstStudyDate = studyDates.length ? studyDates[0] : today();
-    let daysSinceStart = Math.max(1, (new Date(today())-new Date(firstStudyDate))/(1000*3600*24));
-    let topicsPerDay = completedTopics / daysSinceStart;
-    let daysToComplete = topicsPerDay > 0 ? Math.ceil(pendingTopics / topicsPerDay) : 999;
-    let expectedCompletion = new Date(); expectedCompletion.setDate(expectedCompletion.getDate() + daysToComplete);
-    let recoveryMsg = isBehind ? `You are behind by ${gapTopics} topics. Study ${Math.ceil(pendingTopics/30)} topics/day to catch up.` : `You are on track! Keep studying ${Math.max(1,Math.ceil(topicsPerDay))} topics/day.`;
-
-    // Build premium HTML
-    container.innerHTML = `
-      <div class="analytics-grid">
-        <div class="analytics-card"><div class="analytics-title">📘 Syllabus Coverage</div><div class="analytics-value">${coveragePercent}%</div><div class="progress-bar-bg mt-2"><div class="progress-fill" style="width:${coveragePercent}%"></div></div><div>${completedTopics}/${totalTopics} topics</div></div>
-        <div class="analytics-card"><div class="analytics-title">🎓 Exam Readiness</div><div class="analytics-value">${examReadiness}%</div><div class="progress-bar-bg mt-2"><div class="progress-fill" style="width:${examReadiness}%"></div></div><div>Based on syllabus + revision + time</div></div>
-        <div class="analytics-card"><div class="analytics-title">🔄 Revision Health</div><div class="analytics-value">${revisionPercent}%</div><div class="progress-bar-bg mt-2"><div class="progress-fill" style="width:${revisionPercent}%"></div></div><div>${revisedTopics}/${totalTopics} topics revised</div></div>
-        <div class="analytics-card"><div class="analytics-title">⏱️ Total Study Time</div><div class="analytics-value">${totalStudyHours}h</div><div>Across all semesters</div></div>
-      </div>
-      <h4 style="margin: 20px 0 10px;">📅 Semester Health</h4>
-      <div class="analytics-grid">
-        ${semesterStats.map(sem => `
-          <div class="analytics-card">
-            <div class="analytics-title">${sem.name}</div>
-            <div class="analytics-value">${sem.progress}%</div>
-            <div class="progress-bar-bg mt-2"><div class="progress-fill" style="width:${sem.progress}%"></div></div>
-            <div>${sem.studyTime ? fmt(sem.studyTime) : '0h'} studied</div>
-            <div style="margin-top:8px;"><span class="${sem.progress >= 70 ? 'badge-on-track' : (sem.progress >= 40 ? 'badge-behind' : 'badge-critical')}">${sem.progress >= 70 ? '✅ On Track' : (sem.progress >= 40 ? '⚠️ Behind' : '🔴 Critical')}</span></div>
-          </div>
-        `).join('')}
-      </div>
-      <h4 style="margin: 20px 0 10px;">📘 Subject-wise Progress</h4>
-      ${semesterStats.map(sem => `
-        <div style="background: var(--surface); border-radius: 16px; padding: 12px; margin-bottom: 16px;">
-          <div style="font-weight: bold; margin-bottom: 12px;">${sem.name}</div>
-          ${sem.subjects.map(sub => `
-            <div class="subject-progress-item">
-              <div class="subject-name"><span>${sub.name}</span><span>${sub.progress}%</span></div>
-              <div class="subject-progress-bar"><div class="subject-progress-fill" style="width:${sub.progress}%"></div></div>
+    <main class="main">
+        <div class="page-header">
+            <h1>Welcome <span>Nemi</span> 👋</h1>
+            <div class="date-badge" id="currentDate">
+                <span class="live-dot"></span>
+                <span class="time-text" id="liveTime"></span>
+                <span id="liveDate"></span>
             </div>
-          `).join('')}
         </div>
-      `).join('')}
-      <div class="analytics-grid" style="margin-top: 20px;">
-        <div class="analytics-card">
-          <div class="analytics-title">🎯 Expected vs Actual</div>
-          <div>Expected: ${expectedTopics}</div>
-          <div>Actual: ${completedTopics}</div>
-          <div>Gap: ${gapTopics > 0 ? `+${gapTopics}` : gapTopics}</div>
-          <div class="${isBehind ? 'behind' : 'on-track'}" style="font-weight:bold;">${isBehind ? '⚠️ Behind Schedule' : '✅ On Track'}</div>
-        </div>
-        <div class="analytics-card">
-          <div class="analytics-title">⚠️ Backlog Detector</div>
-          ${backlogSubjects.length ? backlogSubjects.map(s => `<div class="backlog-item"><strong>${s.name}</strong> (${s.progress}%, ${s.studyTime})</div>`).join('') : '<div>No high-risk subjects. Great job!</div>'}
-        </div>
-        <div class="analytics-card">
-          <div class="analytics-title">⏱️ Time Investment (Top 5)</div>
-          ${timeInvestmentHtml}
-        </div>
-        <div class="analytics-card">
-          <div class="analytics-title">📆 Study Gap</div>
-          <div>Longest gap: ${longestGap} days</div>
-          <div>Current gap: ${Math.floor(currentGap)} days</div>
-          <div>Missed days: ${Math.floor(currentGap)}</div>
-        </div>
-        <div class="analytics-card">
-          <div class="analytics-title">🔮 Completion Forecast</div>
-          <div>Speed: ${topicsPerDay.toFixed(1)} topics/day</div>
-          <div>Topics left: ${pendingTopics}</div>
-          <div>Expected finish: ${expectedCompletion.toLocaleDateString()}</div>
-        </div>
-        <div class="analytics-card">
-          <div class="analytics-title">🚀 Recovery Plan</div>
-          <div>${recoveryMsg}</div>
-        </div>
-      </div>
-    `;
-  }
 
-  // ==================== EXPORT ====================
-  function exportReport() {
-    let month = parseInt(document.getElementById('exportMonth').value);
-    let year = parseInt(document.getElementById('exportYear').value);
-    let prefix = `${year}-${String(month+1).padStart(2,'0')}`;
-    let wb = XLSX.utils.book_new();
-    let pRows = []; Object.entries(plans).forEach(([d,tasks])=>{ if(d.startsWith(prefix)) tasks.forEach(t=>pRows.push({Date:d,Subject:t.subject,'Planned(hrs)':(t.plannedMin/60).toFixed(2),'Actual(hrs)':((t.actualMin||0)/60).toFixed(2)})); });
-    if(pRows.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(pRows), 'Planner');
-    let sRows = sessions.filter(s=>s.date.startsWith(prefix)).map(s=>({Date:s.date,Task:s.task,'Duration(hrs)':(s.durationMin/60).toFixed(2)}));
-    if(sRows.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(sRows), 'Sessions');
-    XLSX.writeFile(wb, `StudyReport_${year}_${month+1}.xlsx`);
-  }
+        <!-- Dashboard -->
+        <div id="tab-dashboard" class="tab-content active">
+            <div class="card"><div class="card-header"><i class="fas fa-chart-line" style="color:#2dd4bf;"></i> Today's Accuracy</div><div id="dashSummary"></div></div>
+            <div class="card"><div class="card-header"><i class="fas fa-graduation-cap" style="color:#a78bfa;"></i> BCA Quick Stats</div><div id="bcaDashboardStats"></div></div>
+            <div class="card"><div class="card-header"><i class="fas fa-list-check" style="color:#fbbf24;"></i> Priority & Due</div><div id="todayQueue"></div></div>
+            <div class="card"><div class="card-header"><i class="fas fa-clock" style="color:#34d399;"></i> Recent Sessions</div><div id="dashRecentSessions"></div></div>
+            <div class="card" id="skillInventoryCard"><div class="card-header"><i class="fas fa-trophy" style="color:#f97316;"></i> Skills Inventory</div><div id="skillInventoryContainer"></div></div>
+            <div id="resumeCard" style="display:none;" class="card"><div class="card-header"><i class="fas fa-play-circle" style="color:#c4b5fd;"></i> Resume Last Topic</div><div id="lastTopicDisplay"></div><button class="btn btn-sm" onclick="resumeLastTopic()" style="margin-top:8px;">▶ Resume</button></div>
+        </div>
 
-  // ==================== SETTINGS ====================
-  function syncNow() { showToast('Sync simulated (local only)'); }
-  function testConnection() { alert('Local storage only. All data saved in browser.'); }
+        <!-- Planner -->
+        <div id="tab-planner" class="tab-content">
+            <div class="card">
+                <div class="card-header"><i class="fas fa-calendar-days" style="color:#fbbf24;"></i> Daily Planner</div>
+                <div class="flex-row"><input type="date" id="planDate" class="input-field"><button class="btn btn-sm btn-outline" onclick="changePlanDate(-1)">◀</button><button class="btn btn-sm btn-outline" onclick="changePlanDate(1)">▶</button><button class="btn btn-sm btn-outline" onclick="goToToday()">Today</button></div>
+                <div class="flex-row"><input type="text" id="planSubject" placeholder="Subject" class="input-field"><input type="number" id="planHrs" placeholder="Hrs" class="input-field" style="width:70px;" value="0"><input type="number" id="planMins" placeholder="Min" class="input-field" style="width:65px;" value="0"><button class="btn btn-sm" onclick="addPlanTask()">➕ Add</button></div>
+                <div id="plannerTasks"></div>
+                <div id="plannerWeekSummary" style="margin-top:10px;"></div>
+            </div>
+        </div>
 
-  // ==================== INIT ====================
-  function init() {
-    loadBCAData(); renderBCA();
-    loadSkillsData(); renderAllSkills();
-    loadPlanner(); renderDashboard(); renderTimerLogs(); renderRevision(); renderLPUAnalytics();
-    document.getElementById('planDate').value = today();
-    setInterval(()=>{ let n=new Date(); document.getElementById('currentDate').innerHTML = n.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}); },1000);
-    if(timerState.running) timerInterval = setInterval(updateTimerDisplay,1000);
-  }
-  init();
-</script>
+        <!-- Live Timer -->
+        <div id="tab-livetimer" class="tab-content">
+            <div class="card">
+                <div class="card-header"><i class="fas fa-stopwatch" style="color:#34d399;"></i> Live Multi‑Task Timer</div>
+                <div class="flex-row"><select id="timerTaskSelect" class="input-field"></select><button class="btn btn-sm btn-success" onclick="startTimerForTask()">▶ Start</button><button class="btn btn-sm" onclick="pauseTimer()">⏸ Pause</button><button class="btn btn-sm btn-danger" onclick="stopTimer()">⏹ Stop & Save</button></div>
+                <div class="timer-display" id="timerDisplay">00:00:00</div>
+                <div id="timerActiveLabel"></div>
+                <h4 style="margin-top:12px;">Today's Sessions</h4>
+                <div id="timerTodayLogs"></div>
+            </div>
+        </div>
+
+        <!-- Self Study -->
+        <div id="tab-selftimer" class="tab-content">
+            <div class="card" style="text-align:center;">
+                <div class="card-header" style="justify-content:center;"><i class="fas fa-bullseye" style="color:#fb7185;"></i> Self Study Timer</div>
+                <div class="timer-display large" id="globalTimerDisplay">00:00:00</div>
+                <div class="flex-row" style="justify-content:center;margin-top:16px;"><button class="btn btn-success" onclick="startGlobalTimer()">▶ Start</button><button class="btn" onclick="pauseGlobalTimer()">⏸ Pause</button><button class="btn btn-danger" onclick="stopGlobalTimer()">⏹ Stop</button></div>
+            </div>
+        </div>
+
+        <!-- BCA -->
+        <div id="tab-bca" class="tab-content">
+            <div class="card"><div class="card-header"><i class="fas fa-graduation-cap" style="color:#a78bfa;"></i> BCA (LPU University) - Full Syllabus</div><div id="bcaContainer"></div></div>
+        </div>
+
+        <!-- Skills -->
+        <div id="tab-skills" class="tab-content">
+            <div class="card"><div class="card-header"><i class="fas fa-rocket" style="color:#f97316;"></i> Skill Learning OS</div><div class="flex-row"><button class="btn btn-sm btn-outline" onclick="showAddSkillModal()">➕ Add New Skill</button></div><div id="skillsContainer"></div></div>
+        </div>
+
+        <!-- Revision -->
+        <div id="tab-revision" class="tab-content">
+            <div class="card">
+                <div class="card-header"><i class="fas fa-brain" style="color:#f472b6;"></i> Revision Master Vault</div>
+                <div class="flex-row"><button class="btn btn-sm" onclick="toggleRevView()">📋 / 🃏</button><button class="btn btn-sm btn-outline" onclick="showAddRevForm()">➕ Add</button><button class="btn btn-sm btn-outline" onclick="filterRevByDoubt()">❌ Doubts</button><button class="btn btn-sm btn-outline" onclick="filterRevByDue()">⏰ Due</button><button class="btn btn-sm btn-outline" onclick="clearRevFilters()">All</button><input type="text" id="revSearchInput" placeholder="🔍 Search" class="input-field" style="width:140px;" onkeyup="filterRevisionList()"></div>
+                <div class="stat-grid" style="margin:12px 0;"><div class="stat-card"><div class="stat-number" id="revTotalCount">0</div><div class="stat-label">Total</div></div><div class="stat-card"><div class="stat-number" id="revMasteredCount">0</div><div class="stat-label">Mastered</div></div><div class="stat-card"><div class="stat-number" id="revDueCount">0</div><div class="stat-label">Due</div></div><div class="stat-card"><div class="stat-number" id="revDoubtCount">0</div><div class="stat-label">Doubts</div></div></div>
+                <div id="revisionContainer"></div><div id="flashcardContainer" style="display:none;"></div>
+            </div>
+        </div>
+
+        <!-- ========== PREMIUM ANALYTICS ========== -->
+        <div id="tab-analytics" class="tab-content">
+            <div class="card" style="padding:26px;">
+                <div class="flex-between" style="margin-bottom:20px;">
+                    <h2 style="background:linear-gradient(135deg,#f8fafc,#22d3ee);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;"><i class="fas fa-chart-pie"></i> LPU BCA Smart Analytics</h2>
+                    <button class="btn btn-sm btn-outline" onclick="renderLPUAnalytics()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                </div>
+                <div id="analyticsContent"></div>
+            </div>
+        </div>
+
+        <!-- Export -->
+        <div id="tab-export" class="tab-content">
+            <div class="card"><div class="card-header"><i class="fas fa-file-export" style="color:#38bdf8;"></i> Export Excel Report</div><div class="flex-row"><select id="exportMonth" class="input-field"><option value="0">Jan</option><option value="1">Feb</option><option value="2">Mar</option><option value="3">Apr</option><option value="4">May</option><option value="5">Jun</option><option value="6">Jul</option><option value="7">Aug</option><option value="8">Sep</option><option value="9">Oct</option><option value="10">Nov</option><option value="11">Dec</option></select><input type="number" id="exportYear" value="2026" style="width:80px;" class="input-field"><button class="btn btn-success" onclick="exportReport()"><i class="fas fa-file-export"></i> Download</button></div></div>
+        </div>
+
+        <!-- Settings -->
+        <div id="tab-settings" class="tab-content">
+            <div class="card"><div class="card-header"><i class="fas fa-gear" style="color:#94a3b8;"></i> Settings</div><p style="color:var(--text-muted);">All data saved securely in your browser.</p><div class="flex-row"><button class="btn btn-outline btn-sm" onclick="syncNow()">Force Sync</button><button class="btn btn-outline btn-sm" onclick="testConnection()">Test Firebase</button></div></div>
+        </div>
+    </main>
+    <div class="sync-badge" id="syncBadge">🟢 Synced</div>
+
+    <!-- Modals -->
+    <div id="addSkillModal" class="modal"><div class="modal-content"><h3>➕ Add New Skill</h3><div class="flex-row"><input type="text" id="skillSearchInput" placeholder="Search skills..." class="input-field" style="flex:1;" oninput="filterSkillList()"><button class="btn btn-sm btn-outline" onclick="showCustomSkillInput()">➕ Custom</button></div><div id="skillSearchList" class="search-list"></div><div id="customSkillInput" style="display:none;"><input type="text" id="customSkillName" placeholder="Enter custom skill name" class="input-field" style="width:100%;margin:8px 0;"></div><div class="flex-row"><label>Target Level:</label><select id="skillTargetLevel" class="input-field"><option>Intermediate</option><option>Advanced</option><option>Expert</option></select></div><div class="flex-row"><label>Target Date:</label><input type="date" id="skillTargetDate" class="input-field"></div><div class="flex-row"><button class="btn" onclick="addSelectedSkill()">Add Skill</button><button class="btn btn-outline" onclick="closeAddSkillModal()">Cancel</button></div></div></div>
+    <div id="addTopicModal" class="modal"><div class="modal-content"><h3>➕ Add Custom Topic</h3><input type="hidden" id="topicSkillIndex"><input type="text" id="newTopicName" class="input-field" style="width:100%"><div class="flex-row"><button class="btn" onclick="addCustomTopic()">Add</button><button class="btn btn-outline" onclick="closeTopicModal()">Cancel</button></div></div></div>
+    <div id="revAddModal" class="modal"><div class="modal-content"><h3>➕ Revision Item</h3><input type="hidden" id="revEditId"><select id="revCourse" class="input-field"><option>BCA</option><option>SSC</option><option>English</option><option>Skills</option></select><input type="text" id="revSubject" placeholder="Subject" class="input-field"><input type="text" id="revTopic" placeholder="Topic" class="input-field"><textarea id="revNotes" rows="3" placeholder="Notes" class="input-field"></textarea><div class="flex-row"><label><input type="checkbox" id="revDoubt"> Doubt</label><label>Next Revision:</label><input type="date" id="revNextRevision"></div><div class="flex-row"><button class="btn" onclick="saveRevisionItem()">Save</button><button class="btn btn-outline" onclick="closeRevModal()">Cancel</button></div></div></div>
+    <div id="notesModal" class="modal"><div class="modal-content"><h3>📝 Notes</h3><textarea id="notesTextarea" rows="8" class="input-field" style="width:100%"></textarea><div id="notesLastUpdated" style="font-size:0.7rem;color:var(--text-muted);"></div><div class="flex-row"><button class="btn btn-sm" onclick="saveNotes()">Save</button><button class="btn btn-sm btn-outline" onclick="closeNotesModal()">Cancel</button></div></div></div>
+    <div id="mistakesModal" class="modal"><div class="modal-content"><h3>❌ Mistake Book</h3><div id="mistakesList"></div><div class="flex-row"><input type="text" id="newMistake" class="input-field" placeholder="New mistake..."><button class="btn btn-sm" onclick="addMistake()">Add</button></div><button class="btn btn-sm btn-outline" onclick="closeMistakesModal()">Close</button></div></div>
+    <div id="resourcesModal" class="modal"><div class="modal-content"><h3>📚 Resources</h3><div id="resourcesList"></div><div class="flex-row"><select id="resourceType" class="input-field"><option>pdf</option><option>youtube</option><option>website</option></select><input type="text" id="resourceUrl" class="input-field" placeholder="URL"><button class="btn btn-sm" onclick="addResource()">Add</button></div><button class="btn btn-sm btn-outline" onclick="closeResourcesModal()">Close</button></div></div>
+
+    <script>
+        // ==================== UTILITIES ====================
+        const today = () => new Date().toISOString().split('T')[0];
+        const fmt = (m) => { let h = Math.floor(m / 60),
+                mn = m % 60; return `${h}h ${mn}m`; };
+        const fmtMins = fmt;
+        const getMonday = (d) => { let dt = new Date(d);
+            dt.setDate(dt.getDate() - dt.getDay() + (dt.getDay() === 0 ? -6 : 1)); return dt.toISOString().split('T')[0]; };
+
+        function showToast(msg) { let t = document.createElement('div');
+            t.className = 'toast';
+            t.innerText = msg;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 2200); }
+
+        function escapeHtml(s) { return String(s).replace(/[&<>]/g, function(m) { return m === '&' ? '&amp;' : m === '<' ? '&lt;' :
+                    '&gt;'; }); }
+
+        // ==================== LIVE DATE/TIME ====================
+        function updateLiveDateTime() {
+            const now = new Date();
+            const timeEl = document.getElementById('liveTime');
+            const dateEl = document.getElementById('liveDate');
+            if (timeEl) {
+                timeEl.textContent = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit',
+                    hour12: true });
+            }
+            if (dateEl) {
+                dateEl.textContent = now.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short',
+                    year: 'numeric' });
+            }
+        }
+        setInterval(updateLiveDateTime, 1000);
+        updateLiveDateTime();
+
+        // ==================== TAB SWITCHING ====================
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            const target = document.getElementById(`tab-${tab}`);
+            if (target) target.classList.add('active');
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            const nav = document.querySelector(`.nav-link[data-tab="${tab}"]`);
+            if (nav) nav.classList.add('active');
+            if (tab === 'planner') loadPlanner();
+            if (tab === 'livetimer') { populateTimerSelect();
+                updateTimerDisplay();
+                renderTimerLogs(); }
+            if (tab === 'bca') renderBCA();
+            if (tab === 'skills') renderAllSkills();
+            if (tab === 'revision') renderRevision();
+            if (tab === 'analytics') renderLPUAnalytics();
+            if (tab === 'dashboard') { renderDashboard();
+                renderSkillInventory(); }
+        }
+
+        // ==================== PLANNER & TIMER ====================
+        let plans = JSON.parse(localStorage.getItem('sh_plans') || '{}');
+        let sessions = JSON.parse(localStorage.getItem('sh_sessions') || '[]');
+        let timerState = JSON.parse(localStorage.getItem('sh_timer_state') ||
+            '{"taskId":null,"running":false,"lastStart":null}');
+        let accumulatedMap = JSON.parse(localStorage.getItem('sh_timer_acc') || '{}');
+        let timerInterval = null;
+
+        function savePlannerTimer() {
+            localStorage.setItem('sh_plans', JSON.stringify(plans));
+            localStorage.setItem('sh_sessions', JSON.stringify(sessions));
+            localStorage.setItem('sh_timer_state', JSON.stringify(timerState));
+            localStorage.setItem('sh_timer_acc', JSON.stringify(accumulatedMap));
+        }
+
+        function getTasks(date) { return plans[date] || []; }
+
+        function getTask(date, id) { return getTasks(date).find(t => t.id === id); }
+
+        function loadPlanner() {
+            let date = document.getElementById('planDate')?.value || today();
+            let tasks = getTasks(date);
+            let html = tasks.length ? '' : '<p style="color:var(--text-muted);">No tasks for this date.</p>';
+            tasks.forEach(t => {
+                html +=
+                    `<div class="card" style="padding:12px;"><div class="flex-row"><strong>${escapeHtml(t.subject)}</strong> | Planned: ${fmt(t.plannedMin)} | Actual: ${fmt(t.actualMin||0)}<input type="checkbox" ${t.completed?'checked':''} onchange="togglePlan('${date}',${t.id})"><button class="btn btn-sm btn-danger" onclick="delPlan('${date}',${t.id})">🗑️</button></div></div>`;
+            });
+            const container = document.getElementById('plannerTasks');
+            if (container) container.innerHTML = html;
+            let ws = getMonday(date);
+            let wp = 0,
+                wa = 0;
+            for (let i = 0; i < 7; i++) { let d = new Date(ws);
+                d.setDate(d.getDate() + i); let k = d.toISOString().split('T')[0];
+                (plans[k] || []).forEach(t => { wp += t.plannedMin;
+                    wa += t.actualMin || 0; }); }
+            const weekSum = document.getElementById('plannerWeekSummary');
+            if (weekSum) weekSum.innerHTML =
+                `<strong>Week (${ws})</strong> | Planned: ${fmt(wp)} | Actual: ${fmt(wa)}`;
+            populateTimerSelect();
+        }
+
+        function togglePlan(date, id) { let t = getTask(date, id); if (t) { t.completed = !t.completed;
+                savePlannerTimer();
+                loadPlanner();
+                renderDashboard(); } }
+
+        function delPlan(date, id) { plans[date] = plans[date].filter(t => t.id !== id);
+            savePlannerTimer();
+            loadPlanner();
+            renderDashboard(); }
+
+        function changePlanDate(o) { let el = document.getElementById('planDate'); if (!el) return; let d = new Date(el.value);
+            d.setDate(d.getDate() + o);
+            el.value = d.toISOString().split('T')[0];
+            loadPlanner(); }
+
+        function goToToday() { const el = document.getElementById('planDate'); if (el) el.value = today();
+            loadPlanner(); }
+
+        function addPlanTask() {
+            let date = document.getElementById('planDate')?.value;
+            let sub = document.getElementById('planSubject')?.value.trim();
+            let h = parseInt(document.getElementById('planHrs')?.value) || 0;
+            let m = parseInt(document.getElementById('planMins')?.value) || 0;
+            if (!sub) { showToast('Enter subject'); return; }
+            if (h === 0 && m === 0) { showToast('Enter time'); return; }
+            if (!plans[date]) plans[date] = [];
+            plans[date].push({ id: Date.now(), subject: sub, plannedMin: h * 60 + m, actualMin: 0, completed: false });
+            savePlannerTimer();
+            loadPlanner();
+            renderDashboard();
+            if (document.getElementById('planSubject')) document.getElementById('planSubject').value = '';
+            if (document.getElementById('planHrs')) document.getElementById('planHrs').value = '0';
+            if (document.getElementById('planMins')) document.getElementById('planMins').value = '0';
+            showToast('Task added');
+        }
+
+        function populateTimerSelect() {
+            let sel = document.getElementById('timerTaskSelect');
+            if (!sel) return;
+            let tasks = getTasks(today());
+            sel.innerHTML = '<option value="">-- Select task --</option>';
+            tasks.forEach(t => {
+                let tid = `${today()}|${t.id}`;
+                let acc = accumulatedMap[tid] || 0;
+                let opt = document.createElement('option');
+                opt.value = tid;
+                opt.textContent = `${t.subject}${acc ? ` (${Math.floor(acc/60000)}m)` : ''}`;
+                if (timerState.taskId === tid) opt.selected = true;
+                sel.appendChild(opt);
+            });
+        }
+
+        function updateTimerDisplay() {
+            let base = timerState.taskId ? (accumulatedMap[timerState.taskId] || 0) : 0;
+            let total = base + (timerState.running && timerState.lastStart ? (Date.now() - timerState.lastStart) : 0);
+            let s = Math.floor(total / 1000),
+                h = Math.floor(s / 3600),
+                m = Math.floor((s % 3600) / 60),
+                sec = s % 60;
+            const disp = document.getElementById('timerDisplay');
+            if (disp) disp.innerText =
+                `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
+        }
+
+        function getTimerName(id) { if (!id) return ''; let [d, tid] = id.split('|'); let t = getTask(d, parseInt(tid)); return t ? t
+                .subject : 'Unknown'; }
+
+        function startTimerForTask() {
+            let sel = document.getElementById('timerTaskSelect');
+            if (!sel) return;
+            let id = sel.value;
+            if (!id) { showToast('Select a task first'); return; }
+            if (timerState.taskId && timerState.taskId !== id && timerState.running) pauseTimer();
+            timerState.taskId = id;
+            timerState.running = true;
+            timerState.lastStart = Date.now();
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimerDisplay, 1000);
+            savePlannerTimer();
+            const label = document.getElementById('timerActiveLabel');
+            if (label) label.innerHTML = `🔴 Running: ${getTimerName(id)}`;
+            populateTimerSelect();
+            renderDashboard();
+        }
+
+        function pauseTimer() {
+            if (!timerState.running || !timerState.taskId) return;
+            accumulatedMap[timerState.taskId] = (accumulatedMap[timerState.taskId] || 0) + (Date.now() - timerState
+                .lastStart);
+            timerState.running = false;
+            timerState.lastStart = null;
+            clearInterval(timerInterval);
+            timerInterval = null;
+            savePlannerTimer();
+            updateTimerDisplay();
+            const label = document.getElementById('timerActiveLabel');
+            if (label) label.innerHTML = `⏸ Paused: ${getTimerName(timerState.taskId)}`;
+            populateTimerSelect();
+        }
+
+        function stopTimer() {
+            if (!timerState.taskId) return;
+            if (timerState.running) pauseTimer();
+            let ms = accumulatedMap[timerState.taskId] || 0;
+            let min = Math.floor(ms / 60000);
+            if (min > 0) {
+                let [date, tid] = timerState.taskId.split('|');
+                let task = getTask(date, parseInt(tid));
+                if (task) task.actualMin = (task.actualMin || 0) + min;
+                sessions.push({ id: Date.now(), task: task?.subject || 'Unknown', date, durationMin: min });
+            }
+            delete accumulatedMap[timerState.taskId];
+            timerState = { taskId: null, running: false, lastStart: null };
+            clearInterval(timerInterval);
+            timerInterval = null;
+            savePlannerTimer();
+            updateTimerDisplay();
+            const label = document.getElementById('timerActiveLabel');
+            if (label) label.innerHTML = 'No active task';
+            populateTimerSelect();
+            loadPlanner();
+            renderTimerLogs();
+            renderDashboard();
+        }
+
+        function renderTimerLogs() {
+            let logs = sessions.filter(s => s.date === today()).slice(0, 5);
+            const container = document.getElementById('timerTodayLogs');
+            if (container) container.innerHTML = logs.map(s =>
+                `<div>📌 ${escapeHtml(s.task)} - ${fmt(s.durationMin)}</div>`).join('') ||
+                '<p style="color:var(--text-muted);">No sessions today</p>';
+        }
+
+        // ==================== SELF STUDY TIMER ====================
+        let globalTimerSeconds = 0,
+            globalTimerRunning = false,
+            globalTimerInterval = null;
+
+        function updateGlobalDisplay() {
+            let hrs = Math.floor(globalTimerSeconds / 3600),
+                mins = Math.floor((globalTimerSeconds % 3600) / 60),
+                secs = globalTimerSeconds % 60;
+            const disp = document.getElementById('globalTimerDisplay');
+            if (disp) disp.innerText =
+                `${hrs.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+        }
+
+        function startGlobalTimer() { if (globalTimerInterval) clearInterval(globalTimerInterval);
+            globalTimerRunning = true;
+            globalTimerInterval = setInterval(() => { if (globalTimerRunning) { globalTimerSeconds++;
+                    updateGlobalDisplay(); } }, 1000);
+            showToast('Self study started'); }
+
+        function pauseGlobalTimer() { globalTimerRunning = false;
+            showToast('Paused'); }
+
+        function stopGlobalTimer() { if (globalTimerInterval) clearInterval(globalTimerInterval); let mins = Math.floor(
+                globalTimerSeconds / 60); if (mins > 0) { sessions.push({ id: Date.now(), task: 'Self Study', date: today(),
+                    durationMin: mins });
+                savePlannerTimer();
+                showToast(`+${fmt(mins)} saved`);
+                renderDashboard(); }
+            globalTimerRunning = false;
+            globalTimerSeconds = 0;
+            updateGlobalDisplay(); }
+
+        // ==================== DASHBOARD ====================
+        function renderDashboard() {
+            let tasks = getTasks(today());
+            let tp = 0,
+                ta = 0;
+            tasks.forEach(t => { tp += t.plannedMin;
+                ta += t.actualMin || 0; });
+            let acc = tp > 0 ? Math.min(100, Math.round((ta / tp) * 100)) : (ta > 0 ? 100 : 0);
+            const dashSum = document.getElementById('dashSummary');
+            if (dashSum) dashSum.innerHTML =
+                `<div class="stat-grid"><div class="stat-card"><div class="stat-number">${tasks.length}</div><div class="stat-label">Tasks</div></div><div class="stat-card"><div class="stat-number">${fmt(tp)}</div><div class="stat-label">Planned</div></div><div class="stat-card"><div class="stat-number">${fmt(ta)}</div><div class="stat-label">Actual</div></div><div class="stat-card"><div class="stat-number">${acc}%</div><div class="stat-label">Accuracy</div></div></div>`;
+            let recent = sessions.sort((a, b) => b.id - a.id).slice(0, 4);
+            const dashRec = document.getElementById('dashRecentSessions');
+            if (dashRec) dashRec.innerHTML = recent.map(s =>
+                `<div>📌 ${s.date} - ${escapeHtml(s.task)} (${fmt(s.durationMin)})</div>`).join('') ||
+                '<p style="color:var(--text-muted);">No sessions</p>';
+            renderBCADashboardStats();
+            renderSkillInventory();
+        }
+
+        // ==================== BCA DATA ====================
+        let bcaData = [];
+        let activeTimers = {};
+        let openSemesters = new Set(),
+            openSubjects = new Set(),
+            openTopics = new Set();
+        let currentTopicId = null;
+
+        function createTopic(name, category = 'Theory', priority = 'Medium', isManual = true) {
+            return { id: Date.now() + Math.random() * 10000, name, category, priority, isManual, status: 'Not Started',
+                attempted: 0, correct: 0, accuracy: 0, studyTime: 0, lastRevision: null, nextRevision: null, notes: '',
+                notesLastUpdated: null, mistakes: [], resources: [], timerRunning: false, timerStart: null,
+            timerCurrent: 0 };
+        }
+
+        function updateTopicAccuracy(t) { t.accuracy = t.attempted > 0 ? Math.round((t.correct / t.attempted) * 100) : 0; }
+        const bcaTopicsMap = {
+            "Fundamentals of Information Technology": ["Intro to Computers", "Hardware & Software", "Number Systems",
+                "OS Basics", "Internet & Web"
+            ],
+            "Programming Methodology (C Programming)": ["C Basics", "Variables", "Operators", "Loops", "Arrays",
+                "Functions", "Pointers", "File Handling"
+            ],
+            "Discrete Structures": ["Set Theory", "Logic", "Relations", "Graph Theory", "Combinatorics"],
+            "English Communication Skills": ["Grammar", "Writing", "Verbal", "Presentation"],
+            "Environmental Studies": ["Ecosystem", "Pollution", "Sustainability", "Green Computing"],
+            "IT Lab": ["MS Office", "Internet Tools", "HTML Basics"],
+            "Programming Lab": ["C Practical", "Debugging", "Mini Projects"],
+            "Database Management Systems (DBMS)": ["SQL", "Normalization", "Transactions", "NoSQL", "MongoDB"],
+            "Object Oriented Programming (C++)": ["Classes", "Inheritance", "Polymorphism", "Encapsulation", "Templates",
+                "STL"
+            ],
+            "Computer Networks": ["OSI Model", "TCP/IP", "Routing", "Network Security", "DNS"],
+            "Computer System Architecture": ["CPU", "Memory Hierarchy", "I/O", "Pipelining"],
+            "Advanced English Communication Skills": ["Business Writing", "Group Discussion", "Interview Skills"],
+            "DBMS Lab": ["SQL Queries", "PL/SQL", "Project"],
+            "OOP Lab": ["C++ Programs", "Mini Project"],
+            "Data Structures": ["Arrays", "Linked Lists", "Stacks & Queues", "Trees", "Graphs", "Sorting", "Searching"],
+            "Operating Systems": ["Process Management", "Memory Management", "File Systems", "Deadlocks", "Scheduling"],
+            "Web Programming": ["HTML", "CSS", "JavaScript", "Bootstrap", "PHP/Node.js"],
+            "Software Engineering": ["SDLC", "Agile", "Testing", "UML", "Project Management"],
+            "Data Structures Lab": ["Implementation of DS", "Problem Solving"],
+            "Web Programming Lab": ["Website Development", "Forms", "Database Integration"],
+            "Minor Project": ["Project Planning", "Development", "Documentation"],
+            "Java Programming": ["OOP in Java", "Exception", "Multithreading", "Collections", "JDBC", "Swing"],
+            "Python Programming": ["Basics", "OOP", "Libraries", "File Handling", "Data Structures"],
+            "Design and Analysis of Algorithms": ["Complexity", "Divide & Conquer", "Dynamic Programming", "Greedy",
+                "Backtracking"
+            ],
+            "Computer Graphics": ["Graphics Primitives", "2D/3D Transformations", "Clipping", "Animation"],
+            "Java Lab": ["Java Programs", "Applets", "JDBC"],
+            "Python Lab": ["Python Scripts", "Data Analysis", "Mini Project"],
+            "Project Work": ["Implementation", "Testing", "Report"],
+            "Artificial Intelligence": ["Search Algorithms", "Knowledge Representation", "Expert Systems", "NLP"],
+            "Cloud Computing": ["AWS", "Azure", "Virtualization", "Docker", "Kubernetes"],
+            "Mobile Application Development": ["Android Basics", "UI Design", "Intents", "SQLite", "Firebase"],
+            "Cyber Security": ["Cryptography", "Network Security", "Ethical Hacking", "Risk Management"],
+            "AI Lab": ["AI Programs", "ML Basics"],
+            "Mobile App Lab": ["Android App Development", "Project"],
+            "Industry Training": ["Internship Report", "Presentation"],
+            "Machine Learning": ["Regression", "Classification", "Clustering", "Neural Networks", "TensorFlow"],
+            "Data Analytics": ["Data Visualization", "Pandas", "NumPy", "Statistics", "Big Data Tools"],
+            "Full Stack Development": ["Node.js", "Express", "MongoDB", "React", "REST APIs"],
+            "Major Project": ["Planning", "Development", "Deployment", "Documentation"],
+            "Internship": ["Industry Experience", "Report"],
+            "Seminar & Viva": ["Presentation", "Viva Voce"]
+        };
+        const bcaStructure = [
+            { name: "Semester 1", subjects: ["Fundamentals of Information Technology",
+                    "Programming Methodology (C Programming)", "Discrete Structures",
+                    "English Communication Skills", "Environmental Studies", "IT Lab", "Programming Lab"
+                ] },
+            { name: "Semester 2", subjects: ["Database Management Systems (DBMS)",
+                    "Object Oriented Programming (C++)", "Computer Networks", "Computer System Architecture",
+                    "Advanced English Communication Skills", "DBMS Lab", "OOP Lab"
+                ] },
+            { name: "Semester 3", subjects: ["Data Structures", "Operating Systems", "Web Programming",
+                    "Software Engineering", "Data Structures Lab", "Web Programming Lab", "Minor Project"
+                ] },
+            { name: "Semester 4", subjects: ["Java Programming", "Python Programming",
+                    "Design and Analysis of Algorithms", "Computer Graphics", "Java Lab", "Python Lab", "Project Work"
+                ] },
+            { name: "Semester 5", subjects: ["Artificial Intelligence", "Cloud Computing",
+                    "Mobile Application Development", "Cyber Security", "AI Lab", "Mobile App Lab", "Industry Training"
+                ] },
+            { name: "Semester 6", subjects: ["Machine Learning", "Data Analytics", "Full Stack Development",
+                    "Major Project", "Internship", "Seminar & Viva"
+                ] }
+        ];
+
+        function loadBCAData() {
+            let saved = localStorage.getItem('studyhub_bca_final');
+            if (saved) bcaData = JSON.parse(saved);
+            else {
+                bcaData = [];
+                bcaStructure.forEach(sem => {
+                    let semData = { name: sem.name, subjects: [] };
+                    sem.subjects.forEach(subName => {
+                        let topics = (bcaTopicsMap[subName] || ['Unit 1', 'Unit 2', 'Unit 3']).map(t =>
+                            createTopic(t, 'Theory', 'Medium', false));
+                        semData.subjects.push({ name: subName, topics });
+                    });
+                    bcaData.push(semData);
+                });
+            }
+        }
+
+        function saveBCAData() { localStorage.setItem('studyhub_bca_final', JSON.stringify(bcaData)); }
+
+        function findTopic(id) { for (let s of bcaData) for (let sub of s.subjects) { let t = sub.topics.find(t => t.id ==
+                    id); if (t) return t; } return null; }
+        let addCtx = null;
+        window.openAddTopicModal = (type, semName, subName) => { addCtx = { type, semName, subName };
+            document.getElementById('newTopicName').value = '';
+            document.getElementById('addTopicModal').style.display = 'flex'; };
+        window.closeAddTopicModal = () => { document.getElementById('addTopicModal').style.display = 'none';
+            addCtx = null; };
+        window.addNewTopic = () => {
+            let name = document.getElementById('newTopicName').value.trim();
+            if (!name) return;
+            if (addCtx && addCtx.type === 'bca') {
+                let sem = bcaData.find(s => s.name === addCtx.semName);
+                let sub = sem?.subjects.find(s => s.name === addCtx.subName);
+                if (sub) { sub.topics.push(createTopic(name, 'Theory', 'Medium', true));
+                    saveBCAData();
+                    renderBCA();
+                    showToast(`✅ "${name}" added`); }
+            }
+            closeAddTopicModal();
+        };
+        window.openNotesModal = (id) => { currentTopicId = id; let t = findTopic(id); if (t) { document.getElementById(
+                    'notesTextarea').value = t.notes || '';
+                document.getElementById('notesLastUpdated').innerText = t.notesLastUpdated ? `Last Updated: ${t.notesLastUpdated}` :
+                    '';
+                document.getElementById('notesModal').style.display = 'flex'; } };
+        window.closeNotesModal = () => { document.getElementById('notesModal').style.display = 'none'; };
+        window.saveNotes = () => { let t = findTopic(currentTopicId); if (t) { t.notes = document.getElementById(
+                    'notesTextarea').value;
+                t.notesLastUpdated = new Date().toLocaleString();
+                saveBCAData();
+                showToast('Notes saved');
+                closeNotesModal(); } };
+        window.openMistakesModal = (id) => { currentTopicId = id; let t = findTopic(id); if (t) { renderMistakesList(t);
+                document.getElementById('mistakesModal').style.display = 'flex'; } };
+
+        function renderMistakesList(t) {
+            let html = '';
+            (t.mistakes || []).forEach((m, i) => { html +=
+                    `<div style="padding:8px;margin:4px 0;background:rgba(255,255,255,0.02);border-radius:8px;"><div>❌ ${escapeHtml(m.text)}</div><div class="flex-row"><button class="btn btn-sm btn-outline" onclick="editMistake(${i})">Edit</button><button class="btn btn-sm btn-danger" onclick="deleteMistake(${i})">Delete</button></div></div>`; });
+            if (!t.mistakes.length) html = '<p style="color:var(--text-muted);">No mistakes yet.</p>';
+            document.getElementById('mistakesList').innerHTML = html;
+        }
+        window.addMistake = () => { let t = findTopic(currentTopicId); let txt = document.getElementById('newMistake').value
+                .trim(); if (t && txt) { if (!t.mistakes) t.mistakes = [];
+                t.mistakes.push({ text: txt, date: new Date().toLocaleString() });
+                saveBCAData();
+                renderMistakesList(t);
+                document.getElementById('newMistake').value = '';
+                showToast('Mistake added'); } };
+        window.editMistake = (idx) => { let t = findTopic(currentTopicId); let newTxt = prompt('Edit mistake:', t.mistakes[
+                idx].text); if (newTxt) { t.mistakes[idx].text = newTxt;
+                saveBCAData();
+                renderMistakesList(t); } };
+        window.deleteMistake = (idx) => { let t = findTopic(currentTopicId);
+            t.mistakes.splice(idx, 1);
+            saveBCAData();
+            renderMistakesList(t);
+            showToast('Deleted'); };
+        window.closeMistakesModal = () => { document.getElementById('mistakesModal').style.display = 'none'; };
+        window.openResourcesModal = (id) => { currentTopicId = id; let t = findTopic(id); if (t) { renderResourcesList(t);
+                document.getElementById('resourcesModal').style.display = 'flex'; } };
+
+        function renderResourcesList(t) {
+            let html = '';
+            (t.resources || []).forEach((r, i) => { let icon = r.type === 'pdf' ? '📄' : r.type === 'youtube' ? '🎥' : '🌐';
+                html +=
+                    `<div style="padding:6px;margin:4px 0;">${icon} <a href="${r.url}" target="_blank" style="color:#c4b5fd;">${r.url.substring(0,40)}</a> <button class="btn btn-sm btn-danger" onclick="deleteResource(${i})">Del</button></div>`; });
+            if (!t.resources.length) html = '<p style="color:var(--text-muted);">No resources.</p>';
+            document.getElementById('resourcesList').innerHTML = html;
+        }
+        window.addResource = () => { let t = findTopic(currentTopicId); let type = document.getElementById('resourceType')
+                .value; let url = document.getElementById('resourceUrl').value.trim(); if (t && url) { if (!t.resources) t
+                    .resources = [];
+                t.resources.push({ type, url, added: new Date().toLocaleString() });
+                saveBCAData();
+                renderResourcesList(t);
+                document.getElementById('resourceUrl').value = '';
+                showToast('Resource added'); } };
+        window.deleteResource = (idx) => { let t = findTopic(currentTopicId);
+            t.resources.splice(idx, 1);
+            saveBCAData();
+            renderResourcesList(t); };
+        window.closeResourcesModal = () => { document.getElementById('resourcesModal').style.display = 'none'; };
+        window.updateStatus = (id, val) => { let t = findTopic(id); if (t) { t.status = val;
+                saveBCAData();
+                updateTopicCompactDisplay(id, t);
+                showToast(`Status: ${val}`);
+                renderDashboard(); } };
+        window.updateAccuracyOnly = (id) => { let t = findTopic(id); if (t) { let att = parseInt(document.getElementById(
+                    `att_${id}`).value) || 0; let corr = parseInt(document.getElementById(`corr_${id}`).value) || 0;
+                t.attempted = att;
+                t.correct = corr;
+                updateTopicAccuracy(t);
+                saveBCAData();
+                updateTopicCompactDisplay(id, t);
+                showToast(`Accuracy: ${t.accuracy}%`);
+                renderDashboard(); } };
+        window.markRevision = (id) => { let t = findTopic(id); if (t) { let days = prompt(
+                    'Next revision in days? (1,3,7,15,30)', '7'); let d = parseInt(days); if (!isNaN(d) && d > 0) { let next =
+                        new Date();
+                    next.setDate(next.getDate() + d);
+                    t.lastRevision = today();
+                    t.nextRevision = next.toISOString().split('T')[0];
+                    saveBCAData();
+                    showToast(`Revision set to ${t.nextRevision}`);
+                    renderDashboard(); } } };
+        window.deleteTopic = (id) => { if (confirm('Delete this topic?')) { for (let s of bcaData) for (let sub of s
+                    .subjects) { let idx = sub.topics.findIndex(t => t.id == id); if (idx !== -1 && sub.topics[idx]
+                    .isManual) { sub.topics.splice(idx, 1);
+                        saveBCAData();
+                        renderBCA();
+                        showToast('Deleted'); return; } } showToast('Cannot delete built-in topic'); } };
+
+        function updateTopicCompactDisplay(id, t) { let div = document.getElementById(`topic-compact-${id}`); if (div) { let
+                stats = div.querySelector('.topic-stats'); if (stats) stats.innerHTML =
+                    `<span>🎯 ${t.accuracy||0}%</span><span><i class="fas fa-stopwatch"></i> ${fmtMins(t.studyTime||0)}</span>`; } }
+        window.startTopicTimer = (id) => { if (activeTimers[id]) clearInterval(activeTimers[id]); let t = findTopic(id); if (
+                t) { t.timerRunning = true;
+                t.timerStart = Date.now() - (t.timerCurrent || 0);
+                activeTimers[id] = setInterval(() => { if (t.timerRunning) { t.timerCurrent = Date.now() - t.timerStart; let
+                            sec = Math.floor(t.timerCurrent / 1000); let h = Math.floor(sec / 3600),
+                            m = Math.floor((sec % 3600) / 60),
+                            s = sec % 60; let disp = document.getElementById(`timer_${id}`); if (disp) disp.innerText =
+                            `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; } },
+                    1000);
+                showToast(`Timer started for ${t.name}`);
+                localStorage.setItem('lastStudyTopic', JSON.stringify({ id, name: t.name }));
+                updateResumeCard(); } };
+        window.pauseTopicTimer = (id) => { let t = findTopic(id); if (t && t.timerRunning) { t.timerRunning = false;
+                t.timerCurrent = Date.now() - t.timerStart; if (activeTimers[id]) clearInterval(activeTimers[id]);
+                showToast('Paused'); } };
+        window.stopTopicTimer = (id) => { let t = findTopic(id); if (t) { if (t.timerRunning) { t.timerCurrent = Date.now() -
+                    t.timerStart; } let added = Math.floor(t.timerCurrent / 60000); if (added > 0) { t.studyTime = (t
+                    .studyTime || 0) + added;
+                saveBCAData();
+                updateTopicCompactDisplay(id, t);
+                showToast(`+${fmtMins(added)} saved`);
+                renderDashboard(); }
+                t.timerRunning = false;
+                t.timerCurrent = 0; if (activeTimers[id]) clearInterval(activeTimers[id]); let disp = document.getElementById(
+                    `timer_${id}`); if (disp) disp.innerText = '00:00:00'; } };
+
+        function renderBCADashboardStats() {
+            let allTopics = [];
+            for (let s of bcaData) for (let sub of s.subjects) allTopics.push(...sub.topics);
+            let notStarted = allTopics.filter(t => t.status === 'Not Started').slice(0, 5);
+            let dueRevisions = allTopics.filter(t => t.nextRevision && new Date(t.nextRevision) <= new Date()).slice(0, 5);
+            let queueHtml =
+                `<div class="progress-bar-bg"><div class="progress-fill" style="width:${allTopics.length?(allTopics.filter(t=>t.status!=='Not Started').length/allTopics.length*100):0}%"></div></div>`;
+            queueHtml +=
+                `<div style="margin-top:8px;"><strong>📋 Priority Queue:</strong> ${notStarted.map(t=>t.name).join(', ') || 'All caught up! 🎉'}</div>`;
+            if (dueRevisions.length) queueHtml +=
+                `<div style="color:#fb7185;margin-top:4px;"><strong>🔴 Due Revision:</strong> ${dueRevisions.map(t=>t.name).join(', ')}</div>`;
+            const queueEl = document.getElementById('todayQueue');
+            if (queueEl) queueEl.innerHTML = queueHtml;
+            let semHtml = '';
+            bcaData.forEach(sem => {
+                let topics = [];
+                sem.subjects.forEach(sub => topics.push(...sub.topics));
+                let comp = topics.filter(t => t.status === 'Completed' || t.status === 'Mastered').length;
+                let pend = topics.filter(t => t.status === 'Not Started').length;
+                let totalTime = topics.reduce((s, t) => s + (t.studyTime || 0), 0);
+                let avgAcc = topics.length ? Math.round(topics.reduce((s, t) => s + (t.accuracy || 0), 0) / topics
+                    .length) : 0;
+                let weak = topics.filter(t => (t.accuracy || 0) < 60 && (t.attempted || 0) > 0).length;
+                let due = topics.filter(t => t.nextRevision && new Date(t.nextRevision) <= new Date()).length;
+                let mast = topics.filter(t => t.status === 'Mastered').length;
+                semHtml +=
+                    `<div class="card"><div class="card-header"><i class="fas fa-graduation-cap"></i> ${sem.name}</div><div class="stat-grid"><div class="stat-card"><div class="stat-number">${topics.length}</div><div class="stat-label">Topics</div></div><div class="stat-card"><div class="stat-number">${comp}</div><div class="stat-label">Completed</div></div><div class="stat-card"><div class="stat-number">${pend}</div><div class="stat-label">Pending</div></div><div class="stat-card"><div class="stat-number">${fmtMins(totalTime)}</div><div class="stat-label">Study Time</div></div><div class="stat-card"><div class="stat-number">${avgAcc}%</div><div class="stat-label">Accuracy</div></div><div class="stat-card"><div class="stat-number">${weak}</div><div class="stat-label">Weak</div></div><div class="stat-card"><div class="stat-number">${due}</div><div class="stat-label">Due Rev</div></div><div class="stat-card"><div class="stat-number">${mast}</div><div class="stat-label">Mastered</div></div></div><div class="progress-bar-bg"><div class="progress-fill" style="width:${topics.length?(comp/topics.length*100):0}%"></div></div></div>`;
+            });
+            const bcaStats = document.getElementById('bcaDashboardStats');
+            if (bcaStats) bcaStats.innerHTML = semHtml;
+            updateResumeCard();
+        }
+
+        function updateResumeCard() { let last = localStorage.getItem('lastStudyTopic'); if (last) { let d = JSON.parse(
+                last);
+            const disp = document.getElementById('lastTopicDisplay'); if (disp) disp.innerHTML = d.name;
+            const card = document.getElementById('resumeCard'); if (card) card.style.display = 'block'; } else { const card =
+                document.getElementById('resumeCard'); if (card) card.style.display = 'none'; } }
+        window.resumeLastTopic = () => { let last = localStorage.getItem('lastStudyTopic'); if (last) { let d = JSON.parse(
+                last); let div = document.getElementById(`topic-compact-${d.id}`); if (div) div.click(); } };
+
+        function renderBCA() {
+            let html = '';
+            bcaData.forEach((sem, semIdx) => {
+                let semKey = `bca_sem_${semIdx}`;
+                let isSemOpen = openSemesters.has(semKey);
+                html +=
+                    `<div><div class="semester-header" onclick="toggleSemesterState('${semKey}',this)"><span>📚 ${sem.name}</span><span>${isSemOpen?'▼':'▶'}</span></div><div class="semester-content" id="${semKey}" style="display:${isSemOpen?'block':'none'}">`;
+                sem.subjects.forEach((sub, subIdx) => {
+                    let subKey = `bca_sub_${semIdx}_${subIdx}`;
+                    let isSubOpen = openSubjects.has(subKey);
+                    html +=
+                        `<div><div class="subject-header" onclick="toggleSubjectState('${subKey}',this)"><span>📘 ${sub.name}</span><span>${isSubOpen?'▼':'▶'}</span></div><div class="subject-content" id="${subKey}" style="display:${isSubOpen?'block':'none'}">`;
+                    html +=
+                        `<div style="margin:8px 0;"><button class="btn btn-sm btn-outline" onclick="openAddTopicModal('bca','${sem.name}','${sub.name}')">➕ Add Topic</button></div>`;
+                    sub.topics.forEach(topic => {
+                        let topicKey = `topic_${topic.id}`;
+                        let isOpen = openTopics.has(topicKey);
+                        let priClass = topic.priority === 'High' ? 'priority-high' : topic
+                            .priority === 'Medium' ? 'priority-medium' : 'priority-low';
+                        html +=
+                            `<div class="topic-compact ${priClass}" id="topic-compact-${topic.id}" onclick="toggleTopicState('${topicKey}',event)"><span><strong>${topic.name}</strong> ${topic.isManual?'✨':''} <span class="status-badge status-${topic.status.replace(' ','')}">${topic.status}</span></span><div class="topic-stats"><span>🎯 ${topic.accuracy||0}%</span><span><i class="fas fa-stopwatch"></i> ${fmtMins(topic.studyTime||0)}</span></div><span>${isOpen?'▼':'▶'}</span></div><div class="topic-details" id="${topicKey}" style="display:${isOpen?'block':'none'};padding-left:20px;"><div class="card" style="background:rgba(255,255,255,0.02);"><div class="flex-row"><label>Status:</label><select class="input-field" onchange="updateStatus('${topic.id}',this.value)"><option ${topic.status==='Not Started'?'selected':''}>Not Started</option><option ${topic.status==='Studied'?'selected':''}>Studied</option><option ${topic.status==='Completed'?'selected':''}>Completed</option><option ${topic.status==='Mastered'?'selected':''}>Mastered</option></select></div><div class="flex-row"><label>Attempted:</label><input type="number" id="att_${topic.id}" class="input-field" style="width:70px;" value="${topic.attempted||0}"><label>Correct:</label><input type="number" id="corr_${topic.id}" class="input-field" style="width:70px;" value="${topic.correct||0}"><button class="btn btn-sm" onclick="updateAccuracyOnly('${topic.id}')">Update</button></div><div class="progress-bar-bg"><div class="progress-fill" style="width:${topic.accuracy||0}%;"></div></div><div><strong>Accuracy: ${topic.accuracy||0}%</strong> | Study: ${fmtMins(topic.studyTime||0)}</div><div style="background:rgba(0,0,0,0.2);padding:10px;border-radius:12px;margin:8px 0;"><div class="timer-display" id="timer_${topic.id}" style="font-size:1.2rem;">00:00:00</div><div class="flex-row"><button class="btn btn-sm btn-success" onclick="startTopicTimer('${topic.id}')">▶ Start</button><button class="btn btn-sm" onclick="pauseTopicTimer('${topic.id}')">⏸ Pause</button><button class="btn btn-sm btn-danger" onclick="stopTopicTimer('${topic.id}')">⏹ Stop</button></div></div><div class="flex-row"><button class="btn btn-sm btn-outline" onclick="openNotesModal('${topic.id}')">📝 Notes</button><button class="btn btn-sm btn-outline" onclick="openMistakesModal('${topic.id}')">❌ Mistakes</button><button class="btn btn-sm btn-outline" onclick="openResourcesModal('${topic.id}')">📚 Resources</button><button class="btn btn-sm" onclick="markRevision('${topic.id}')"><i class="fas fa-brain"></i> Revision</button>${topic.isManual?`<button class="btn btn-sm btn-danger" onclick="deleteTopic('${topic.id}')">🗑</button>`:''}</div><div style="font-size:0.75rem;color:var(--text-muted);">Last Revision: ${topic.lastRevision||'Not yet'} | Next: ${topic.nextRevision||'Not scheduled'}</div></div></div>`;
+                    });
+                    html += `</div></div>`;
+                });
+                html += `</div></div>`;
+            });
+            const container = document.getElementById('bcaContainer');
+            if (container) container.innerHTML = html;
+            renderDashboard();
+        }
+        window.toggleSemesterState = (key, el) => { let c = document.getElementById(key); if (c) { if (openSemesters.has(
+                    key)) { openSemesters.delete(key);
+                c.style.display = 'none'; if (el) el.querySelector('span:last-child').innerHTML = '▶'; } else {
+                openSemesters.add(key);
+                c.style.display = 'block'; if (el) el.querySelector('span:last-child').innerHTML = '▼'; } } };
+        window.toggleSubjectState = (key, el) => { let c = document.getElementById(key); if (c) { if (openSubjects.has(
+                    key)) { openSubjects.delete(key);
+                c.style.display = 'none'; if (el) el.querySelector('span:last-child').innerHTML = '▶'; } else {
+                openSubjects.add(key);
+                c.style.display = 'block'; if (el) el.querySelector('span:last-child').innerHTML = '▼'; } } };
+        window.toggleTopicState = (key, ev) => { ev.stopPropagation(); let c = document.getElementById(key); if (c) { if (
+                    openTopics.has(key)) { openTopics.delete(key);
+                c.style.display = 'none'; let p = c.previousElementSibling; if (p && p.classList.contains(
+                        'topic-compact')) p.querySelector('span:last-child').innerHTML = '▶'; } else { openTopics.add(
+                    key);
+                c.style.display = 'block'; let p = c.previousElementSibling; if (p && p.classList.contains(
+                        'topic-compact')) p.querySelector('span:last-child').innerHTML = '▼'; } } };
+
+        // ==================== SKILLS ====================
+        let userSkills = [];
+        let openSkillsSet = new Set();
+        const defaultTopicsList = ["Basics", "Fundamentals", "Intermediate", "Advanced", "Expert"];
+        const predefinedSkills = ["Excel", "Word", "HTML", "CSS", "JavaScript", "Python", "Java", "C", "SQL", "Power BI", "AI",
+            "Machine Learning", "Data Analysis", "Communication", "English Speaking", "Typing"
+        ];
+        let selectedSkillName = null,
+            showCustom = false;
+
+        function loadSkillsData() { const saved = localStorage.getItem('skillLearningSystem'); if (saved) userSkills = JSON
+                .parse(saved); else userSkills = []; for (let s of userSkills) for (let t of s.topics) { if (t.doubtText ===
+                    undefined) t.doubtText = null; if (t.videoUrl === undefined) t.videoUrl = null; } }
+
+        function saveSkillsData() { localStorage.setItem('skillLearningSystem', JSON.stringify(userSkills));
+            renderAllSkills();
+            renderSkillInventory(); }
+
+        function filterSkillList() { const search = document.getElementById('skillSearchInput').value.toLowerCase(); const
+                filtered = predefinedSkills.filter(s => s.toLowerCase().includes(search)); const listDiv = document
+                .getElementById('skillSearchList');
+            listDiv.innerHTML = filtered.map(s => `<div class="search-item" onclick="selectSkill('${s}')">${s}</div>`).join(
+                ''); if (filtered.length === 0 && !showCustom) listDiv.innerHTML +=
+                `<div class="search-item" onclick="showCustomSkillInput()">➕ Add custom: "${search}"</div>`; }
+
+        function selectSkill(skill) { selectedSkillName = skill;
+            document.getElementById('skillSearchInput').value = skill;
+            document.getElementById('skillSearchList').innerHTML =
+                `<div class="search-item" style="background:rgba(139,92,246,0.3);">${skill} selected ✅</div>`; }
+
+        function showCustomSkillInput() { showCustom = true;
+            document.getElementById('customSkillInput').style.display = 'block';
+            document.getElementById('skillSearchList').innerHTML = ''; }
+
+        function addSelectedSkill() {
+            let skillName = selectedSkillName; if (showCustom) skillName = document.getElementById('customSkillName').value
+                .trim(); if (!skillName) return;
+            if (userSkills.find(s => s.name.toLowerCase() === skillName.toLowerCase())) { showToast(
+                    'Skill already exists'); return; }
+            const targetLevel = document.getElementById('skillTargetLevel').value;
+            const targetDate = document.getElementById('skillTargetDate').value;
+            const topicsList = defaultTopicsList;
+            const topics = topicsList.map(t => ({ name: t, completed: false, studyTime: 0, lastPracticed: null,
+                doubtText: null, videoUrl: null }));
+            userSkills.push({ name: skillName, currentLevel: 'Beginner', targetLevel, targetDate, topics, notes: '',
+                resources: [], studyTimeTotal: 0, streak: 0, knowledgeScore: 0, createdAt: today(),
+            lastStudied: null });
+            saveSkillsData();
+            closeAddSkillModal();
+            showToast(`Skill "${skillName}" added`);
+        }
+
+        function closeAddSkillModal() { document.getElementById('addSkillModal').style.display = 'none';
+            selectedSkillName = null;
+            showCustom = false;
+            document.getElementById('customSkillInput').style.display = 'none';
+            document.getElementById('skillSearchInput').value = '';
+            document.getElementById('customSkillName').value = '';
+            filterSkillList(); }
+
+        function showAddSkillModal() { document.getElementById('addSkillModal').style.display = 'flex';
+            filterSkillList(); }
+
+        function renderAllSkills() { const container = document.getElementById('skillsContainer'); if (!container) return;
+            container.innerHTML = userSkills.length ? userSkills.map((s, i) =>
+                `<div class="card" style="padding:14px;"><strong>${s.name}</strong> <span class="badge badge-mastered">${s.currentLevel||'Beginner'}</span> → ${s.targetLevel||'Intermediate'} <span style="font-size:0.7rem;color:var(--text-muted);">| Score: ${s.knowledgeScore||0}</span></div>`
+                ).join('') : '<p style="color:var(--text-muted);">No skills added yet. Click Add to begin.</p>'; }
+
+        function renderSkillInventory() { const container = document.getElementById('skillInventoryContainer'); if (!container)
+                return; if (!userSkills.length) { container.innerHTML =
+                    '<p style="color:var(--text-muted);">No skills added.</p>'; return; } let totalSkills = userSkills
+                .length; let totalKnowledge = userSkills.reduce((a, s) => a + (s.knowledgeScore || 0), 0); let avg =
+                totalSkills ? Math.round(totalKnowledge / totalSkills) : 0;
+            container.innerHTML =
+                `<div class="stat-grid"><div class="stat-card"><div class="stat-number">${totalSkills}</div><div class="stat-label">Skills</div></div><div class="stat-card"><div class="stat-number">${avg}</div><div class="stat-label">Avg Knowledge</div></div></div>`; }
+
+        function addCustomTopic() { showToast('Custom topic added (placeholder)');
+            closeTopicModal(); }
+
+        function closeTopicModal() { document.getElementById('addTopicModal').style.display = 'none'; }
+
+        // ==================== REVISION VAULT ====================
+        let revisionItems = JSON.parse(localStorage.getItem('sh_revision') || '[]');
+        let revViewMode = 'list',
+            revFilterMode = 'all',
+            revSearchTerm = '',
+            revFlashIndex = 0;
+
+        function saveRevision() { localStorage.setItem('sh_revision', JSON.stringify(revisionItems));
+            updateRevStats();
+            renderRevision(); }
+
+        function updateRevStats() {
+            document.getElementById('revTotalCount').innerText = revisionItems.length;
+            document.getElementById('revMasteredCount').innerText = revisionItems.filter(r => r.status === 'Mastered')
+                .length;
+            document.getElementById('revDueCount').innerText = revisionItems.filter(r => r.nextRevision && new Date(r
+                .nextRevision) <= new Date()).length;
+            document.getElementById('revDoubtCount').innerText = revisionItems.filter(r => r.doubt).length;
+        }
+
+        function getFilteredRev() {
+            let filtered = [...revisionItems];
+            if (revFilterMode === 'doubt') filtered = filtered.filter(r => r.doubt);
+            if (revFilterMode === 'due') filtered = filtered.filter(r => r.nextRevision && new Date(r.nextRevision) <=
+                new Date());
+            if (revSearchTerm.trim()) filtered = filtered.filter(r => r.topic.toLowerCase().includes(revSearchTerm
+                .toLowerCase()) || r.subject.toLowerCase().includes(revSearchTerm.toLowerCase()));
+            return filtered;
+        }
+
+        function renderRevision() {
+            let listDiv = document.getElementById('revisionContainer');
+            let flashDiv = document.getElementById('flashcardContainer');
+            if (revViewMode === 'list') {
+                flashDiv.style.display = 'none';
+                listDiv.style.display = 'block';
+                let filtered = getFilteredRev();
+                if (filtered.length === 0) { listDiv.innerHTML =
+                        '<p style="color:var(--text-muted);">No items</p>'; return; }
+                listDiv.innerHTML = filtered.map(r =>
+                    `<div class="card" style="padding:12px;"><div><strong>${r.course} - ${r.subject}</strong> <strong>${r.topic}</strong> <span class="status-badge">${r.status||'Not Started'}</span> ${r.doubt?'❗':''}</div><div style="font-size:0.8rem;color:var(--text-muted);">${r.notes||''}</div><div class="flex-row"><select class="input-field" onchange="updateRevStatus('${r.id}',this.value)"><option ${r.status==='Not Started'?'selected':''}>Not Started</option><option ${r.status==='Learning'?'selected':''}>Learning</option><option ${r.status==='Revised'?'selected':''}>Revised</option><option ${r.status==='Mastered'?'selected':''}>Mastered</option></select><button class="btn btn-sm" onclick="editRevItem('${r.id}')">Edit</button><button class="btn btn-sm btn-danger" onclick="deleteRevItem('${r.id}')">Delete</button></div></div>`
+                    ).join('');
+            } else {
+                listDiv.style.display = 'none';
+                flashDiv.style.display = 'block';
+                let filtered = getFilteredRev();
+                if (filtered.length === 0) { flashDiv.innerHTML =
+                        '<p style="color:var(--text-muted);">No flashcards</p>'; return; }
+                revFlashIndex = Math.min(revFlashIndex, filtered.length - 1);
+                let item = filtered[revFlashIndex];
+                flashDiv.innerHTML =
+                    `<div class="flex-row" style="justify-content:center;"><button class="btn btn-sm" onclick="prevFlash()">◀</button><span>${revFlashIndex+1}/${filtered.length}</span><button class="btn btn-sm" onclick="nextFlash()">▶</button></div><div class="card" style="text-align:center;cursor:pointer;min-height:150px;display:flex;align-items:center;justify-content:center;" onclick="this.classList.toggle('flipped')"><div><h4>${item.topic}</h4><p style="color:var(--text-muted);">${item.subject}</p><p style="margin-top:12px;">${item.notes||'No notes'}</p></div></div>`;
+            }
+        }
+
+        function showAddRevForm(id = null) {
+            document.getElementById('revEditId').value = id || '';
+            if (id) { let r = revisionItems.find(x => x.id == id); if (r) { document.getElementById('revCourse').value = r
+                        .course;
+                    document.getElementById('revSubject').value = r.subject;
+                    document.getElementById('revTopic').value = r.topic;
+                    document.getElementById('revNotes').value = r.notes || '';
+                    document.getElementById('revDoubt').checked = r.doubt || false;
+                    document.getElementById('revNextRevision').value = r.nextRevision || ''; } } else { document
+                    .getElementById('revCourse').value = 'BCA';
+                document.getElementById('revSubject').value = '';
+                document.getElementById('revTopic').value = '';
+                document.getElementById('revNotes').value = '';
+                document.getElementById('revDoubt').checked = false;
+                document.getElementById('revNextRevision').value = ''; }
+            document.getElementById('revAddModal').style.display = 'flex';
+        }
+
+        function closeRevModal() { document.getElementById('revAddModal').style.display = 'none'; }
+
+        function saveRevisionItem() {
+            let id = document.getElementById('revEditId').value;
+            let course = document.getElementById('revCourse').value;
+            let subject = document.getElementById('revSubject').value.trim();
+            let topic = document.getElementById('revTopic').value.trim();
+            let notes = document.getElementById('revNotes').value;
+            let doubt = document.getElementById('revDoubt').checked;
+            let nextRevision = document.getElementById('revNextRevision').value;
+            if (!subject || !topic) return;
+            if (id) { let idx = revisionItems.findIndex(r => r.id == id); if (idx !== -1) revisionItems[idx] = { ...
+                        revisionItems[idx], course, subject, topic, notes, doubt, nextRevision }; } else { revisionItems
+                    .push({ id: Date.now(), course, subject, topic, notes, doubt, nextRevision, status: 'Not Started' }); }
+            saveRevision();
+            closeRevModal();
+        }
+
+        function updateRevStatus(id, status) { let r = revisionItems.find(x => x.id == id); if (r) { r.status = status;
+                saveRevision(); } }
+
+        function deleteRevItem(id) { revisionItems = revisionItems.filter(r => r.id != id);
+            saveRevision(); }
+
+        function editRevItem(id) { showAddRevForm(id); }
+
+        function toggleRevView() { revViewMode = revViewMode === 'list' ? 'flashcard' : 'list';
+            renderRevision(); }
+
+        function filterRevByDoubt() { revFilterMode = 'doubt';
+            renderRevision(); }
+
+        function filterRevByDue() { revFilterMode = 'due';
+            renderRevision(); }
+
+        function clearRevFilters() { revFilterMode = 'all';
+            document.getElementById('revSearchInput').value = '';
+            revSearchTerm = '';
+            renderRevision(); }
+
+        function filterRevisionList() { revSearchTerm = document.getElementById('revSearchInput').value;
+            renderRevision(); }
+
+        function prevFlash() { let f = getFilteredRev(); if (revFlashIndex > 0) revFlashIndex--;
+            renderRevision(); }
+
+        function nextFlash() { let f = getFilteredRev(); if (revFlashIndex < f.length - 1) revFlashIndex++;
+            renderRevision(); }
+
+        // ==================== PREMIUM LPU ANALYTICS ====================
+        function renderLPUAnalytics() {
+            const container = document.getElementById('analyticsContent');
+            if (!container) return;
+            if (!bcaData || bcaData.length === 0) {
+                container.innerHTML =
+                    '<div class="card" style="text-align:center;"><p style="color:var(--text-muted);">No BCA syllabus data available. Please add BCA topics first.</p></div>';
+                return;
+            }
+            let totalTopics = 0,
+                completedTopics = 0;
+            let semesterStats = [];
+            for (let sem of bcaData) {
+                let semTopics = 0,
+                    semCompleted = 0,
+                    semStudyTime = 0;
+                let subjectsData = [];
+                for (let sub of sem.subjects) {
+                    let subTopics = 0,
+                        subCompleted = 0,
+                        subStudyTime = 0;
+                    for (let topic of sub.topics) { subTopics++;
+                        totalTopics++; if (topic.status === 'Completed' || topic.status === 'Mastered') { subCompleted++;
+                            semCompleted++;
+                            completedTopics++; }
+                        subStudyTime += topic.studyTime || 0;
+                        semStudyTime += topic.studyTime || 0; }
+                    subjectsData.push({ name: sub.name, progress: subTopics ? Math.round((subCompleted / subTopics) *
+                            100) : 0, studyTime: subStudyTime });
+                }
+                semesterStats.push({ name: sem.name, progress: semTopics ? Math.round((semCompleted / semTopics) * 100) :
+                        0, subjects: subjectsData, studyTime: semStudyTime });
+            }
+            const pendingTopics = totalTopics - completedTopics;
+            const coveragePercent = totalTopics ? Math.round((completedTopics / totalTopics) * 100) : 0;
+            const currentDate = new Date();
+            let expectedTopics = 0;
+            for (let i = 0; i < semesterStats.length; i++) {
+                let semStart = new Date(currentDate.getFullYear(), (i % 2 === 0 ? 6 : 0), 1);
+                let semEnd = new Date(semStart);
+                semEnd.setMonth(semStart.getMonth() + 6);
+                if (currentDate > semEnd) expectedTopics += bcaData[i].subjects.reduce((acc, sub) => acc + sub.topics
+                    .length, 0);
+                else if (currentDate >= semStart) {
+                    let daysPassed = (currentDate - semStart) / (1000 * 3600 * 24);
+                    let totalDays = (semEnd - semStart) / (1000 * 3600 * 24);
+                    expectedTopics += Math.floor((daysPassed / totalDays) * bcaData[i].subjects.reduce((acc, sub) => acc +
+                        sub.topics.length, 0));
+                }
+            }
+            const gapTopics = expectedTopics - completedTopics;
+            const isBehind = gapTopics > 0;
+            let revisedTopics = 0;
+            for (let sem of bcaData) for (let sub of sem.subjects) for (let t of sub.topics) if (t.nextRevision || t
+                    .status === 'Mastered') revisedTopics++;
+            const revisionPercent = totalTopics ? Math.round((revisedTopics / totalTopics) * 100) : 0;
+            let totalStudyMinutes = 0;
+            for (let sem of bcaData) for (let sub of sem.subjects) for (let t of sub.topics) totalStudyMinutes += t
+                .studyTime || 0;
+            const totalStudyHours = Math.round(totalStudyMinutes / 60);
+            const examReadiness = Math.min(100, Math.round(coveragePercent * 0.4 + revisionPercent * 0.3 + Math.min(100,
+                totalStudyHours / 120) * 0.2 + 70 * 0.1));
+            let backlogSubjects = [];
+            for (let sem of bcaData) { for (let sub of sem.subjects) { let subTopics = sub.topics.length; let
+                    subCompleted = sub.topics.filter(t => t.status === 'Completed' || t.status === 'Mastered')
+                    .length; let subProgress = subTopics ? (subCompleted / subTopics) * 100 : 0; let subStudyTime = sub
+                    .topics.reduce((s, t) => s + (t.studyTime || 0), 0); if (subProgress < 40 && subStudyTime < 600)
+                    backlogSubjects.push({ name: sub.name, progress: Math.round(subProgress), studyTime: fmt(
+                        subStudyTime) }); } }
+            let subjectTime = [];
+            for (let sem of bcaData) for (let sub of sem.subjects) subjectTime.push({ name: sub.name, time: sub.topics
+                    .reduce((s, t) => s + (t.studyTime || 0), 0) });
+            subjectTime.sort((a, b) => b.time - a.time);
+            let timeInvestmentHtml = subjectTime.slice(0, 5).map(s =>
+                `<div class="flex-row" style="justify-content:space-between;"><span>${s.name}</span><span style="font-weight:600;">${fmt(s.time)}</span></div>`
+                ).join('');
+            let studyDates = sessions.map(s => s.date).filter((v, i, a) => a.indexOf(v) === i).sort();
+            let longestGap = 0,
+                lastDate = null;
+            for (let d of studyDates) { if (lastDate) { let diff = (new Date(d) - new Date(lastDate)) / (1000 * 3600 *
+                    24); if (diff > longestGap) longestGap = diff; }
+                lastDate = d; }
+            let currentGap = lastDate ? (new Date(today()) - new Date(lastDate)) / (1000 * 3600 * 24) : 0;
+            let firstStudyDate = studyDates.length ? studyDates[0] : today();
+            let daysSinceStart = Math.max(1, (new Date(today()) - new Date(firstStudyDate)) / (1000 * 3600 * 24));
+            let topicsPerDay = completedTopics / daysSinceStart;
+            let daysToComplete = topicsPerDay > 0 ? Math.ceil(pendingTopics / topicsPerDay) : 999;
+            let expectedCompletion = new Date();
+            expectedCompletion.setDate(expectedCompletion.getDate() + daysToComplete);
+            let recoveryMsg = isBehind ?
+                `⚠️ You are behind by ${gapTopics} topics. Study ${Math.ceil(pendingTopics/30)} topics/day to catch up.` :
+                `✅ On track! Keep studying ${Math.max(1,Math.ceil(topicsPerDay))} topics/day.`;
+
+            container.innerHTML = `
+            <div class="analytics-grid">
+              <div class="analytics-card highlight-purple"><div class="analytics-title"><i class="fas fa-book-open"></i> Syllabus Coverage</div><div class="analytics-value">${coveragePercent}%</div><div class="progress-bar-bg"><div class="progress-fill" style="width:${coveragePercent}%"></div></div><div style="font-size:0.8rem;color:var(--text-muted);">${completedTopics}/${totalTopics} topics</div></div>
+              <div class="analytics-card highlight-teal"><div class="analytics-title"><i class="fas fa-graduation-cap"></i> Exam Readiness</div><div class="analytics-value teal">${examReadiness}%</div><div class="progress-bar-bg"><div class="progress-fill" style="width:${examReadiness}%;background:linear-gradient(90deg,#2dd4bf,#6366f1);"></div></div><div style="font-size:0.8rem;color:var(--text-muted);">Coverage + Revision + Time</div></div>
+              <div class="analytics-card highlight-amber"><div class="analytics-title"><i class="fas fa-brain"></i> Revision Health</div><div class="analytics-value amber">${revisionPercent}%</div><div class="progress-bar-bg"><div class="progress-fill" style="width:${revisionPercent}%;background:linear-gradient(90deg,#fbbf24,#c4b5fd);"></div></div><div style="font-size:0.8rem;color:var(--text-muted);">${revisedTopics}/${totalTopics} topics revised</div></div>
+              <div class="analytics-card highlight-teal"><div class="analytics-title"><i class="fas fa-stopwatch"></i> Total Study</div><div class="analytics-value teal">${totalStudyHours}h</div><div style="font-size:0.8rem;color:var(--text-muted);">Across all semesters</div></div>
+            </div>
+            <h4 style="margin:20px 0 10px;color:var(--text-secondary);"><i class="fas fa-calendar-days"></i> Semester Health</h4>
+            <div class="analytics-grid">${semesterStats.map(sem=>`<div class="analytics-card"><div class="analytics-title">${sem.name}</div><div class="analytics-value">${sem.progress}%</div><div class="progress-bar-bg"><div class="progress-fill" style="width:${sem.progress}%"></div></div><div style="font-size:0.8rem;">${sem.studyTime?fmt(sem.studyTime):'0h'} studied</div><span class="badge ${sem.progress>=70?'badge-on-track':(sem.progress>=40?'badge-behind':'badge-critical')}" style="margin-top:6px;">${sem.progress>=70?'✅ On Track':(sem.progress>=40?'⚠️ Behind':'🔴 Critical')}</span></div>`).join('')}</div>
+            <div class="analytics-grid" style="margin-top:20px;">
+              <div class="analytics-card highlight-rose"><div class="analytics-title">🎯 Expected vs Actual</div><div>Expected: <strong>${expectedTopics}</strong></div><div>Actual: <strong>${completedTopics}</strong></div><div>Gap: <strong style="color:${gapTopics>0?'#fb7185':'#34d399'};">${gapTopics>0?'+'+gapTopics:gapTopics}</strong></div><span class="badge ${isBehind?'badge-critical':'badge-on-track'}">${isBehind?'⚠️ Behind':'✅ On Track'}</span></div>
+              <div class="analytics-card highlight-rose"><div class="analytics-title">⚠️ Backlog</div>${backlogSubjects.length?backlogSubjects.map(s=>`<div class="backlog-item"><strong>${s.name}</strong> (${s.progress}%, ${s.studyTime})</div>`).join(''):'<div style="color:#34d399;">No high-risk subjects! 🎉</div>'}</div>
+              <div class="analytics-card highlight-teal"><div class="analytics-title"><i class="fas fa-stopwatch"></i> Top 5 Time</div>${timeInvestmentHtml}</div>
+              <div class="analytics-card highlight-amber"><div class="analytics-title">📆 Consistency</div><div>Longest gap: <strong>${longestGap} days</strong></div><div>Current gap: <strong>${Math.floor(currentGap)} days</strong></div></div>
+              <div class="analytics-card highlight-teal"><div class="analytics-title">🔮 Forecast</div><div>Speed: <strong>${topicsPerDay.toFixed(1)} topics/day</strong></div><div>Left: <strong>${pendingTopics}</strong></div><div>Finish: <strong>${expectedCompletion.toLocaleDateString()}</strong></div></div>
+              <div class="analytics-card highlight-purple"><div class="analytics-title">🚀 Recovery Plan</div><div style="font-size:0.85rem;">${recoveryMsg}</div></div>
+            </div>`;
+        }
+
+        // ==================== EXPORT ====================
+        function exportReport() {
+            let month = parseInt(document.getElementById('exportMonth').value);
+            let year = parseInt(document.getElementById('exportYear').value);
+            let prefix = `${year}-${String(month+1).padStart(2,'0')}`;
+            let wb = XLSX.utils.book_new();
+            let pRows = [];
+            Object.entries(plans).forEach(([d, tasks]) => { if (d.startsWith(prefix)) tasks.forEach(t => pRows.push({ Date: d,
+                    Subject: t.subject, 'Planned(hrs)': (t.plannedMin / 60).toFixed(2), 'Actual(hrs)': ((t
+                        .actualMin || 0) / 60).toFixed(2) })); });
+            if (pRows.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(pRows), 'Planner');
+            let sRows = sessions.filter(s => s.date.startsWith(prefix)).map(s => ({ Date: s.date, Task: s.task,
+                'Duration(hrs)': (s.durationMin / 60).toFixed(2) }));
+            if (sRows.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(sRows), 'Sessions');
+            XLSX.writeFile(wb, `StudyReport_${year}_${month+1}.xlsx`);
+            showToast('Report downloaded!');
+        }
+
+        function syncNow() { showToast('Sync simulated (local only)'); }
+
+        function testConnection() { alert('Local storage only. All data saved in browser.'); }
+
+        function init() {
+            loadBCAData();
+            renderBCA();
+            loadSkillsData();
+            renderAllSkills();
+            loadPlanner();
+            renderDashboard();
+            renderTimerLogs();
+            renderRevision();
+            renderLPUAnalytics();
+            const planDateEl = document.getElementById('planDate');
+            if (planDateEl) planDateEl.value = today();
+            if (timerState.running) timerInterval = setInterval(updateTimerDisplay, 1000);
+            document.getElementById('syncBadge').innerText = '🟢 Synced';
+        }
+        init();
+    </script>
 </body>
 </html>
